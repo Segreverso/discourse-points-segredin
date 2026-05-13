@@ -552,6 +552,158 @@
       </div>
     {{/if}}
 
+    {{#if (eq this.activeTab "inventory")}}
+      <div class="points-mall-inventory">
+        <div class="inventory-header">
+          <div>
+            <h2>{{i18n "points_mall.inventory.title"}}</h2>
+            <p>{{i18n "points_mall.inventory.subtitle"}}</p>
+          </div>
+          <div class="inventory-ticket-card">
+            <span>{{i18n "points_mall.inventory.skin_ticket"}}</span>
+            <strong>{{this.themeSkinTicketCount}}</strong>
+          </div>
+        </div>
+
+        <section class="inventory-equipped-panel">
+          <div class="inventory-section-head">
+            <h3>{{i18n "points_mall.inventory.equipped_title"}}</h3>
+            <span>{{i18n "points_mall.inventory.equipped_tip"}}</span>
+          </div>
+
+          {{#if this.hasEquippedInventory}}
+            <div class="inventory-equipped-grid">
+              {{#each this.equippedInventoryItems as |item|}}
+                <article class="inventory-equipped-item">
+                  <div>
+                    <span>{{item.kind_label}}</span>
+                    <strong>{{item.display_value}}</strong>
+                    {{#if item.expires_at}}
+                      <small>{{i18n "points_mall.inventory.expires_at"}} {{item.expires_display}} · {{item.remaining_text}}</small>
+                    {{/if}}
+                  </div>
+                  <DButton
+                    @action={{fn this.unequipInventoryKind item.kind}}
+                    @label="points_mall.inventory.unequip"
+                    class="btn"
+                  />
+                </article>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="inventory-empty-inline">
+              {{i18n "points_mall.inventory.no_equipped"}}
+            </div>
+          {{/if}}
+        </section>
+
+        <section class="inventory-section">
+          <div class="inventory-section-head">
+            <h3>{{i18n "points_mall.inventory.active_title"}}</h3>
+            <span>{{i18n "points_mall.inventory.active_count" count=this.activeInventoryItems.length}}</span>
+          </div>
+
+          {{#if this.activeInventoryItems.length}}
+            <div class="inventory-grid">
+              {{#each this.activeInventoryItems as |item|}}
+                <article class="inventory-card {{if item.equipped 'equipped'}}">
+                  <div class="inventory-preview {{item.preview_class}}">
+                    {{#if item.image_url}}
+                      <img src={{item.image_url}} alt={{item.name}} />
+                    {{else}}
+                      <span>{{item.kind_label}}</span>
+                    {{/if}}
+                  </div>
+                  <div class="inventory-card-top">
+                    <span class="inventory-kind">{{item.kind_label}}</span>
+                    {{#if item.equipped}}
+                      <span class="inventory-status equipped">{{i18n "points_mall.inventory.equipped"}}</span>
+                    {{else if item.equippable}}
+                      <span class="inventory-status">{{i18n "points_mall.inventory.available"}}</span>
+                    {{else}}
+                      <span class="inventory-status ticket">{{i18n "points_mall.inventory.ticket"}}</span>
+                    {{/if}}
+                  </div>
+                  <h3>{{item.name}}</h3>
+                  <p>{{item.description}}</p>
+                  <div class="inventory-meta">
+                    <span>{{i18n "points_mall.inventory.granted_at"}} {{item.granted_display}}</span>
+                    {{#if item.expires_at}}
+                      <span>{{i18n "points_mall.inventory.expires_at"}} {{item.expires_display}} · {{item.remaining_text}}</span>
+                    {{else}}
+                      <span>{{i18n "points_mall.inventory.permanent"}}</span>
+                    {{/if}}
+                  </div>
+
+                  {{#if item.equippable}}
+                    {{#if item.equipped}}
+                      <DButton
+                        @action={{fn this.unequipInventoryKind item.kind}}
+                        @label="points_mall.inventory.unequip"
+                        class="btn"
+                      />
+                    {{else}}
+                      <DButton
+                        @action={{fn this.equipInventoryItem item}}
+                        @label="points_mall.inventory.equip"
+                        class="btn-primary"
+                      />
+                    {{/if}}
+                  {{else}}
+                    <button type="button" class="btn btn-disabled" disabled>
+                      {{i18n "points_mall.inventory.not_equippable"}}
+                    </button>
+                  {{/if}}
+                </article>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="empty-state inventory-empty">
+              <h3>{{i18n "points_mall.inventory.empty_title"}}</h3>
+              <p>{{i18n "points_mall.inventory.empty_tip"}}</p>
+              <DButton
+                @action={{this.goToShop}}
+                @label="points_mall.inventory.go_shop"
+                @icon="gift"
+                class="btn-primary"
+              />
+            </div>
+          {{/if}}
+        </section>
+
+        {{#if this.expiredInventoryItems.length}}
+          <section class="inventory-section">
+            <div class="inventory-section-head">
+              <h3>{{i18n "points_mall.inventory.expired_title"}}</h3>
+              <span>{{i18n "points_mall.inventory.expired_tip"}}</span>
+            </div>
+            <div class="inventory-grid expired">
+              {{#each this.expiredInventoryItems as |item|}}
+                <article class="inventory-card expired">
+                  <div class="inventory-preview {{item.preview_class}}">
+                    {{#if item.image_url}}
+                      <img src={{item.image_url}} alt={{item.name}} />
+                    {{else}}
+                      <span>{{item.kind_label}}</span>
+                    {{/if}}
+                  </div>
+                  <div class="inventory-card-top">
+                    <span class="inventory-kind">{{item.kind_label}}</span>
+                    <span class="inventory-status expired">{{i18n "points_mall.inventory.expired"}}</span>
+                  </div>
+                  <h3>{{item.name}}</h3>
+                  <p>{{item.description}}</p>
+                  <div class="inventory-meta">
+                    <span>{{i18n "points_mall.inventory.expires_at"}} {{item.expires_display}}</span>
+                  </div>
+                </article>
+              {{/each}}
+            </div>
+          </section>
+        {{/if}}
+      </div>
+    {{/if}}
+
     {{#if (eq this.activeTab "orders")}}
       <div class="points-mall-orders">
         <div class="orders-header">

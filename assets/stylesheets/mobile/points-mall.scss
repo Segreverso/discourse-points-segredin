@@ -151,6 +151,38 @@
   }
 }
 
+.points-mall-inventory {
+  .inventory-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inventory-ticket-card {
+    width: 100%;
+    text-align: left;
+  }
+
+  .inventory-section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inventory-equipped-grid,
+  .inventory-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-equipped-item {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
 .points-mall-orders {
   .orders-header {
     flex-direction: column;

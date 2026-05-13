@@ -32,6 +32,38 @@ register_svg_icon "minus"
 
 module ::DiscoursePointsMall
   PLUGIN_NAME = "discourse-points-mall"
+
+  COSMETIC_EXPIRY_FIELDS = {
+    "jn_cosmetic_title_expires_at" => %w[
+      jn_cosmetic_title
+      jn_cosmetic_title_expires_at
+      jn_previous_title_before_cosmetic
+    ],
+    "jn_cosmetic_avatar_frame_expires_at" => %w[
+      jn_cosmetic_avatar_frame
+      jn_cosmetic_avatar_frame_expires_at
+    ],
+    "jn_cosmetic_card_border_expires_at" => %w[
+      jn_cosmetic_card_border
+      jn_cosmetic_card_border_expires_at
+    ],
+    "jn_cosmetic_profile_background_expires_at" => %w[
+      jn_cosmetic_profile_background
+      jn_cosmetic_profile_background_expires_at
+    ],
+    "jn_cosmetic_post_signature_expires_at" => %w[
+      jn_cosmetic_post_signature
+      jn_cosmetic_post_signature_expires_at
+    ],
+    "jn_cosmetic_svip_glow_expires_at" => %w[
+      jn_cosmetic_svip_glow
+      jn_cosmetic_svip_glow_expires_at
+    ],
+    "jn_cosmetic_theme_skin_expires_at" => %w[
+      jn_cosmetic_theme_skin
+      jn_cosmetic_theme_skin_expires_at
+    ],
+  }.freeze
 end
 
 require_relative "lib/discourse_points_mall/engine"
@@ -58,6 +90,7 @@ after_initialize do
   require_relative "app/controllers/discourse_points_mall/checkins_controller"
   require_relative "app/controllers/discourse_points_mall/points_controller"
   require_relative "app/controllers/discourse_points_mall/addresses_controller"
+  require_relative "app/controllers/discourse_points_mall/inventory_controller"
   require_relative "app/controllers/discourse_points_mall/pages_controller"
   require_relative "app/controllers/discourse_points_mall/admin_products_controller"
   require_relative "app/controllers/discourse_points_mall/admin_orders_controller"
@@ -78,6 +111,9 @@ after_initialize do
       get "/checkins/summary" => "checkins#summary"
       post "/checkins/makeup" => "checkins#makeup"
       get "/points/ledger" => "points#ledger"
+      get "/inventory" => "inventory#index"
+      post "/inventory/equip" => "inventory#equip"
+      post "/inventory/unequip" => "inventory#unequip"
       resources :addresses, only: %i[index create update destroy]
     end
 
@@ -100,5 +136,36 @@ after_initialize do
 
   add_to_serializer(:current_user, :points_balance) do
     object.points_balance
+  end
+
+  module ::Jobs
+    class PointsMallExpireCosmetics < ::Jobs::Scheduled
+      every 1.day
+
+      def execute(_args)
+        now = Time.zone.now
+
+        DiscoursePointsMall::COSMETIC_EXPIRY_FIELDS.each do |expires_field, fields|
+          ::UserCustomField
+            .where(name: expires_field)
+            .where("value IS NOT NULL AND value != ''")
+            .find_each do |expires_custom_field|
+              expires_at = Time.zone.parse(expires_custom_field.value) rescue nil
+              next unless expires_at && expires_at <= now
+
+              user = ::User.find_by(id: expires_custom_field.user_id)
+              next unless user
+
+              if expires_field == "jn_cosmetic_title_expires_at"
+                previous_title = user.custom_fields["jn_previous_title_before_cosmetic"].to_s.presence
+                user.title = previous_title
+                user.save!
+              end
+
+              ::UserCustomField.where(user_id: user.id, name: fields).destroy_all
+            end
+        end
+      end
+    end
   end
 end

@@ -56,6 +56,7 @@ export default class PointsMallController extends Controller {
     return [
       { name: "checkin", icon: "calendar-check" },
       { name: "shop", icon: "gift" },
+      { name: "inventory", icon: "box" },
       { name: "orders", icon: "list" },
       { name: "ledger", icon: "wallet" },
     ];
@@ -368,6 +369,38 @@ export default class PointsMallController extends Controller {
     return this.filteredOrders.length > 0;
   }
 
+  get inventoryItems() {
+    return this.model.inventory?.items || [];
+  }
+
+  get equippedInventory() {
+    return this.model.inventory?.equipped || {};
+  }
+
+  get themeSkinTicketCount() {
+    return Number(this.model.inventory?.theme_skin_ticket_count || 0);
+  }
+
+  get hasInventoryItems() {
+    return this.inventoryItems.length > 0;
+  }
+
+  get activeInventoryItems() {
+    return this.inventoryItems.filter((item) => !item.expired);
+  }
+
+  get expiredInventoryItems() {
+    return this.inventoryItems.filter((item) => item.expired);
+  }
+
+  get equippedInventoryItems() {
+    return Object.values(this.equippedInventory);
+  }
+
+  get hasEquippedInventory() {
+    return this.equippedInventoryItems.length > 0;
+  }
+
   get addresses() {
     return this.model.addresses || [];
   }
@@ -628,6 +661,7 @@ export default class PointsMallController extends Controller {
       });
       const createdOrder = result.order || result;
       const isMakeupCard = Boolean(this.checkoutProduct?.is_makeup_card);
+      const isCosmetic = this.isCosmeticProduct(this.checkoutProduct);
 
       this.model.orders.unshift(createdOrder);
 
@@ -658,8 +692,9 @@ export default class PointsMallController extends Controller {
       await this.reloadProducts();
       await this.reloadLedger();
       await this.reloadCheckinSummary();
+      await this.reloadInventory();
 
-      this.activeTab = isMakeupCard ? "checkin" : "orders";
+      this.activeTab = isMakeupCard ? "checkin" : isCosmetic ? "inventory" : "orders";
       this.notifyPropertyChange("model");
       this.resetPurchaseModal();
     } catch (error) {
@@ -858,6 +893,60 @@ export default class PointsMallController extends Controller {
     this.notifyPropertyChange("model");
   }
 
+  async reloadInventory() {
+    const result = await ajax("/points-mall/inventory");
+    this.model.inventory = result.inventory || { items: [], equipped: {} };
+    this.notifyPropertyChange("model");
+  }
+
+  @action
+  async equipInventoryItem(item) {
+    if (!item?.order_id || item.expired || !item.equippable) {
+      return;
+    }
+
+    try {
+      const result = await ajax("/points-mall/inventory/equip", {
+        type: "POST",
+        data: { order_id: item.order_id },
+      });
+      this.model.inventory = result.inventory || { items: [], equipped: {} };
+      this.broadcastCosmeticsUpdated(this.model.inventory);
+      this.notifyPropertyChange("model");
+
+      this.appEvents.trigger("modal-body:flash", {
+        text: I18n.t("points_mall.inventory.equip_success"),
+        messageClass: "success",
+      });
+    } catch (error) {
+      popupAjaxError(error);
+    }
+  }
+
+  @action
+  async unequipInventoryKind(kind) {
+    if (!kind) {
+      return;
+    }
+
+    try {
+      const result = await ajax("/points-mall/inventory/unequip", {
+        type: "POST",
+        data: { kind },
+      });
+      this.model.inventory = result.inventory || { items: [], equipped: {} };
+      this.broadcastCosmeticsUpdated(this.model.inventory);
+      this.notifyPropertyChange("model");
+
+      this.appEvents.trigger("modal-body:flash", {
+        text: I18n.t("points_mall.inventory.unequip_success"),
+        messageClass: "success",
+      });
+    } catch (error) {
+      popupAjaxError(error);
+    }
+  }
+
   normalizeAddressPayload(form) {
     return {
       recipient_name: form.recipient_name?.trim(),
@@ -907,6 +996,18 @@ export default class PointsMallController extends Controller {
 
   orderProductType(order) {
     return order?.product?.product_type || "virtual";
+  }
+
+  isCosmeticProduct(product) {
+    return String(product?.product_key || "").startsWith("cosmetic_");
+  }
+
+  broadcastCosmeticsUpdated(inventory) {
+    window.dispatchEvent(
+      new CustomEvent("jn:cosmetics-updated", {
+        detail: { inventory },
+      })
+    );
   }
 
   avatarUrlFromTemplate(template, size = 56) {
