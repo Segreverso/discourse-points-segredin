@@ -7,13 +7,35 @@ module DiscoursePointsMall
     before_action :ensure_logged_in
 
     MAX_EVENTS = 200
+    SCORABLE_LOOKBACK_DAYS = 90
+
+    SCORABLE_LABELS = {
+      "post_created" => "发布回复",
+      "topic_created" => "发布主题",
+      "like_received" => "获得点赞",
+      "like_given" => "送出点赞",
+      "day_visited" => "每日访问",
+      "post_read" => "阅读帖子",
+      "time_read" => "阅读时长",
+      "solutions" => "最佳答案",
+      "flag_created" => "有效举报",
+      "user_invited" => "邀请用户",
+      "chat_message_created" => "聊天消息",
+      "chat_reaction_given" => "聊天送出表情",
+      "chat_reaction_received" => "聊天获得表情",
+      "reaction_given" => "送出表情",
+      "reaction_received" => "获得表情",
+    }.freeze
 
     def ledger
-      events = load_events
+      entries = (load_events.map { |e| serialize_event(e) } + load_scorable_entries)
+      entries.sort_by! { |e| [e[:date].to_s, e[:created_at].to_s] }
+      entries.reverse!
+      entries = entries.first(MAX_EVENTS)
 
       render json: {
-        summary: ledger_summary(events),
-        events: events.map { |event| serialize_event(event) },
+        summary: ledger_summary(entries),
+        events: entries,
       }
     end
 
@@ -32,21 +54,69 @@ module DiscoursePointsMall
       []
     end
 
-    def ledger_summary(events)
+    # 把 gamification 的自动积分（发帖、点赞等 scorable）合并进明细
+    def load_scorable_entries
+      return [] unless defined?(::DiscourseGamification::Scorable)
+
+      leaderboard = PointsManager.default_leaderboard
+      return [] if leaderboard.blank?
+
+      since = SCORABLE_LOOKBACK_DAYS.days.ago.to_date
+      entries = []
+
+      ::DiscourseGamification::Scorable.subclasses.each do |scorable|
+        next unless scorable.enabled?(leaderboard: leaderboard)
+
+        key = scorable.scorable_key
+        label = SCORABLE_LABELS[key] || key
+
+        begin
+          rows = DB.query(<<~SQL, since: since, current_user_id: current_user.id)
+            SELECT s.date, s.points
+            FROM ( #{scorable.query(leaderboard: leaderboard)} ) AS s
+            WHERE s.user_id = :current_user_id
+          SQL
+
+          rows.each do |row|
+            points = row.points.to_i
+            next if points.zero?
+
+            entries << {
+              id: nil,
+              date: row.date.to_date,
+              created_at: row.date,
+              points: points,
+              description: label,
+              category: "community",
+              direction: points.negative? ? "expense" : "income",
+            }
+          end
+        rescue StandardError => e
+          Rails.logger.warn("[points-mall] scorable #{key} ledger failed: #{e.class} #{e.message}")
+        end
+      end
+
+      entries
+    rescue StandardError => e
+      Rails.logger.warn("[points-mall] load scorable entries failed: #{e.class} #{e.message}")
+      []
+    end
+
+    def ledger_summary(entries)
       category_counts = Hash.new(0)
       income_count = 0
       expense_count = 0
 
-      events.each do |event|
-        category_counts[event_category(event.description)] += 1
-        points = event.points.to_i
+      entries.each do |entry|
+        category_counts[entry[:category]] += 1
+        points = entry[:points].to_i
         income_count += 1 if points.positive?
         expense_count += 1 if points.negative?
       end
 
       {
         current_points: current_user.points_balance.to_i,
-        total_count: events.length,
+        total_count: entries.length,
         income_count: income_count,
         expense_count: expense_count,
         checkin_count: category_counts["checkin"],

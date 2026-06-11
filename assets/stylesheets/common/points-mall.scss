@@ -5,6 +5,7 @@
 
   .points-mall-header-card {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
@@ -57,6 +58,9 @@
       border: 1px solid var(--primary-low);
       background: var(--secondary);
       min-width: 140px;
+      max-width: 100%;
+      box-sizing: border-box;
+      flex: 0 1 auto;
 
       span {
         font-size: 0.85em;
@@ -67,6 +71,7 @@
         font-size: 1.9em;
         line-height: 1.1;
         color: var(--primary);
+        overflow-wrap: anywhere;
       }
     }
   }
@@ -1709,6 +1714,7 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 .points-mall-ledger {
   .ledger-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
@@ -1744,6 +1750,12 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 
   .ledger-balance-card {
     min-width: 150px;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    strong {
+      overflow-wrap: anywhere;
+    }
     border: 1px solid var(--primary-low);
     border-radius: 12px;
     background: var(--primary-very-low);
