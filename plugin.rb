@@ -80,6 +80,7 @@ after_initialize do
   require_relative "app/models/points_mall_checkin"
   require_relative "app/models/points_mall_address"
   require_relative "app/models/points_mall_makeup_card"
+  require_relative "app/models/points_mall_shout"
 
   require_relative "app/serializers/discourse_points_mall/product_serializer"
   require_relative "app/serializers/discourse_points_mall/order_serializer"
@@ -95,6 +96,7 @@ after_initialize do
   require_relative "app/controllers/discourse_points_mall/admin_products_controller"
   require_relative "app/controllers/discourse_points_mall/admin_orders_controller"
   require_relative "app/controllers/discourse_points_mall/admin_checkins_controller"
+  require_relative "app/controllers/discourse_points_mall/shouts_controller"
 
   add_admin_route(
     "points_mall.admin.title",
@@ -111,6 +113,9 @@ after_initialize do
       get "/checkins/summary" => "checkins#summary"
       post "/checkins/makeup" => "checkins#makeup"
       get "/points/ledger" => "points#ledger"
+      get "/shouts" => "shouts#index"
+      post "/shouts" => "shouts#create"
+      delete "/shouts/:id" => "shouts#destroy"
       get "/inventory" => "inventory#index"
       post "/inventory/equip" => "inventory#equip"
       post "/inventory/unequip" => "inventory#unequip"
@@ -165,6 +170,18 @@ after_initialize do
               ::UserCustomField.where(user_id: user.id, name: fields).destroy_all
             end
         end
+      end
+    end
+
+    # 小喇叭：每小时清理超过设定时长（默认 24 小时）的留言，实现"满一天自动重置"
+    class PointsMallCleanupShouts < ::Jobs::Scheduled
+      every 1.hour
+
+      def execute(_args)
+        hours = SiteSetting.points_mall_shout_ttl_hours.to_i
+        return if hours <= 0
+
+        PointsMallShout.where("created_at < ?", hours.hours.ago).delete_all
       end
     end
   end

@@ -18,6 +18,13 @@ module DiscoursePointsMall
       "pokerogue_voucher_golden" => { voucher_type: 3, count: 1, label: "Golden Voucher" },
     }.freeze
 
+    # 网盘流量商品：从 product_key 自动解析，无需改代码即可新增商品
+    #   netdisk_traffic_1gb        => 1GB 永久
+    #   netdisk_traffic_5gb        => 5GB 永久
+    #   netdisk_traffic_500mb      => 500MB 永久
+    #   netdisk_traffic_10gb_30d   => 10GB，30 天有效
+    NETDISK_TRAFFIC_KEY = /\Anetdisk_traffic_(\d+)(gb|mb)(?:_(\d+)d)?\z/i
+
     COSMETIC_PRODUCTS = {
       "cosmetic_title_launch_trainer_30d" => {
         kind: "title",
@@ -160,6 +167,41 @@ module DiscoursePointsMall
           end
 
           granted, grant_error = grant_game_voucher!(locked_user, product, order)
+          unless granted
+            error = grant_error
+            raise ActiveRecord::Rollback
+          end
+
+          product.decrease_stock! if product.stock
+          next
+        end
+
+        if netdisk_traffic_product?(product)
+          price = product.points_cost
+
+          if locked_user.points_balance < price
+            error = I18n.t("points_mall.errors.insufficient_points")
+            raise ActiveRecord::Rollback
+          end
+
+          order =
+            ::PointsMallOrder.create!(
+              user_id: locked_user.id,
+              product_id: product.id,
+              points_spent: price,
+              status: "completed",
+            )
+
+          unless DiscoursePointsMall::PointsManager.add_points!(
+                   user: locked_user,
+                   points: -price,
+                   description: "积分商城兑换网盘流量",
+                 )
+            error = I18n.t("points_mall.errors.points_update_failed")
+            raise ActiveRecord::Rollback
+          end
+
+          granted, grant_error = grant_netdisk_traffic!(locked_user, product, order)
           unless granted
             error = grant_error
             raise ActiveRecord::Rollback
@@ -350,6 +392,79 @@ module DiscoursePointsMall
     rescue StandardError => e
       Rails.logger.warn("[points-mall] cosmetic grant failed: #{e.class}: #{e.message}")
       [false, "装饰发放失败，请稍后再试", nil]
+    end
+
+    def netdisk_traffic_config(product)
+      return nil unless product.respond_to?(:product_key)
+      m = NETDISK_TRAFFIC_KEY.match(product.product_key.to_s)
+      return nil unless m
+      amount = m[1].to_i
+      mb = m[2].downcase == "gb" ? amount * 1024 : amount
+      return nil if mb <= 0
+      { mb: mb, valid_days: m[3].to_i }
+    end
+
+    def netdisk_traffic_product?(product)
+      !netdisk_traffic_config(product).nil?
+    end
+
+    def netdisk_grant_secret
+      path = "/shared/netdisk_redeem_secret"
+      return nil unless File.exist?(path)
+
+      File.read(path).strip.presence
+    end
+
+    def grant_netdisk_traffic!(user, product, order)
+      config = netdisk_traffic_config(product)
+      return [false, "商品配置无效"] if config.nil?
+      secret = netdisk_grant_secret
+      return [false, "流量发货服务未配置"] if secret.blank?
+
+      payload = {
+        external_id: "points_mall_order:#{order.id}",
+        discourse_id: user.id.to_s,
+        mb: config[:mb],
+        valid_days: config[:valid_days],
+        timestamp: Time.now.to_i,
+      }
+      signing_payload = [
+        payload[:external_id],
+        payload[:discourse_id],
+        payload[:mb],
+        payload[:valid_days],
+        payload[:timestamp],
+      ].join(":")
+      payload[:signature] = Base64.urlsafe_encode64(
+        OpenSSL::HMAC.digest("SHA256", secret, signing_payload),
+        padding: false,
+      )
+
+      uri = URI("https://172.17.0.1/sso/points-grant")
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http.open_timeout = 5
+      http.read_timeout = 15
+
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request["Content-Type"] = "application/json"
+      request["Host"] = "pan.justnainai.com"
+      request.body = payload.to_json
+
+      response = http.request(request)
+      return [true, nil] if response.is_a?(Net::HTTPSuccess)
+
+      Rails.logger.warn("[points-mall] netdisk traffic grant failed: #{response.code} #{response.body}")
+      case response.code.to_i
+      when 409
+        [false, "该订单已发过货，请勿重复兑换"]
+      else
+        [false, "流量发放失败，请稍后再试或联系站长"]
+      end
+    rescue StandardError => e
+      Rails.logger.warn("[points-mall] netdisk traffic grant error: #{e.class}: #{e.message}")
+      [false, "流量发放失败，请稍后再试或联系站长"]
     end
 
     def game_voucher_secret

@@ -22,3 +22,14 @@ plugins:
     default: 5000
     min: 1
     max: 1000000
+  points_mall_shout_cost:
+    default: 50
+    min: 0
+    max: 1000000
+  points_mall_shout_enabled:
+    default: true
+    client: true
+  points_mall_shout_ttl_hours:
+    default: 24
+    min: 0
+    max: 8760
