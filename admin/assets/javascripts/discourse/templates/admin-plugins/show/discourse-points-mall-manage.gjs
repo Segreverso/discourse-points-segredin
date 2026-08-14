@@ -670,4 +670,3 @@ export default <template>
     </section>
   </div>
 </template>
-
