@@ -17,6 +17,16 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   @tracked adminOrderTypeFilter = "all";
   @tracked adminOrderStatusFilter = "all";
   @tracked orderEditVersion = 0;
+  @tracked editingProductId = null;
+
+  @action
+  toggleEditProduct(product) {
+    if (this.editingProductId === product.id) {
+      this.editingProductId = null;
+    } else {
+      this.editingProductId = product.id;
+    }
+  }
 
   productPayload(product) {
     return {
