@@ -79,7 +79,7 @@ pt_BR:
             stock: "Estoque"
             type: "Tipo"
             category: "Categoria"
-            badge_text: "Selo"
+            badge_text: "Emblema"
             sort_order: "Ordem"
             redeemed_count: "Resgatados"
             featured: "Destaque"
@@ -308,7 +308,7 @@ pt_BR:
         lv1: "Nível 1 · Jujuba"
         lv2: "Nível 2 · Brigadeiro"
         lv3: "Nível 3 · Pipoca Doce"
-        lv4: "Nível 4 · Coroa de Açúcar"
+        lv4: "Nível 4 · Beijinho"
       errors:
         insufficient_points: "Pontos insuficientes"
         product_unavailable: "Produto indisponível"
