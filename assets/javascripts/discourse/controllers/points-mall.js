@@ -525,26 +525,6 @@ export default class PointsMallController extends Controller {
   }
 
   @action
-  setShopTypeFilter(val) {
-    this.shopTypeFilter = typeof val === "string" ? val : val?.target?.value || "all";
-  }
-
-  @action
-  setShopCategoryFilter(val) {
-    this.shopCategoryFilter = typeof val === "string" ? val : val?.target?.value || "all";
-  }
-
-  @action
-  setShopSort(val) {
-    this.shopSort = typeof val === "string" ? val : val?.target?.value || "featured";
-  }
-
-  @action
-  updateShopKeyword(event) {
-    this.shopKeyword = typeof event === "string" ? event : event?.target?.value || "";
-  }
-
-  @action
   goToShop() {
     this.activeTab = "shop";
   }

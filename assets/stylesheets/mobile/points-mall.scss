@@ -538,38 +538,39 @@
   .shop-toolbar {
     top: calc(var(--header-offset, 52px) + 58px);
     margin-bottom: 10px;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    padding: 6px;
+    overflow: visible;
   }
 
-  .shop-toolbar-search {
-    width: 100%;
-    min-width: 0;
-  }
+  .shop-filter-row,
+  .shop-sort-row {
+    gap: 5px;
+    padding-right: 28px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 24px),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 24px),
+      transparent
+    );
 
-  .shop-toolbar-selects {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    width: 100%;
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
-    .shop-select-box {
-      height: 38px;
-      padding: 3px 6px;
-      justify-content: center;
-
-      .shop-select-label {
-        display: none;
-      }
-
-      .shop-select-control {
-        width: 100%;
-        font-size: 0.76rem;
-        text-align: center;
-      }
+    .shop-filter-chip,
+    .shop-sort-chip {
+      min-height: 44px;
+      padding: 6px 11px;
+      font-size: 0.74rem;
     }
   }
 

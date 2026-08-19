@@ -195,13 +195,7 @@ pt_BR:
         shipping_info_prompt: "Informe os dados de envio (Nome, Telefone, Endereço)"
         shipping_info_required: "Dados de envio obrigatórios para produtos físicos"
         purchase_success: "Resgate concluído!"
-        catalog_eyebrow: "CATÁLOGO"
-        catalog_title: "Troque seus pontos"
-        catalog_accumulated: "%{count} acumulados"
         filters:
-          type_label: "Tipo:"
-          category_label: "Categoria:"
-          sort_label: "Ordenar:"
           type:
             all: "Todos"
             physical: "Físicos"
@@ -211,7 +205,6 @@ pt_BR:
             uncategorized: "Sem Categoria"
             default_physical: "Físicos"
             default_virtual: "Virtuais"
-        sort_label: "Ordenar:"
         sort:
           featured: "Destaques"
           popular: "Mais Populares"
