@@ -1,4 +1,7 @@
 import { concat } from "@ember/helper";
+import dIcon from "discourse/ui-kit/helpers/d-icon";
+import { i18n } from "discourse-i18n";
+
 function formatDateFixed(dateVal) {
   if (!dateVal) return "-";
   if (typeof dateVal === "string" && dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
