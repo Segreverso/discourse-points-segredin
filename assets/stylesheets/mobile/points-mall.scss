@@ -796,27 +796,27 @@
 
 .points-mall-ledger {
   .ledger-summary-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
   }
 
   .ledger-summary-card {
-    padding: 10px 6px;
-    text-align: center;
+    padding: 8px 10px;
 
     strong {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
     }
 
     span {
-      font-size: 0.68rem;
+      font-size: 0.72rem;
     }
   }
 
   .ledger-event-item {
     flex-direction: row;
     align-items: center;
-    padding: 11px;
+    justify-content: space-between;
+    padding: 8px 10px;
   }
 
   .ledger-event-points {
@@ -824,7 +824,19 @@
   }
 
   .ledger-filter-item {
-    min-height: 44px;
+    min-height: 34px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+  }
+
+  .ledger-pagination {
+    gap: 8px;
+
+    .btn {
+      min-height: 34px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+    }
   }
 }
 
