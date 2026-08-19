@@ -538,38 +538,48 @@
   .shop-toolbar {
     top: calc(var(--header-offset, 52px) + 58px);
     margin-bottom: 10px;
-    padding: 6px;
-    overflow: visible;
+    padding: 8px;
+    gap: 8px;
   }
 
-  .shop-filter-row,
-  .shop-sort-row {
-    gap: 5px;
-    padding-right: 28px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    -webkit-mask-image: linear-gradient(
-      to right,
-      #000 0,
-      #000 calc(100% - 24px),
-      transparent
-    );
-    mask-image: linear-gradient(
-      to right,
-      #000 0,
-      #000 calc(100% - 24px),
-      transparent
-    );
+  .shop-nav-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
 
-    &::-webkit-scrollbar {
-      display: none;
+  .shop-type-pills {
+    width: 100%;
+    justify-content: space-between;
+
+    .shop-filter-chip {
+      flex: 1;
+      text-align: center;
+      padding: 6px 8px;
+      font-size: 0.78rem;
     }
+  }
+
+  .shop-search-box {
+    max-width: 100%;
+    width: 100%;
+
+    .shop-search-input {
+      font-size: 0.8rem;
+    }
+  }
+
+  .shop-secondary-row {
+    width: 100%;
+  }
+
+  .shop-filter-scroll {
+    padding-bottom: 4px;
 
     .shop-filter-chip,
     .shop-sort-chip {
-      min-height: 44px;
-      padding: 6px 11px;
+      min-height: 36px;
+      padding: 5px 10px;
       font-size: 0.74rem;
     }
   }

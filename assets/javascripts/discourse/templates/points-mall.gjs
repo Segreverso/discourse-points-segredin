@@ -416,64 +416,78 @@ export default <template>
 
           {{#if @controller.model.products.length}}
             <div class="shop-toolbar">
-              <div class="shop-filter-row">
-                {{#each @controller.shopTypeFilters as |filter|}}
-                  <button
-                    type="button"
-                    class="shop-filter-chip
-                      {{if (eq @controller.shopTypeFilter filter) 'active'}}"
-                    aria-pressed={{if
-                      (eq @controller.shopTypeFilter filter)
-                      "true"
-                      "false"
-                    }}
-                    {{on "click" (fn @controller.setShopTypeFilter filter)}}
-                  >
-                    {{i18n (concat "points_mall.shop.filters.type." filter)}}
-                  </button>
-                {{/each}}
+              <div class="shop-nav-bar">
+                <div class="shop-type-pills">
+                  {{#each @controller.shopTypeFilters as |filter|}}
+                    <button
+                      type="button"
+                      class="shop-filter-chip
+                        {{if (eq @controller.shopTypeFilter filter) 'active'}}"
+                      aria-pressed={{if
+                        (eq @controller.shopTypeFilter filter)
+                        "true"
+                        "false"
+                      }}
+                      {{on "click" (fn @controller.setShopTypeFilter filter)}}
+                    >
+                      {{i18n (concat "points_mall.shop.filters.type." filter)}}
+                    </button>
+                  {{/each}}
+                </div>
+
+                <div class="shop-search-box">
+                  {{dIcon "magnifying-glass"}}
+                  <Input
+                    @value={{@controller.shopKeyword}}
+                    aria-label={{i18n "points_mall.shop.search_placeholder"}}
+                    placeholder={{i18n "points_mall.shop.search_placeholder"}}
+                    class="shop-search-input"
+                  />
+                </div>
               </div>
 
-              <div class="shop-filter-row">
-                {{#each @controller.shopCategoryOptions as |option|}}
-                  <button
-                    type="button"
-                    class="shop-filter-chip
-                      {{if
+              <div class="shop-secondary-row">
+                <div class="shop-filter-scroll">
+                  {{#each @controller.shopCategoryOptions as |option|}}
+                    <button
+                      type="button"
+                      class="shop-filter-chip
+                        {{if
+                          (eq @controller.shopCategoryFilter option.key)
+                          'active'
+                        }}"
+                      aria-pressed={{if
                         (eq @controller.shopCategoryFilter option.key)
-                        'active'
-                      }}"
-                    aria-pressed={{if
-                      (eq @controller.shopCategoryFilter option.key)
-                      "true"
-                      "false"
-                    }}
-                    {{on
-                      "click"
-                      (fn @controller.setShopCategoryFilter option.key)
-                    }}
-                  >
-                    {{option.label}}
-                  </button>
-                {{/each}}
-              </div>
+                        "true"
+                        "false"
+                      }}
+                      {{on
+                        "click"
+                        (fn @controller.setShopCategoryFilter option.key)
+                      }}
+                    >
+                      {{option.label}}
+                    </button>
+                  {{/each}}
 
-              <div class="shop-sort-row">
-                {{#each @controller.shopSortOptions as |sort|}}
-                  <button
-                    type="button"
-                    class="shop-sort-chip
-                      {{if (eq @controller.shopSort sort) 'active'}}"
-                    aria-pressed={{if
-                      (eq @controller.shopSort sort)
-                      "true"
-                      "false"
-                    }}
-                    {{on "click" (fn @controller.setShopSort sort)}}
-                  >
-                    {{i18n (concat "points_mall.shop.sort." sort)}}
-                  </button>
-                {{/each}}
+                  <span class="shop-filter-divider"></span>
+
+                  {{#each @controller.shopSortOptions as |sort|}}
+                    <button
+                      type="button"
+                      class="shop-sort-chip
+                        {{if (eq @controller.shopSort sort) 'active'}}"
+                      aria-pressed={{if
+                        (eq @controller.shopSort sort)
+                        "true"
+                        "false"
+                      }}
+                      {{on "click" (fn @controller.setShopSort sort)}}
+                    >
+                      {{i18n (concat "points_mall.shop.sort." sort)}}
+                    </button>
+                  {{/each}}
+                </div>
               </div>
             </div>
 

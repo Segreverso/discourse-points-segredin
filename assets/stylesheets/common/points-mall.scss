@@ -981,84 +981,142 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 
   .shop-toolbar {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     border: 1px solid var(--primary-low);
-    border-radius: 12px;
+    border-radius: 14px;
     background: var(--secondary);
-    padding: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   }
 
-  .shop-search-wrap {
-    margin-bottom: 8px;
-  }
-
-  .shop-search-input {
+  .shop-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     width: 100%;
   }
 
-  .shop-filter-row {
+  .shop-type-pills {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    align-items: center;
+    gap: 4px;
+    background: var(--primary-very-low);
+    padding: 3px;
+    border-radius: 999px;
+    border: 1px solid var(--primary-low);
 
-    &:not(:first-child) {
-      margin-top: 8px;
+    .shop-filter-chip {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--primary-medium);
+      padding: 6px 14px;
+      font-size: 0.84em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: var(--primary);
+      }
+
+      &.active {
+        color: var(--secondary);
+        background: var(--tertiary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
     }
   }
 
-  .shop-sort-row {
+  .shop-search-box {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--primary-low);
-  }
-
-  .shop-filter-chip {
+    background: var(--primary-very-low);
     border: 1px solid var(--primary-low);
     border-radius: 999px;
-    background: var(--secondary);
-    color: var(--primary-medium);
-    padding: 7px 12px;
-    font-size: 0.84em;
-    font-weight: 700;
-    transition: all 0.2s;
+    padding: 4px 12px;
+    flex: 1;
+    max-width: 280px;
 
-    &:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+    .d-icon {
+      color: var(--primary-medium);
+      font-size: 0.9em;
+      flex-shrink: 0;
     }
 
-    &.active {
-      color: var(--secondary);
-      border-color: transparent;
-      background: linear-gradient(140deg, var(--tertiary), var(--primary));
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
+    .shop-search-input {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 4px 0;
+      font-size: 0.85em;
+      color: var(--primary);
+      width: 100%;
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
     }
   }
 
-  .shop-sort-chip {
-    border: 1px solid var(--primary-low);
-    border-radius: 999px;
-    background: var(--secondary);
-    color: var(--primary-medium);
-    padding: 7px 12px;
-    font-size: 0.82em;
-    font-weight: 700;
-    transition: all 0.2s;
+  .shop-secondary-row {
+    width: 100%;
+    overflow: hidden;
+  }
 
-    &:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+  .shop-filter-scroll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
     }
 
-    &.active {
-      color: var(--secondary);
-      border-color: transparent;
-      background: linear-gradient(140deg, #ff8755, #c8451b);
-      box-shadow: 0 8px 16px rgba(132, 52, 26, 0.18);
+    .shop-filter-chip,
+    .shop-sort-chip {
+      flex-shrink: 0;
+      border: 1px solid var(--primary-low);
+      border-radius: 999px;
+      background: var(--secondary);
+      color: var(--primary-high);
+      padding: 5px 12px;
+      font-size: 0.8em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: var(--primary-medium);
+      }
+
+      &.active {
+        border-color: var(--tertiary);
+        background: color-mix(in srgb, var(--tertiary) 12%, var(--secondary));
+        color: var(--tertiary);
+        font-weight: 700;
+      }
     }
+  }
+
+  .shop-filter-divider {
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    background: var(--primary-low);
+    margin: 0 4px;
+    flex-shrink: 0;
   }
 
   .shop-sections {
