@@ -58,7 +58,7 @@ async function refreshCurrentUserCosmetics(api) {
   }
 
   try {
-    const response = await fetch("/points-mall/inventory", {
+    const response = await fetch("/loja/inventory", {
       credentials: "same-origin",
       headers: { Accept: "application/json" },
     });
@@ -80,7 +80,7 @@ export default apiInitializer("1.8.0", (api) => {
   api.addNavigationBarItem({
     name: "points-mall",
     displayName: i18n("points_mall.title"),
-    href: "/points-mall",
+    href: "/loja",
     classNames: ["points-mall-nav"],
   });
 

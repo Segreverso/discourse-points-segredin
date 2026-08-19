@@ -110,7 +110,7 @@ after_initialize do
   )
 
   Discourse::Application.routes.append do
-    scope module: "discourse_points_mall", path: "/points-mall" do
+    scope module: "discourse_points_mall", path: "/loja" do
       get "/" => "pages#index", format: false
       resources :products, only: [:index, :show]
       resources :orders, only: [:index, :create, :show]

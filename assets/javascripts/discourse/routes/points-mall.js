@@ -10,15 +10,15 @@ export default class PointsMallRoute extends DiscourseRoute {
 
   async model() {
     const [checkins, products, orders, addresses, ledger, inventory] = await Promise.all([
-      ajax("/points-mall/checkins/summary").catch(() => ({
+      ajax("/loja/checkins/summary").catch(() => ({
         checkins: [],
         summary: {},
       })),
-      ajax("/points-mall/products").catch(() => ({ products: [] })),
-      ajax("/points-mall/orders").catch(() => ({ orders: [] })),
-      ajax("/points-mall/addresses").catch(() => ({ addresses: [] })),
-      ajax("/points-mall/points/ledger").catch(() => ({ summary: {}, events: [] })),
-      ajax("/points-mall/inventory").catch(() => ({ inventory: { items: [], equipped: {} } })),
+      ajax("/loja/products").catch(() => ({ products: [] })),
+      ajax("/loja/orders").catch(() => ({ orders: [] })),
+      ajax("/loja/addresses").catch(() => ({ addresses: [] })),
+      ajax("/loja/points/ledger").catch(() => ({ summary: {}, events: [] })),
+      ajax("/loja/inventory").catch(() => ({ inventory: { items: [], equipped: {} } })),
     ]);
 
     return {
