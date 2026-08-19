@@ -20,6 +20,16 @@ function formatDateFixed(dateVal) {
   return `${day}/${month}/${year}`;
 }
 
+function formatBrl(val) {
+  if (val === null || val === undefined || val === "") return "";
+  const num = Number(val);
+  if (isNaN(num)) return String(val);
+  if (Number.isInteger(num)) {
+    return num.toString();
+  }
+  return num.toFixed(2).replace(".", ",");
+}
+
 export default <template>
   <div class="points-mall-container">
     <div class="points-mall-header-card">
@@ -577,7 +587,7 @@ export default <template>
                           <div class="product-meta">
                             <span class="product-cost">
                               {{#if product.price_brl}}
-                                R$ {{product.price_brl}}
+                                R$ {{formatBrl product.price_brl}}
                               {{else}}
                                 {{i18n
                                   "points_mall.shop.cost"
@@ -633,7 +643,7 @@ export default <template>
                               {{dIcon "external-link-alt"}}
                               <span>
                                 {{#if product.price_brl}}
-                                  Comprar (R$ {{product.price_brl}})
+                                  Comprar (R$ {{formatBrl product.price_brl}})
                                 {{else}}
                                   Comprar
                                 {{/if}}
@@ -757,7 +767,7 @@ export default <template>
                             <div class="product-meta">
                               <span class="product-cost">
                                 {{#if product.price_brl}}
-                                  R$ {{product.price_brl}}
+                                  R$ {{formatBrl product.price_brl}}
                                 {{else}}
                                   {{i18n
                                     "points_mall.shop.cost"
@@ -812,7 +822,7 @@ export default <template>
                                 {{dIcon "external-link-alt"}}
                                 <span>
                                   {{#if product.price_brl}}
-                                    Comprar (R$ {{product.price_brl}})
+                                    Comprar (R$ {{formatBrl product.price_brl}})
                                   {{else}}
                                     Comprar
                                   {{/if}}

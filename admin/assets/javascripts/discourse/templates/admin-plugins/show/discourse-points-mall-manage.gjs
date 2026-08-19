@@ -20,6 +20,16 @@ function formatDateFixed(dateVal) {
   return `${day}/${month}/${year}`;
 }
 
+function formatBrl(val) {
+  if (val === null || val === undefined || val === "") return "";
+  const num = Number(val);
+  if (isNaN(num)) return String(val);
+  if (Number.isInteger(num)) {
+    return num.toString();
+  }
+  return num.toFixed(2).replace(".", ",");
+}
+
 export default <template>
   <div class="admin-detail points-mall-admin">
     {{! CABEÇALHO DO PAINEL }}
@@ -531,7 +541,7 @@ export default <template>
                   <span class="meta-label">Custo</span>
                   <span class="meta-value points-val">{{product.points_cost}} pts</span>
                   {{#if product.price_brl}}
-                    <span class="meta-sub">R$ {{product.price_brl}}</span>
+                    <span class="meta-sub">R$ {{formatBrl product.price_brl}}</span>
                   {{/if}}
                 </div>
 
