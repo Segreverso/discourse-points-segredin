@@ -94,10 +94,14 @@ module DiscoursePointsMall
           :badge_text,
           :image_url,
           :enabled,
+          :price_brl,
+          :external_url,
           :sort_order,
         ).to_h
 
       attrs[:points_cost] = attrs[:points_cost].to_i if attrs.key?(:points_cost)
+      attrs[:price_brl] = attrs[:price_brl].present? ? attrs[:price_brl].to_f : nil if attrs.key?(:price_brl)
+      attrs[:external_url] = attrs[:external_url].to_s.strip.presence if attrs.key?(:external_url)
       attrs[:sort_order] = attrs[:sort_order].to_i if attrs.key?(:sort_order)
       attrs[:category] = attrs[:category].to_s.strip.presence if attrs.key?(:category)
       attrs[:badge_text] = attrs[:badge_text].to_s.strip.presence if attrs.key?(:badge_text)
@@ -155,6 +159,8 @@ module DiscoursePointsMall
         badge_text: (::PointsMallProduct.has_badge_text? ? product.badge_text : nil),
         image_url: product.image_url,
         enabled: product.enabled,
+        price_brl: (product.respond_to?(:price_brl) ? product.price_brl : nil),
+        external_url: (product.respond_to?(:external_url) ? product.external_url : nil),
         sort_order: product.sort_order,
         redeemed_count: redeemed_count,
         product_key: (product.respond_to?(:product_key) ? product.product_key : nil),

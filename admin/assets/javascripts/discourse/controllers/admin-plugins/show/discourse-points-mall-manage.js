@@ -33,6 +33,8 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       badge_text: (product.badge_text || "").trim(),
       image_url: product.image_url,
       enabled: !!product.enabled,
+      price_brl: product.price_brl !== "" && product.price_brl !== null && product.price_brl !== undefined ? Number(product.price_brl) : null,
+      external_url: (product.external_url || "").trim(),
       sort_order: Number(product.sort_order || 0),
     };
   }
@@ -153,6 +155,8 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
         badge_text: "",
         image_url: "",
         enabled: true,
+        price_brl: "",
+        external_url: "",
         sort_order: 0,
       });
       this.refreshDashboardStats();

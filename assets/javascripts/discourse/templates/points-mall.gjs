@@ -563,10 +563,14 @@ export default <template>
                           <p>{{product.description}}</p>
                           <div class="product-meta">
                             <span class="product-cost">
-                              {{i18n
-                                "points_mall.shop.cost"
-                                points=product.points_cost
-                              }}
+                              {{#if product.price_brl}}
+                                R$ {{product.price_brl}}
+                              {{else}}
+                                {{i18n
+                                  "points_mall.shop.cost"
+                                  points=product.points_cost
+                                }}
+                              {{/if}}
                             </span>
                             <span class="product-stock">
                               {{#if (eq product.stock -1)}}
@@ -606,7 +610,23 @@ export default <template>
                         </div>
 
                         <div class="product-action">
-                          {{#if product.is_makeup_card}}
+                          {{#if product.external_url}}
+                            <a
+                              href={{product.external_url}}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="btn btn-primary btn-external-buy"
+                            >
+                              {{dIcon "external-link-alt"}}
+                              <span>
+                                {{#if product.price_brl}}
+                                  Comprar (R$ {{product.price_brl}})
+                                {{else}}
+                                  Comprar
+                                {{/if}}
+                              </span>
+                            </a>
+                          {{else if product.is_makeup_card}}
                             {{#if product.purchaseable}}
                               <DButton
                                 @action={{fn @controller.buyProduct product.id}}
@@ -723,10 +743,14 @@ export default <template>
                             <p>{{product.description}}</p>
                             <div class="product-meta">
                               <span class="product-cost">
-                                {{i18n
-                                  "points_mall.shop.cost"
-                                  points=product.points_cost
-                                }}
+                                {{#if product.price_brl}}
+                                  R$ {{product.price_brl}}
+                                {{else}}
+                                  {{i18n
+                                    "points_mall.shop.cost"
+                                    points=product.points_cost
+                                  }}
+                                {{/if}}
                               </span>
                               <span class="product-stock">
                                 {{#if (eq product.stock -1)}}
@@ -765,7 +789,23 @@ export default <template>
                             {{/if}}
                           </div>
                           <div class="product-action">
-                            {{#if product.is_makeup_card}}
+                            {{#if product.external_url}}
+                              <a
+                                href={{product.external_url}}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn btn-primary btn-external-buy"
+                              >
+                                {{dIcon "external-link-alt"}}
+                                <span>
+                                  {{#if product.price_brl}}
+                                    Comprar (R$ {{product.price_brl}})
+                                  {{else}}
+                                    Comprar
+                                  {{/if}}
+                                </span>
+                              </a>
+                            {{else if product.is_makeup_card}}
                               {{#if product.purchaseable}}
                                 <DButton
                                   @action={{fn

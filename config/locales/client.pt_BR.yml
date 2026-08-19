@@ -84,6 +84,8 @@ pt_BR:
             redeemed_count: "Resgatados"
             featured: "Destaque"
             image_url: "URL Imagem"
+            price_brl: "Preço R$"
+            external_url: "Link de Compra"
             enabled: "Ativo"
             actions: "Ações"
         orders:

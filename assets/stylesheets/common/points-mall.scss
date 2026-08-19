@@ -1402,6 +1402,12 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
           padding: 6px 12px;
           font-size: 0.8em;
           font-weight: 600;
+          gap: 6px;
+          text-decoration: none;
+
+          svg {
+            margin-right: 2px;
+          }
         }
 
         .d-button-label {

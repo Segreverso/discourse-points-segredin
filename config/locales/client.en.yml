@@ -84,6 +84,8 @@ en:
             redeemed_count: "Redeemed"
             featured: "Featured"
             image_url: "Image URL"
+            price_brl: "Price BRL (R$)"
+            external_url: "Purchase Link"
             enabled: "Enabled"
             actions: "Actions"
         orders:

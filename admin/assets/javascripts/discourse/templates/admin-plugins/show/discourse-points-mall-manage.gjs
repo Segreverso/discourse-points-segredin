@@ -238,6 +238,8 @@ export default <template>
                 }}</th>
               <th>{{i18n "points_mall.admin.products.fields.featured"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.image_url"}}</th>
+              <th>{{i18n "points_mall.admin.products.fields.price_brl"}}</th>
+              <th>{{i18n "points_mall.admin.products.fields.external_url"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.enabled"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.actions"}}</th>
             </tr>
@@ -342,6 +344,22 @@ export default <template>
                 <td>
                   <Input
                     @value={{product.image_url}}
+                    class="points-mall-admin-input --wide"
+                  />
+                </td>
+                <td>
+                  <Input
+                    @value={{product.price_brl}}
+                    @type="number"
+                    step="0.01"
+                    placeholder="R$ 0,00"
+                    class="points-mall-admin-input --number"
+                  />
+                </td>
+                <td>
+                  <Input
+                    @value={{product.external_url}}
+                    placeholder="https://..."
                     class="points-mall-admin-input --wide"
                   />
                 </td>
@@ -460,6 +478,18 @@ export default <template>
           <Input
             @value={{@controller.model.newProduct.image_url}}
             placeholder={{i18n "points_mall.admin.products.fields.image_url"}}
+            class="points-mall-admin-input --wide"
+          />
+          <Input
+            @value={{@controller.model.newProduct.price_brl}}
+            @type="number"
+            step="0.01"
+            placeholder={{i18n "points_mall.admin.products.fields.price_brl"}}
+            class="points-mall-admin-input --number"
+          />
+          <Input
+            @value={{@controller.model.newProduct.external_url}}
+            placeholder={{i18n "points_mall.admin.products.fields.external_url"}}
             class="points-mall-admin-input --wide"
           />
         </div>
