@@ -226,6 +226,7 @@ export default <template>
           <thead>
             <tr>
               <th>{{i18n "points_mall.admin.products.fields.name"}}</th>
+              <th>{{i18n "points_mall.admin.products.fields.description"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.cost"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.stock"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.type"}}</th>
@@ -254,6 +255,15 @@ export default <template>
                       {{i18n "points_mall.admin.products.makeup.badge"}}
                     </span>
                   {{/if}}
+                </td>
+                <td>
+                  <Input
+                    @value={{product.description}}
+                    class="points-mall-admin-input --wide"
+                    placeholder={{i18n
+                      "points_mall.admin.products.fields.description"
+                    }}
+                  />
                 </td>
                 <td>
                   <Input
