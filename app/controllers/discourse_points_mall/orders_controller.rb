@@ -266,12 +266,27 @@ module DiscoursePointsMall
           raise ActiveRecord::Rollback
         end
 
+        status = "pending"
+        notes = nil
+
+        if product.respond_to?(:grant_group_id) && product.grant_group_id.present?
+          group = ::Group.find_by(id: product.grant_group_id)
+          if group
+            duration_days = product.respond_to?(:grant_duration_days) ? product.grant_duration_days.to_i : 0
+            expires_at = duration_days > 0 ? duration_days.days.from_now : nil
+            group.add(locked_user, expires_at: expires_at)
+            status = "completed"
+            notes = "VIP concedido: Grupo '#{group.name}' por #{duration_days > 0 ? "#{duration_days} dias" : 'tempo indeterminado'}"
+          end
+        end
+
         order =
           ::PointsMallOrder.create!(
             user_id: locked_user.id,
             product_id: product.id,
             points_spent: product.points_cost,
-            status: "pending",
+            status: status,
+            notes: notes,
             shipping_info: shipping_info.presence,
           )
 

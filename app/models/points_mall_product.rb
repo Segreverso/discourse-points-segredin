@@ -32,6 +32,10 @@ class PointsMallProduct < ActiveRecord::Base
     column_names.include?("badge_text")
   end
 
+  def self.has_grant_group?
+    column_names.include?("grant_group_id")
+  end
+
   def self.ensure_makeup_card!
     return unless has_product_key?
     first_tier_price = DiscoursePointsMall::MakeupPricing.first_tier

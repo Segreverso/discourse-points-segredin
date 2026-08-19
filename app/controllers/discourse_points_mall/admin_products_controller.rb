@@ -15,9 +15,11 @@ module DiscoursePointsMall
       ::PointsMallProduct.ensure_makeup_card!
       products = ::PointsMallProduct.order(sort_order: :asc, created_at: :desc)
       redeemed_counts = ::PointsMallOrder.group(:product_id).count
+      groups = ::Group.where(automatic: false).order(:name).pluck(:id, :name).map { |id, name| { id: id, name: name } }
       render json: {
         products: products.map { |product| serialize_product(product, redeemed_counts[product.id].to_i) },
         makeup: makeup_status_payload,
+        groups: groups,
       }
     end
 
@@ -96,6 +98,8 @@ module DiscoursePointsMall
           :enabled,
           :price_brl,
           :external_url,
+          :grant_group_id,
+          :grant_duration_days,
           :sort_order,
         ).to_h
 
@@ -105,6 +109,16 @@ module DiscoursePointsMall
       attrs[:sort_order] = attrs[:sort_order].to_i if attrs.key?(:sort_order)
       attrs[:category] = attrs[:category].to_s.strip.presence if attrs.key?(:category)
       attrs[:badge_text] = attrs[:badge_text].to_s.strip.presence if attrs.key?(:badge_text)
+
+      if attrs.key?(:grant_group_id)
+        gid = attrs[:grant_group_id].to_s.strip
+        attrs[:grant_group_id] = gid.present? ? gid.to_i : nil
+      end
+
+      if attrs.key?(:grant_duration_days)
+        days = attrs[:grant_duration_days].to_s.strip
+        attrs[:grant_duration_days] = days.present? ? days.to_i : nil
+      end
 
       if attrs.key?(:stock)
         stock = attrs[:stock].to_s.strip
@@ -161,6 +175,8 @@ module DiscoursePointsMall
         enabled: product.enabled,
         price_brl: (product.respond_to?(:price_brl) ? product.price_brl : nil),
         external_url: (product.respond_to?(:external_url) ? product.external_url : nil),
+        grant_group_id: (product.respond_to?(:grant_group_id) ? product.grant_group_id : nil),
+        grant_duration_days: (product.respond_to?(:grant_duration_days) ? product.grant_duration_days : nil),
         sort_order: product.sort_order,
         redeemed_count: redeemed_count,
         product_key: (product.respond_to?(:product_key) ? product.product_key : nil),

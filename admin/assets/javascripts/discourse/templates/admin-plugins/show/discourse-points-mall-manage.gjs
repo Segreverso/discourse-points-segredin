@@ -22,8 +22,11 @@ function formatDateFixed(dateVal) {
 
 export default <template>
   <div class="admin-detail points-mall-admin">
-    <h1>{{i18n "points_mall.admin.manage"}}</h1>
+    <header class="points-mall-admin-header">
+      <h1>{{i18n "points_mall.admin.manage"}}</h1>
+    </header>
 
+    {{! SEÇÃO 1: VISÃO GERAL & METRICAS }}
     <section class="points-mall-admin-section">
       <div class="points-mall-admin-overview-head">
         <div>
@@ -64,21 +67,18 @@ export default <template>
           <p>{{@controller.model.dashboardStats.todayCheckins}}</p>
         </article>
         <article class="points-mall-admin-stat-card">
-          <h3>{{i18n
-              "points_mall.admin.overview.cards.today_checkin_points"
-            }}</h3>
+          <h3>{{i18n "points_mall.admin.overview.cards.today_checkin_points"}}</h3>
           <p>{{@controller.model.dashboardStats.todayCheckinPoints}}</p>
         </article>
       </div>
     </section>
 
+    {{! SEÇÃO 2: CHECK-INS E FREQUÊNCIA }}
     <section class="points-mall-admin-section">
       <h2>{{i18n "points_mall.admin.checkins.title"}}</h2>
       <p>{{i18n "points_mall.admin.checkins.help"}}</p>
 
-      <div
-        class="points-mall-admin-overview-grid points-mall-admin-overview-grid-checkin"
-      >
+      <div class="points-mall-admin-overview-grid points-mall-admin-overview-grid-checkin">
         <article class="points-mall-admin-stat-card">
           <h3>{{i18n "points_mall.admin.checkins.cards.total_checkins"}}</h3>
           <p>{{@controller.model.checkinSummary.total_checkins}}</p>
@@ -132,9 +132,7 @@ export default <template>
                 <th>{{i18n "points_mall.admin.checkins.fields.user"}}</th>
                 <th>{{i18n "points_mall.admin.checkins.fields.checkins"}}</th>
                 <th>{{i18n "points_mall.admin.checkins.fields.points"}}</th>
-                <th>{{i18n
-                    "points_mall.admin.checkins.fields.current_streak"
-                  }}</th>
+                <th>{{i18n "points_mall.admin.checkins.fields.current_streak"}}</th>
               </tr>
             </thead>
             <tbody>
@@ -159,9 +157,7 @@ export default <template>
               <th>{{i18n "points_mall.admin.checkins.fields.user"}}</th>
               <th>{{i18n "points_mall.admin.checkins.fields.date"}}</th>
               <th>{{i18n "points_mall.admin.checkins.fields.points"}}</th>
-              <th>{{i18n
-                  "points_mall.admin.checkins.fields.current_streak"
-                }}</th>
+              <th>{{i18n "points_mall.admin.checkins.fields.current_streak"}}</th>
             </tr>
           </thead>
           <tbody>
@@ -178,10 +174,12 @@ export default <template>
       </article>
     </section>
 
+    {{! SEÇÃO 3: PRODUTOS & AUTOMAÇÃO VIP }}
     <section class="points-mall-admin-section">
       <h2>{{i18n "points_mall.admin.products.title"}}</h2>
       <p>{{i18n "points_mall.admin.products.help"}}</p>
 
+      {{! CARTÃO 3.1: CONFIGURAÇÃO DE CARTÃO DE MAQUIAGEM / RECUPERAÇÃO }}
       <article class="points-mall-admin-card">
         <h3>{{i18n "points_mall.admin.products.makeup.title"}}</h3>
         <p>{{i18n "points_mall.admin.products.makeup.help"}}</p>
@@ -220,20 +218,183 @@ export default <template>
             class="btn-primary"
           />
         </div>
-        <p>
-          {{i18n
-            "points_mall.admin.products.makeup.tiers"
-            first=@controller.model.makeupConfig.tier_1
-            second=@controller.model.makeupConfig.tier_2
-            third=@controller.model.makeupConfig.tier_3
-          }}
-        </p>
-        <p>{{i18n "points_mall.admin.products.makeup.save_help"}}</p>
-        {{#unless @controller.model.makeupConfig.feature_ready}}
-          <p>{{i18n "points_mall.admin.products.makeup.migration_hint"}}</p>
-        {{/unless}}
       </article>
 
+      {{! FORMULÁRIO DENSO & RESPONSIVO: NOVO PRODUTO }}
+      <article class="points-mall-admin-card points-mall-admin-create-card">
+        <header class="create-card-header">
+          <h3>{{i18n "points_mall.admin.products.new"}}</h3>
+          <span class="create-card-subtitle">Cadastre itens físicos, digitais ou automações VIP por grupo</span>
+        </header>
+
+        <div class="points-mall-admin-grid-form">
+          <div class="form-group col-span-2">
+            <label>Nome do Produto *</label>
+            <Input
+              @value={{@controller.model.newProduct.name}}
+              placeholder="Ex: VIP Bronze 30 Dias"
+              class="points-mall-admin-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Custo (Pontos) *</label>
+            <Input
+              @value={{@controller.model.newProduct.points_cost}}
+              @type="number"
+              placeholder="100"
+              class="points-mall-admin-input --number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Estoque (-1 = ilimitado)</label>
+            <Input
+              @value={{@controller.model.newProduct.stock}}
+              @type="number"
+              placeholder="-1"
+              class="points-mall-admin-input --number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Produto</label>
+            <select
+              class="points-mall-admin-select"
+              {{on "change" (fn @controller.setProductType @controller.model.newProduct)}}
+            >
+              {{#each @controller.model.productTypes as |type|}}
+                <option
+                  selected={{eq @controller.model.newProduct.product_type type}}
+                  value={{type}}
+                >{{type}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Conceder Grupo (VIP)</label>
+            <select
+              class="points-mall-admin-select"
+              {{on "change" (fn @controller.setProductGroup @controller.model.newProduct)}}
+            >
+              <option value="">Nenhum (Sem grupo)</option>
+              {{#each @controller.model.groups as |grp|}}
+                <option
+                  selected={{eq @controller.model.newProduct.grant_group_id grp.id}}
+                  value={{grp.id}}
+                >{{grp.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Duração VIP (Dias)</label>
+            <Input
+              @value={{@controller.model.newProduct.grant_duration_days}}
+              @type="number"
+              placeholder="14, 30... (0 = permanente)"
+              class="points-mall-admin-input --number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Categoria</label>
+            <Input
+              @value={{@controller.model.newProduct.category}}
+              placeholder="Ex: VIP / Cosméticos"
+              class="points-mall-admin-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Rótulo / Badge</label>
+            <Input
+              @value={{@controller.model.newProduct.badge_text}}
+              placeholder="Ex: HOT, NOVO, -20%"
+              class="points-mall-admin-input --tag"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Ordem de Exibição</label>
+            <Input
+              @value={{@controller.model.newProduct.sort_order}}
+              @type="number"
+              placeholder="0"
+              class="points-mall-admin-input --number"
+            />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label>Descrição</label>
+            <Input
+              @value={{@controller.model.newProduct.description}}
+              placeholder="Breve explicação exibida na loja para os membros"
+              class="points-mall-admin-input --wide"
+            />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label>URL da Imagem</label>
+            <Input
+              @value={{@controller.model.newProduct.image_url}}
+              placeholder="https://..."
+              class="points-mall-admin-input --wide"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Preço Equivalente (R$)</label>
+            <Input
+              @value={{@controller.model.newProduct.price_brl}}
+              @type="number"
+              step="0.01"
+              placeholder="R$ 0,00"
+              class="points-mall-admin-input --number"
+            />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label>URL Externa / Link de Resgate</label>
+            <Input
+              @value={{@controller.model.newProduct.external_url}}
+              placeholder="https://..."
+              class="points-mall-admin-input --wide"
+            />
+          </div>
+
+          <div class="form-group form-checkboxes col-span-2">
+            <label class="checkbox-label">
+              <Input
+                @type="checkbox"
+                @checked={{@controller.model.newProduct.featured}}
+                {{on "change" (fn @controller.setProductFeatured @controller.model.newProduct)}}
+              />
+              <span>Destaque na Loja</span>
+            </label>
+            <label class="checkbox-label">
+              <Input
+                @type="checkbox"
+                @checked={{@controller.model.newProduct.enabled}}
+                {{on "change" (fn @controller.setProductEnabled @controller.model.newProduct)}}
+              />
+              <span>Ativo (Visível)</span>
+            </label>
+          </div>
+
+          <div class="form-actions col-span-full">
+            <DButton
+              @label="points_mall.admin.actions.add"
+              @icon="plus"
+              @action={{@controller.createProduct}}
+              class="btn-primary btn-large"
+            />
+          </div>
+        </div>
+      </article>
+
+      {{! TABELA DE GERENCIAMENTO DE PRODUTOS }}
       <div class="points-mall-admin-table-wrap">
         <table class="d-admin-table points-mall-admin-table">
           <thead>
@@ -243,12 +404,12 @@ export default <template>
               <th>{{i18n "points_mall.admin.products.fields.cost"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.stock"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.type"}}</th>
+              <th>Grupo VIP</th>
+              <th>Dias VIP</th>
               <th>{{i18n "points_mall.admin.products.fields.category"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.badge_text"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.sort_order"}}</th>
-              <th>{{i18n
-                  "points_mall.admin.products.fields.redeemed_count"
-                }}</th>
+              <th>{{i18n "points_mall.admin.products.fields.redeemed_count"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.featured"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.image_url"}}</th>
               <th>{{i18n "points_mall.admin.products.fields.price_brl"}}</th>
@@ -275,9 +436,7 @@ export default <template>
                   <Input
                     @value={{product.description}}
                     class="points-mall-admin-input --wide"
-                    placeholder={{i18n
-                      "points_mall.admin.products.fields.description"
-                    }}
+                    placeholder={{i18n "points_mall.admin.products.fields.description"}}
                   />
                 </td>
                 <td>
@@ -287,13 +446,6 @@ export default <template>
                     class="points-mall-admin-input --number"
                     disabled={{product.is_makeup_card}}
                   />
-                  {{#if product.is_makeup_card}}
-                    <p class="points-mall-admin-row-tip">
-                      {{i18n
-                        "points_mall.admin.products.makeup.controlled_cost_hint"
-                      }}
-                    </p>
-                  {{/if}}
                 </td>
                 <td>
                   <Input
@@ -318,21 +470,41 @@ export default <template>
                   </select>
                 </td>
                 <td>
+                  <select
+                    class="points-mall-admin-select"
+                    {{on "change" (fn @controller.setProductGroup product)}}
+                    disabled={{product.is_makeup_card}}
+                  >
+                    <option value="">Nenhum</option>
+                    {{#each @controller.model.groups as |grp|}}
+                      <option
+                        selected={{eq product.grant_group_id grp.id}}
+                        value={{grp.id}}
+                      >{{grp.name}}</option>
+                    {{/each}}
+                  </select>
+                </td>
+                <td>
+                  <Input
+                    @value={{product.grant_duration_days}}
+                    @type="number"
+                    class="points-mall-admin-input --number"
+                    disabled={{product.is_makeup_card}}
+                    placeholder="Dias"
+                  />
+                </td>
+                <td>
                   <Input
                     @value={{product.category}}
                     class="points-mall-admin-input"
-                    placeholder={{i18n
-                      "points_mall.admin.products.fields.category"
-                    }}
+                    placeholder={{i18n "points_mall.admin.products.fields.category"}}
                   />
                 </td>
                 <td>
                   <Input
                     @value={{product.badge_text}}
                     class="points-mall-admin-input --tag"
-                    placeholder={{i18n
-                      "points_mall.admin.products.fields.badge_text"
-                    }}
+                    placeholder={{i18n "points_mall.admin.products.fields.badge_text"}}
                   />
                 </td>
                 <td>
@@ -343,9 +515,7 @@ export default <template>
                   />
                 </td>
                 <td>
-                  <span
-                    class="points-mall-admin-metric"
-                  >{{product.redeemed_count}}</span>
+                  <span class="points-mall-admin-metric">{{product.redeemed_count}}</span>
                 </td>
                 <td>
                   <Input
@@ -384,137 +554,29 @@ export default <template>
                   />
                 </td>
                 <td>
-                  <DButton
-                    @icon="floppy-disk"
-                    @action={{fn @controller.saveProduct product}}
-                    class="btn-primary"
-                  />
-                  {{#unless product.is_makeup_card}}
+                  <div class="row-actions">
                     <DButton
-                      @icon="trash-can"
-                      @action={{fn @controller.deleteProduct product}}
-                      class="btn-danger"
+                      @icon="floppy-disk"
+                      @action={{fn @controller.saveProduct product}}
+                      class="btn-primary"
                     />
-                  {{/unless}}
+                    {{#unless product.is_makeup_card}}
+                      <DButton
+                        @icon="trash-can"
+                        @action={{fn @controller.deleteProduct product}}
+                        class="btn-danger"
+                      />
+                    {{#endunless}}
+                  </div>
                 </td>
               </tr>
             {{/each}}
           </tbody>
         </table>
       </div>
-
-      <div class="points-mall-admin-create">
-        <h3>{{i18n "points_mall.admin.products.new"}}</h3>
-        <div class="points-mall-admin-row">
-          <Input
-            @value={{@controller.model.newProduct.name}}
-            placeholder={{i18n "points_mall.admin.products.fields.name"}}
-            class="points-mall-admin-input"
-          />
-          <Input
-            @value={{@controller.model.newProduct.points_cost}}
-            @type="number"
-            placeholder={{i18n "points_mall.admin.products.fields.cost"}}
-            class="points-mall-admin-input --number"
-          />
-          <Input
-            @value={{@controller.model.newProduct.stock}}
-            @type="number"
-            placeholder={{i18n "points_mall.admin.products.fields.stock"}}
-            class="points-mall-admin-input --number"
-          />
-          <select
-            class="points-mall-admin-select"
-            {{on
-              "change"
-              (fn @controller.setProductType @controller.model.newProduct)
-            }}
-          >
-            {{#each @controller.model.productTypes as |type|}}
-              <option
-                selected={{eq @controller.model.newProduct.product_type type}}
-                value={{type}}
-              >{{type}}</option>
-            {{/each}}
-          </select>
-          <Input
-            @value={{@controller.model.newProduct.category}}
-            placeholder={{i18n "points_mall.admin.products.fields.category"}}
-            class="points-mall-admin-input"
-          />
-          <Input
-            @value={{@controller.model.newProduct.badge_text}}
-            placeholder={{i18n "points_mall.admin.products.fields.badge_text"}}
-            class="points-mall-admin-input --tag"
-          />
-          <Input
-            @value={{@controller.model.newProduct.sort_order}}
-            @type="number"
-            placeholder={{i18n "points_mall.admin.products.fields.sort_order"}}
-            class="points-mall-admin-input --number"
-          />
-          <label>
-            <Input
-              @type="checkbox"
-              @checked={{@controller.model.newProduct.featured}}
-              {{on
-                "change"
-                (fn @controller.setProductFeatured @controller.model.newProduct)
-              }}
-            />
-            {{i18n "points_mall.admin.products.fields.featured"}}
-          </label>
-          <label>
-            <Input
-              @type="checkbox"
-              @checked={{@controller.model.newProduct.enabled}}
-              {{on
-                "change"
-                (fn @controller.setProductEnabled @controller.model.newProduct)
-              }}
-            />
-            {{i18n "points_mall.admin.products.fields.enabled"}}
-          </label>
-          <DButton
-            @label="points_mall.admin.actions.add"
-            @icon="plus"
-            @action={{@controller.createProduct}}
-            class="btn-primary"
-          />
-        </div>
-        <div class="points-mall-admin-row">
-          <Input
-            @value={{@controller.model.newProduct.description}}
-            placeholder={{i18n "points_mall.admin.products.fields.description"}}
-            class="points-mall-admin-input --wide"
-          />
-          <Input
-            @value={{@controller.model.newProduct.image_url}}
-            placeholder={{i18n "points_mall.admin.products.fields.image_url"}}
-            class="points-mall-admin-input --wide"
-          />
-          <Input
-            @value={{@controller.model.newProduct.price_brl}}
-            @type="number"
-            step="0.01"
-            placeholder={{i18n "points_mall.admin.products.fields.price_brl"}}
-            class="points-mall-admin-input --number"
-          />
-          <Input
-            @value={{@controller.model.newProduct.external_url}}
-            placeholder={{i18n "points_mall.admin.products.fields.external_url"}}
-            class="points-mall-admin-input --wide"
-          />
-        </div>
-        <p class="points-mall-admin-row-tip">
-          {{i18n "points_mall.admin.products.badge_tip"}}
-        </p>
-        <p class="points-mall-admin-row-tip">
-          {{i18n "points_mall.admin.products.makeup.create_hint"}}
-        </p>
-      </div>
     </section>
 
+    {{! SEÇÃO 4: PEDIDOS DOS USUÁRIOS (TABELA COMPACTA E MODERNA) }}
     <section class="points-mall-admin-section">
       <div class="points-mall-admin-orders-head">
         <div>
@@ -531,23 +593,17 @@ export default <template>
               {{#each @controller.model.orderTypes as |type|}}
                 <button
                   type="button"
-                  class="points-mall-admin-chip
-                    {{if (eq @controller.adminOrderTypeFilter type) 'active'}}"
+                  class="points-mall-admin-chip {{if (eq @controller.adminOrderTypeFilter type) 'active'}}"
                   {{on "click" (fn @controller.setAdminOrderTypeFilter type)}}
                 >
-                  {{i18n
-                    (concat "points_mall.admin.orders.filters.type." type)
-                  }}
+                  {{i18n (concat "points_mall.admin.orders.filters.type." type)}}
                 </button>
               {{/each}}
             </div>
           </div>
 
           <div class="points-mall-admin-order-filter">
-            <label
-              class="points-mall-admin-filter-label"
-              for="pm-admin-order-status-filter"
-            >
+            <label class="points-mall-admin-filter-label" for="pm-admin-order-status-filter">
               {{i18n "points_mall.admin.orders.filters.status_label"}}
             </label>
             <select
@@ -560,9 +616,7 @@ export default <template>
                   selected={{eq @controller.adminOrderStatusFilter status}}
                   value={{status}}
                 >
-                  {{i18n
-                    (concat "points_mall.admin.orders.filters.status." status)
-                  }}
+                  {{i18n (concat "points_mall.admin.orders.filters.status." status)}}
                 </option>
               {{/each}}
             </select>
@@ -571,149 +625,120 @@ export default <template>
       </div>
 
       {{#if @controller.filteredAdminOrders.length}}
-        <div class="points-mall-admin-order-list">
-          {{#each @controller.filteredAdminOrders as |order|}}
-            <article class="points-mall-admin-order-card">
-              <header class="points-mall-admin-order-head">
-                <div class="points-mall-admin-order-id">
-                  #{{order.id}}
-                </div>
-                <span
-                  class="points-mall-admin-order-type type-{{order.display_product_type}}"
-                >
-                  {{i18n
-                    (concat
-                      "points_mall.orders.types." order.display_product_type
-                    )
-                  }}
-                </span>
-                <span
-                  class="points-mall-admin-order-status status-{{order.status}}"
-                >
-                  {{i18n (concat "points_mall.orders.status." order.status)}}
-                </span>
-                <span class="points-mall-admin-order-date">{{formatDateFixed
-                    order.created_at
-                  }}</span>
-              </header>
+        <div class="points-mall-admin-table-wrap">
+          <table class="d-admin-table points-mall-admin-table points-mall-admin-orders-table">
+            <thead>
+              <tr>
+                <th class="col-id">#ID / Data</th>
+                <th class="col-user">Usuário</th>
+                <th class="col-product">Produto</th>
+                <th class="col-type">Tipo & Custo</th>
+                <th class="col-shipping">Endereço / Dados</th>
+                <th class="col-status">Status</th>
+                <th class="col-notes">Anotações Admin</th>
+                <th class="col-actions">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each @controller.filteredAdminOrders as |order|}}
+                <tr class="order-row status-{{order.status}}">
+                  <td class="col-id">
+                    <span class="order-id-badge">#{{order.id}}</span>
+                    <span class="order-date-text">{{formatDateFixed order.created_at}}</span>
+                  </td>
 
-              <div class="points-mall-admin-order-main">
-                <div class="points-mall-admin-order-user">
-                  <div class="points-mall-admin-order-avatar">
-                    {{#if order.avatar_url}}
-                      <img src={{order.avatar_url}} alt={{order.username}} />
-                    {{else}}
-                      {{dIcon "user"}}
-                    {{/if}}
-                  </div>
-                  <div class="points-mall-admin-order-userinfo">
-                    <strong>{{order.username}}</strong>
-                    <div class="points-mall-admin-order-usermeta">
-                      <span
-                        class="points-mall-admin-role-badge
-                          {{order.user_role_class}}"
-                      >
-                        {{i18n order.user_role_label_key}}
-                      </span>
-                      <span class="points-mall-admin-order-trust">
-                        {{i18n
-                          "points_mall.admin.orders.trust_level"
-                          level=order.trust_level
-                        }}
-                      </span>
+                  <td class="col-user">
+                    <div class="order-user-cell">
+                      <div class="avatar-wrap">
+                        {{#if order.avatar_url}}
+                          <img src={{order.avatar_url}} class="user-avatar" alt={{order.username}} />
+                        {{else}}
+                          {{dIcon "user"}}
+                        {{/if}}
+                      </div>
+                      <div class="user-info">
+                        <strong class="username">{{order.username}}</strong>
+                        <div class="meta-row">
+                          <span class="points-mall-admin-role-badge {{order.user_role_class}}">
+                            {{i18n order.user_role_label_key}}
+                          </span>
+                          <span class="trust-level">TL{{order.trust_level}}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </td>
 
-                <div class="points-mall-admin-order-product">
-                  <div class="points-mall-admin-order-product-thumb">
-                    {{#if order.product_image_url}}
-                      <img
-                        src={{order.product_image_url}}
-                        alt={{order.product_name}}
-                      />
-                    {{else if (eq order.display_product_type "physical")}}
-                      {{dIcon "box"}}
-                    {{else}}
-                      {{dIcon "bolt"}}
-                    {{/if}}
-                  </div>
-                  <div class="points-mall-admin-order-productinfo">
-                    <strong>{{order.product_name}}</strong>
-                    <p>
-                      {{i18n
-                        "points_mall.admin.orders.points_spent"
-                        points=order.points_spent
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                  <td class="col-product">
+                    <div class="order-product-cell">
+                      {{#if order.product_image_url}}
+                        <img src={{order.product_image_url}} class="product-thumb" alt={{order.product_name}} />
+                      {{/if}}
+                      <strong class="product-name">{{order.product_name}}</strong>
+                    </div>
+                  </td>
 
-              <div class="points-mall-admin-order-edit">
-                <div class="points-mall-admin-order-field">
-                  <label>{{i18n
-                      "points_mall.admin.orders.fields.status"
-                    }}</label>
-                  <select
-                    class="points-mall-admin-select"
-                    {{on "change" (fn @controller.setOrderStatus order)}}
-                  >
-                    {{#each @controller.model.orderStatuses as |status|}}
-                      <option
-                        selected={{eq order.status status}}
-                        value={{status}}
+                  <td class="col-type">
+                    <div class="type-cell">
+                      <span class="points-mall-admin-order-type type-{{order.display_product_type}}">
+                        {{i18n (concat "points_mall.orders.types." order.display_product_type)}}
+                      </span>
+                      <span class="points-badge">{{order.points_spent}} pts</span>
+                    </div>
+                  </td>
+
+                  <td class="col-shipping">
+                    <div class="shipping-info-cell" title={{order.shipping_info}}>
+                      {{if order.shipping_info order.shipping_info "-"}}
+                    </div>
+                  </td>
+
+                  <td class="col-status">
+                    <select
+                      class="points-mall-admin-select status-select status-{{order.status}}"
+                      {{on "change" (fn @controller.setOrderStatus order)}}
+                    >
+                      {{#each @controller.model.orderStatuses as |status|}}
+                        <option selected={{eq order.status status}} value={{status}}>
+                          {{i18n (concat "points_mall.orders.status." status)}}
+                        </option>
+                      {{/each}}
+                    </select>
+                  </td>
+
+                  <td class="col-notes">
+                    <Input
+                      @value={{order.notes}}
+                      class="points-mall-admin-input --notes"
+                      placeholder="Anotações internas..."
+                      {{on "input" (fn @controller.setOrderNotes order)}}
+                      {{on "change" (fn @controller.setOrderNotes order)}}
+                    />
+                  </td>
+
+                  <td class="col-actions">
+                    <div class="actions-cell">
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-small"
+                        {{on "click" (fn @controller.saveOrder order)}}
                       >
-                        {{i18n (concat "points_mall.orders.status." status)}}
-                      </option>
-                    {{/each}}
-                  </select>
-                </div>
-
-                <div class="points-mall-admin-order-field --notes">
-                  <label>{{i18n
-                      "points_mall.admin.orders.fields.notes"
-                    }}</label>
-                  <Textarea
-                    @value={{order.notes}}
-                    class="points-mall-admin-order-notes-input"
-                    {{on "input" (fn @controller.setOrderNotes order)}}
-                    {{on "change" (fn @controller.setOrderNotes order)}}
-                  />
-                </div>
-
-                <div class="points-mall-admin-order-field --shipping">
-                  <label>{{i18n
-                      "points_mall.admin.orders.fields.shipping_info"
-                    }}</label>
-                  <p>{{if
-                      order.shipping_info
-                      order.shipping_info
-                      (i18n "points_mall.admin.orders.empty_shipping")
-                    }}</p>
-                </div>
-
-                <div class="points-mall-admin-order-field --action">
-                  <div class="points-mall-admin-order-actions">
-                    <button
-                      type="button"
-                      class="btn btn-primary points-mall-admin-order-save-btn"
-                      {{on "click" (fn @controller.saveOrder order)}}
-                    >
-                      {{i18n "points_mall.admin.actions.save"}}
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-default points-mall-admin-order-cancel-btn"
-                      {{on "click" (fn @controller.cancelOrderEdit order)}}
-                    >
-                      {{i18n "points_mall.admin.actions.cancel"}}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-          {{/each}}
+                        {{i18n "points_mall.admin.actions.save"}}
+                      </button>
+                      {{#if (@controller.isOrderDirty order)}}
+                        <button
+                          type="button"
+                          class="btn btn-default btn-small"
+                          {{on "click" (fn @controller.cancelOrderEdit order)}}
+                        >
+                          {{i18n "points_mall.admin.actions.cancel"}}
+                        </button>
+                      {{/if}}
+                    </div>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
         </div>
       {{else}}
         <div class="points-mall-admin-empty">

@@ -35,6 +35,8 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       enabled: !!product.enabled,
       price_brl: product.price_brl !== "" && product.price_brl !== null && product.price_brl !== undefined ? Number(product.price_brl) : null,
       external_url: (product.external_url || "").trim(),
+      grant_group_id: product.grant_group_id !== "" && product.grant_group_id !== null && product.grant_group_id !== undefined ? Number(product.grant_group_id) : null,
+      grant_duration_days: product.grant_duration_days !== "" && product.grant_duration_days !== null && product.grant_duration_days !== undefined ? Number(product.grant_duration_days) : null,
       sort_order: Number(product.sort_order || 0),
     };
   }
@@ -157,6 +159,8 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
         enabled: true,
         price_brl: "",
         external_url: "",
+        grant_group_id: "",
+        grant_duration_days: "",
         sort_order: 0,
       });
       this.refreshDashboardStats();
@@ -235,6 +239,12 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   @action
   setProductType(product, event) {
     product.product_type = event.target.value;
+  }
+
+  @action
+  setProductGroup(product, event) {
+    const val = event.target.value;
+    set(product, "grant_group_id", val ? Number(val) : null);
   }
 
   @action
