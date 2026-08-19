@@ -25,18 +25,31 @@
   }
 
   .points-mall-nav-shell {
-    padding: 8px;
+    margin: 0 0 12px 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .points-mall-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 2px;
+    padding: 0 2px;
+    width: max-content;
+    min-width: 100%;
 
     .points-mall-nav-item {
-      padding: 10px 8px;
-      font-size: 0.9em;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      flex: 0 0 auto;
 
       .d-icon {
-        font-size: 1.1em;
+        font-size: 0.95em;
       }
     }
   }
