@@ -102,7 +102,7 @@ export default <template>
             <tbody>
               {{#each @controller.model.checkinTrend as |day|}}
                 <tr>
-                  <td>{{dFormatDate day.date}}</td>
+                  <td>{{dFormatDate day.date format="medium"}}</td>
                   <td>{{day.checkins}}</td>
                   <td>{{day.points}}</td>
                 </tr>
@@ -155,7 +155,7 @@ export default <template>
             {{#each @controller.model.recentCheckins as |checkin|}}
               <tr>
                 <td>{{checkin.username}}</td>
-                <td>{{dFormatDate checkin.checkin_date}}</td>
+                <td>{{dFormatDate checkin.checkin_date format="medium"}}</td>
                 <td>{{checkin.points_earned}}</td>
                 <td>{{if checkin.streak_days checkin.streak_days "-"}}</td>
               </tr>
@@ -581,6 +581,7 @@ export default <template>
                 </span>
                 <span class="points-mall-admin-order-date">{{dFormatDate
                     order.created_at
+                    format="medium"
                   }}</span>
               </header>
 
