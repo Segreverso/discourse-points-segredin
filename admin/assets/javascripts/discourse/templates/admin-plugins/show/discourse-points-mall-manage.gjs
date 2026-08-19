@@ -3,9 +3,19 @@ import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { eq } from "discourse/truth-helpers";
 import DButton from "discourse/ui-kit/d-button";
-import dFormatDate from "discourse/ui-kit/helpers/d-format-date";
-import dIcon from "discourse/ui-kit/helpers/d-icon";
-import { i18n } from "discourse-i18n";
+function formatDateFixed(dateVal) {
+  if (!dateVal) return "-";
+  if (typeof dateVal === "string" && dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const parts = dateVal.split("-");
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return String(dateVal);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 export default <template>
   <div class="admin-detail points-mall-admin">
@@ -102,7 +112,7 @@ export default <template>
             <tbody>
               {{#each @controller.model.checkinTrend as |day|}}
                 <tr>
-                  <td>{{dFormatDate day.date format="medium"}}</td>
+                  <td>{{formatDateFixed day.date}}</td>
                   <td>{{day.checkins}}</td>
                   <td>{{day.points}}</td>
                 </tr>
@@ -155,7 +165,7 @@ export default <template>
             {{#each @controller.model.recentCheckins as |checkin|}}
               <tr>
                 <td>{{checkin.username}}</td>
-                <td>{{dFormatDate checkin.checkin_date format="medium"}}</td>
+                <td>{{formatDateFixed checkin.checkin_date}}</td>
                 <td>{{checkin.points_earned}}</td>
                 <td>{{if checkin.streak_days checkin.streak_days "-"}}</td>
               </tr>
@@ -579,9 +589,8 @@ export default <template>
                 >
                   {{i18n (concat "points_mall.orders.status." order.status)}}
                 </span>
-                <span class="points-mall-admin-order-date">{{dFormatDate
+                <span class="points-mall-admin-order-date">{{formatDateFixed
                     order.created_at
-                    format="medium"
                   }}</span>
               </header>
 

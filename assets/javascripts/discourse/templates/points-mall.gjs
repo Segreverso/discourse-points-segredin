@@ -3,9 +3,19 @@ import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { eq, gt, not, or } from "discourse/truth-helpers";
 import DButton from "discourse/ui-kit/d-button";
-import dFormatDate from "discourse/ui-kit/helpers/d-format-date";
-import dIcon from "discourse/ui-kit/helpers/d-icon";
-import { i18n } from "discourse-i18n";
+function formatDateFixed(dateVal) {
+  if (!dateVal) return "-";
+  if (typeof dateVal === "string" && dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const parts = dateVal.split("-");
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return String(dateVal);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 export default <template>
   <div class="points-mall-container">
@@ -259,7 +269,7 @@ export default <template>
                 <tbody>
                   {{#each @controller.model.checkins as |checkin|}}
                     <tr>
-                      <td>{{dFormatDate checkin.checkin_date}}</td>
+                      <td>{{formatDateFixed checkin.checkin_date}}</td>
                       <td>{{checkin.points_earned}}</td>
                       <td>{{checkin.streak_days}}</td>
                     </tr>
@@ -1137,7 +1147,7 @@ export default <template>
                           (concat "points_mall.orders.status." order.status)
                         }}
                       </span>
-                      <span class="order-date">{{dFormatDate
+                      <span class="order-date">{{formatDateFixed
                           order.created_at
                         }}</span>
                     </div>
@@ -1399,7 +1409,7 @@ export default <template>
                     </span>
                     <div>
                       <strong>{{event.description}}</strong>
-                      <p>{{dFormatDate event.created_at}}</p>
+                      <p>{{formatDateFixed event.created_at}}</p>
                     </div>
                   </div>
                   <strong class="ledger-event-points {{event.direction}}">
