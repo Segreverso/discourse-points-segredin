@@ -112,19 +112,19 @@ after_initialize do
   Discourse::Application.routes.append do
     scope module: "discourse_points_mall", path: "/loja" do
       get "/" => "pages#index", format: false
-      resources :products, only: [:index, :show]
-      resources :orders, only: [:index, :create, :show]
-      resources :checkins, only: [:index, :create]
-      get "/checkins/summary" => "checkins#summary"
-      post "/checkins/makeup" => "checkins#makeup"
-      get "/points/ledger" => "points#ledger"
+      resources :products, path: "produtos", only: [:index, :show]
+      resources :orders, path: "pedidos", only: [:index, :create, :show]
+      resources :checkins, path: "checkin", only: [:index, :create]
+      get "/checkin/resumo" => "checkins#summary"
+      post "/checkin/recuperar" => "checkins#makeup"
+      get "/extrato" => "points#ledger"
       get "/shouts" => "shouts#index"
       post "/shouts" => "shouts#create"
       delete "/shouts/:id" => "shouts#destroy"
-      get "/inventory" => "inventory#index"
-      post "/inventory/equip" => "inventory#equip"
-      post "/inventory/unequip" => "inventory#unequip"
-      resources :addresses, only: %i[index create update destroy]
+      get "/inventario" => "inventory#index"
+      post "/inventario/equipar" => "inventory#equip"
+      post "/inventario/desequipar" => "inventory#unequip"
+      resources :addresses, path: "enderecos", only: %i[index create update destroy]
     end
 
     scope "/admin/plugins/discourse-points-mall", constraints: AdminConstraint.new do

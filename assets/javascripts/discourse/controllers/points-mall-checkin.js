@@ -11,7 +11,7 @@ export default class PointsMallCheckinController extends Controller {
   @action
   async checkin() {
     try {
-      const result = await ajax("/loja/checkins", {
+      const result = await ajax("/loja/checkin", {
         type: "POST",
       });
 

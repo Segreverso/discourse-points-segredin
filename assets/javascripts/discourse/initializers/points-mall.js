@@ -58,7 +58,7 @@ async function refreshCurrentUserCosmetics(api) {
   }
 
   try {
-    const response = await fetch("/loja/inventory", {
+    const response = await fetch("/loja/inventario", {
       credentials: "same-origin",
       headers: { Accept: "application/json" },
     });

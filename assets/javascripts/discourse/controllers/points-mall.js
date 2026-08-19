@@ -462,7 +462,7 @@ export default class PointsMallController extends Controller {
   @action
   async checkin() {
     try {
-      const result = await ajax("/loja/checkins", { type: "POST" });
+      const result = await ajax("/loja/checkin", { type: "POST" });
       const checkin = result.checkin || result;
       this.updateCurrentUserPoints(checkin.points_earned || 0);
       await this.reloadCheckinSummary();
@@ -496,7 +496,7 @@ export default class PointsMallController extends Controller {
     }
 
     try {
-      const result = await ajax("/loja/checkins/makeup", {
+      const result = await ajax("/loja/checkin/recuperar", {
         type: "POST",
         data: { checkin_date: day.date },
       });
@@ -655,7 +655,7 @@ export default class PointsMallController extends Controller {
         }
       }
 
-      const result = await ajax("/loja/orders", {
+      const result = await ajax("/loja/pedidos", {
         type: "POST",
         data,
       });
@@ -766,7 +766,7 @@ export default class PointsMallController extends Controller {
       const payload = this.normalizeAddressPayload(this.addressEditorForm);
 
       if (this.editingAddressId) {
-        await ajax(`/loja/addresses/${this.editingAddressId}`, {
+        await ajax(`/loja/enderecos/${this.editingAddressId}`, {
           type: "PUT",
           data: payload,
         });
@@ -811,7 +811,7 @@ export default class PointsMallController extends Controller {
     }
 
     try {
-      await ajax(`/loja/addresses/${addressId}`, {
+      await ajax(`/loja/enderecos/${addressId}`, {
         type: "DELETE",
       });
       await this.reloadAddresses();
@@ -832,7 +832,7 @@ export default class PointsMallController extends Controller {
   @action
   async setDefaultAddress(addressId) {
     try {
-      await ajax(`/loja/addresses/${addressId}`, {
+      await ajax(`/loja/enderecos/${addressId}`, {
         type: "PUT",
         data: { is_default: true },
       });
@@ -867,34 +867,34 @@ export default class PointsMallController extends Controller {
   }
 
   async reloadAddresses() {
-    const result = await ajax("/loja/addresses");
+    const result = await ajax("/loja/enderecos");
     this.model.addresses = result.addresses || [];
     this.notifyPropertyChange("model");
     return this.model.addresses;
   }
 
   async reloadCheckinSummary() {
-    const result = await ajax("/loja/checkins/summary");
+    const result = await ajax("/loja/checkin/resumo");
     this.model.checkins = result.checkins || [];
     this.model.summary = result.summary || {};
     this.notifyPropertyChange("model");
   }
 
   async reloadProducts() {
-    const result = await ajax("/loja/products");
+    const result = await ajax("/loja/produtos");
     this.model.products = result.products || [];
     this.notifyPropertyChange("model");
   }
 
   async reloadLedger() {
-    const result = await ajax("/loja/points/ledger");
+    const result = await ajax("/loja/extrato");
     this.model.ledgerSummary = result.summary || {};
     this.model.ledgerEvents = result.events || [];
     this.notifyPropertyChange("model");
   }
 
   async reloadInventory() {
-    const result = await ajax("/loja/inventory");
+    const result = await ajax("/loja/inventario");
     this.model.inventory = result.inventory || { items: [], equipped: {} };
     this.notifyPropertyChange("model");
   }
@@ -906,7 +906,7 @@ export default class PointsMallController extends Controller {
     }
 
     try {
-      const result = await ajax("/loja/inventory/equip", {
+      const result = await ajax("/loja/inventario/equipar", {
         type: "POST",
         data: { order_id: item.order_id },
       });
@@ -930,7 +930,7 @@ export default class PointsMallController extends Controller {
     }
 
     try {
-      const result = await ajax("/loja/inventory/unequip", {
+      const result = await ajax("/loja/inventario/desequipar", {
         type: "POST",
         data: { kind },
       });
@@ -977,7 +977,7 @@ export default class PointsMallController extends Controller {
       return null;
     }
 
-    const result = await ajax("/loja/addresses", {
+    const result = await ajax("/loja/enderecos", {
       type: "POST",
       data: payload,
     });

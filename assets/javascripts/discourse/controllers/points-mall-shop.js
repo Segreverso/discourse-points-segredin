@@ -16,7 +16,7 @@ export default class PointsMallShopController extends Controller {
     }
 
     try {
-      await ajax("/loja/orders", {
+      await ajax("/loja/pedidos", {
         type: "POST",
         data: { product_id: productId },
       });
