@@ -566,7 +566,7 @@ export default <template>
                         @action={{fn @controller.deleteProduct product}}
                         class="btn-danger"
                       />
-                    {{#endunless}}
+                    {{/unless}}
                   </div>
                 </td>
               </tr>
