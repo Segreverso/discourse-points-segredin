@@ -432,9 +432,15 @@ export default <template>
                   <span class="shop-select-label">{{i18n "points_mall.shop.filters.type_label"}}</span>
                   <select class="shop-select-control" {{on "change" @controller.setShopTypeFilter}}>
                     {{#each @controller.shopTypeFilters as |filter|}}
-                      <option value={{filter}} selected={{eq @controller.shopTypeFilter filter}}>
-                        {{i18n (concat "points_mall.shop.filters.type." filter)}}
-                      </option>
+                      {{#if (eq @controller.shopTypeFilter filter)}}
+                        <option value={{filter}} selected>
+                          {{i18n (concat "points_mall.shop.filters.type." filter)}}
+                        </option>
+                      {{else}}
+                        <option value={{filter}}>
+                          {{i18n (concat "points_mall.shop.filters.type." filter)}}
+                        </option>
+                      {{/if}}
                     {{/each}}
                   </select>
                 </div>
@@ -443,9 +449,15 @@ export default <template>
                   <span class="shop-select-label">{{i18n "points_mall.shop.filters.category_label"}}</span>
                   <select class="shop-select-control" {{on "change" @controller.setShopCategoryFilter}}>
                     {{#each @controller.shopCategoryOptions as |option|}}
-                      <option value={{option.key}} selected={{eq @controller.shopCategoryFilter option.key}}>
-                        {{option.label}}
-                      </option>
+                      {{#if (eq @controller.shopCategoryFilter option.key)}}
+                        <option value={{option.key}} selected>
+                          {{option.label}}
+                        </option>
+                      {{else}}
+                        <option value={{option.key}}>
+                          {{option.label}}
+                        </option>
+                      {{/if}}
                     {{/each}}
                   </select>
                 </div>
@@ -454,9 +466,15 @@ export default <template>
                   <span class="shop-select-label">{{i18n "points_mall.shop.filters.sort_label"}}</span>
                   <select class="shop-select-control" {{on "change" @controller.setShopSort}}>
                     {{#each @controller.shopSortOptions as |sort|}}
-                      <option value={{sort}} selected={{eq @controller.shopSort sort}}>
-                        {{i18n (concat "points_mall.shop.sort." sort)}}
-                      </option>
+                      {{#if (eq @controller.shopSort sort)}}
+                        <option value={{sort}} selected>
+                          {{i18n (concat "points_mall.shop.sort." sort)}}
+                        </option>
+                      {{else}}
+                        <option value={{sort}}>
+                          {{i18n (concat "points_mall.shop.sort." sort)}}
+                        </option>
+                      {{/if}}
                     {{/each}}
                   </select>
                 </div>
