@@ -3150,16 +3150,13 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 
   .shop-toolbar {
-    position: sticky;
-    top: calc(var(--header-offset, 60px) + 8px);
-    z-index: 4;
-    padding: 8px;
+    position: relative;
+    z-index: 1;
+    padding: 10px 12px;
     border-color: var(--pm-line);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--secondary) 92%, transparent);
-    box-shadow: 0 9px 24px rgba(20, 53, 112, 0.09);
-    -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    backdrop-filter: blur(14px) saturate(1.2);
+    border-radius: 12px;
+    background: var(--secondary);
+    box-shadow: none;
   }
 
   .shop-filter-chip,
