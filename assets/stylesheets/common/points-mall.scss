@@ -551,8 +551,9 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 
   .checkin-overview-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1.6fr 1fr;
     gap: 12px;
+    align-items: stretch;
   }
 
   .checkin-summary-card,
