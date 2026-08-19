@@ -274,9 +274,10 @@ module DiscoursePointsMall
           if group
             duration_days = product.respond_to?(:grant_duration_days) ? product.grant_duration_days.to_i : 0
             expires_at = duration_days > 0 ? duration_days.days.from_now : nil
-            group.add(locked_user, expires_at: expires_at)
+            group.add(locked_user)
             status = "completed"
-            notes = "VIP concedido: Grupo '#{group.name}' por #{duration_days > 0 ? "#{duration_days} dias" : 'tempo indeterminado'}"
+            expiry_str = expires_at ? expires_at.strftime("%d/%m/%Y") : "tempo indeterminado"
+            notes = "VIP concedido: Grupo '#{group.name}' (#{duration_days > 0 ? "#{duration_days} dias - até #{expiry_str}" : 'permanente'})"
           end
         end
 
