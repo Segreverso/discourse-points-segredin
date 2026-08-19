@@ -41,6 +41,8 @@ export default class PointsMallController extends Controller {
   @tracked shopSort = "featured";
   @tracked orderTypeFilter = "all";
   @tracked pointsFilter = "all";
+  @tracked ledgerPage = 1;
+  @tracked ledgerPerPage = 15;
 
   updateCurrentUserPoints(delta) {
     const current = Number(this.currentUser?.points_balance || 0);
@@ -336,6 +338,15 @@ export default class PointsMallController extends Controller {
     return this.filteredLedgerEvents.length > 0;
   }
 
+  get totalLedgerPages() {
+    return Math.ceil(this.filteredLedgerEvents.length / this.ledgerPerPage) || 1;
+  }
+
+  get paginatedLedgerEvents() {
+    const start = (this.ledgerPage - 1) * this.ledgerPerPage;
+    return this.filteredLedgerEvents.slice(start, start + this.ledgerPerPage);
+  }
+
   get orderTypeFilters() {
     return ["all", "physical", "virtual"];
   }
@@ -487,6 +498,21 @@ export default class PointsMallController extends Controller {
   @action
   setPointsFilter(filter) {
     this.pointsFilter = filter;
+    this.ledgerPage = 1;
+  }
+
+  @action
+  prevLedgerPage() {
+    if (this.ledgerPage > 1) {
+      this.ledgerPage--;
+    }
+  }
+
+  @action
+  nextLedgerPage() {
+    if (this.ledgerPage < this.totalLedgerPages) {
+      this.ledgerPage++;
+    }
   }
 
   @action

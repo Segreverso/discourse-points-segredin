@@ -195,7 +195,7 @@ module DiscoursePointsMall
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "积分商城兑换网盘流量",
+                   description: "Resgate de Tráfego / Nuvem",
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
@@ -237,7 +237,7 @@ module DiscoursePointsMall
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "积分商城兑换身份装饰",
+                   description: "Resgate de Cosmético / Insígnia",
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
@@ -278,7 +278,7 @@ module DiscoursePointsMall
         unless DiscoursePointsMall::PointsManager.add_points!(
                  user: locked_user,
                  points: -product.points_cost,
-                 description: "积分商城兑换商品",
+                 description: "Compra na Loja de Pontos",
                )
           error = I18n.t("points_mall.errors.points_update_failed")
           raise ActiveRecord::Rollback

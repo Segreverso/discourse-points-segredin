@@ -1347,7 +1347,7 @@ export default <template>
 
           {{#if @controller.hasLedgerEvents}}
             <div class="ledger-event-list">
-              {{#each @controller.filteredLedgerEvents as |event|}}
+              {{#each @controller.paginatedLedgerEvents as |event|}}
                 <article class="ledger-event-item">
                   <div class="ledger-event-main">
                     <span class="ledger-event-mark {{event.direction}}">
@@ -1365,11 +1365,37 @@ export default <template>
                   <strong class="ledger-event-points {{event.direction}}">
                     {{#if
                       (eq event.direction "income")
-                    }}+{{/if}}{{event.points}}
+                    }}+{{/if}}{{event.points}} pts
                   </strong>
                 </article>
               {{/each}}
             </div>
+
+            {{#if (gt @controller.totalLedgerPages 1)}}
+              <div class="ledger-pagination">
+                <button
+                  type="button"
+                  class="btn btn-default btn-small"
+                  disabled={{eq @controller.ledgerPage 1}}
+                  {{on "click" @controller.prevLedgerPage}}
+                >
+                  {{dIcon "chevron-left"}} Anterior
+                </button>
+
+                <span class="ledger-page-indicator">
+                  Página {{@controller.ledgerPage}} de {{@controller.totalLedgerPages}}
+                </span>
+
+                <button
+                  type="button"
+                  class="btn btn-default btn-small"
+                  disabled={{eq @controller.ledgerPage @controller.totalLedgerPages}}
+                  {{on "click" @controller.nextLedgerPage}}
+                >
+                  Próxima {{dIcon "chevron-right"}}
+                </button>
+              </div>
+            {{/if}}
           {{else}}
             <div class="ledger-empty">
               {{i18n "points_mall.points.empty"}}

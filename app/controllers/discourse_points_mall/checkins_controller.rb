@@ -594,7 +594,7 @@ module DiscoursePointsMall
       DiscoursePointsMall::PointsManager.add_points!(
         user: current_user,
         points: total_points,
-        description: (SiteSetting.respond_to?(:daily_checkin_score_description) ? SiteSetting.daily_checkin_score_description : "每日签到"),
+        description: (SiteSetting.respond_to?(:daily_checkin_score_description) && SiteSetting.daily_checkin_score_description.present? ? SiteSetting.daily_checkin_score_description : "Check-in Diário"),
       )
 
       render json: {
