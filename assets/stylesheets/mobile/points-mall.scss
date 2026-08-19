@@ -600,7 +600,7 @@
   .shop-featured-shelf,
   .shop-section {
     padding: 8px;
-    border-radius: 15px;
+    border-radius: 8px;
   }
 
   .shop-section-head {
@@ -624,7 +624,7 @@
     .product-card {
       min-width: 0;
       min-height: auto;
-      border-radius: 10px;
+      border-radius: 8px;
 
       .product-corner-badge {
         top: 6px;
@@ -632,6 +632,7 @@
         left: auto;
         padding: 2px 6px;
         font-size: 0.62rem;
+        border-radius: 4px;
       }
 
       .product-image {
@@ -655,6 +656,7 @@
           font-size: 0.62rem;
           text-overflow: ellipsis;
           white-space: nowrap;
+          border-radius: 4px;
         }
 
         h3 {
@@ -688,14 +690,14 @@
       }
 
       .product-action {
-        padding: 6px 8px;
+        padding: 5px 6px;
 
         .btn,
         .btn-primary,
         .btn-disabled {
-          min-height: 36px;
-          padding: 4px 8px;
-          border-radius: 6px;
+          min-height: 32px;
+          padding: 4px 6px;
+          border-radius: 5px;
           font-size: 0.72rem;
         }
       }
@@ -707,7 +709,8 @@
   .checkin-button,
   .already-checked-in,
   .checkin-buy-makeup-btn {
-    min-height: 44px;
+    min-height: 38px;
+    border-radius: 5px;
   }
 
   .checkin-stats-grid {
@@ -720,8 +723,8 @@
   .checkin-calendar-card,
   .checkin-ranking-card,
   .checkin-history {
-    padding: 13px;
-    border-radius: 16px;
+    padding: 10px;
+    border-radius: 8px;
   }
 
   .checkin-summary-head {
