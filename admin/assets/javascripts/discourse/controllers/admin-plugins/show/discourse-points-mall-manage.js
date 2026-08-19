@@ -16,6 +16,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   @service toasts;
   @tracked adminOrderTypeFilter = "all";
   @tracked adminOrderStatusFilter = "all";
+  @tracked orderEditVersion = 0;
 
   productPayload(product) {
     return {
@@ -27,10 +28,10 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
           ? -1
           : Number(product.stock),
       product_type: product.product_type || "virtual",
-      category: product.category || "",
-      badge_text: product.badge_text || "",
+      category: (product.category || "").trim(),
       featured: !!product.featured,
-      image_url: product.image_url || "",
+      badge_text: (product.badge_text || "").trim(),
+      image_url: product.image_url,
       enabled: !!product.enabled,
       sort_order: Number(product.sort_order || 0),
     };
@@ -62,7 +63,14 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       orders = orders.filter((order) => order.status === this.adminOrderStatusFilter);
     }
 
-    return orders;
+    return orders.map((order) => {
+      const displayProductType = this.adminOrderType(order);
+      set(order, "display_product_type", displayProductType);
+      set(order, "avatar_url", this.avatarUrlFromTemplate(order.avatar_template, 48));
+      set(order, "user_role_label_key", this.userRoleLabelKey(order));
+      set(order, "user_role_class", this.userRoleClass(order));
+      return order;
+    });
   }
 
   get adminOrderStatuses() {
@@ -74,13 +82,15 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   isOrderDirty(order) {
+    // Force recomputation after local edit handlers run
+    this.orderEditVersion;
     return (
       (order?.status || "") !== (order?._original_status || "") ||
       (order?.notes || "") !== (order?._original_notes || "")
     );
   }
 
-  avatarUrl(template, size = 45) {
+  avatarUrlFromTemplate(template, size = 45) {
     return template ? template.replace("{size}", String(size)) : null;
   }
 
@@ -112,32 +122,14 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
 
   success() {
     this.toasts.success({
-      data: { message: i18n("saved") },
+      data: { message: typeof I18n !== "undefined" ? I18n.t("saved") : i18n("saved") },
       duration: "short",
     });
   }
 
-  @action
-  setMakeupTier(tier, event) {
-    set(this.model.makeupConfig, tier, Number(event.target.value));
-  }
-
-  @action
-  async saveMakeupConfig() {
-    try {
-      const payload = {
-        tier_1: Number(this.model.makeupConfig.tier_1 || 1000),
-        tier_2: Number(this.model.makeupConfig.tier_2 || 3000),
-        tier_3: Number(this.model.makeupConfig.tier_3 || 5000),
-      };
-      await ajax("/admin/plugins/discourse-points-mall/manage/makeup", {
-        type: "PUT",
-        data: payload,
-      });
-      this.success();
-    } catch (error) {
-      popupAjaxError(error);
-    }
+  updateMakeupConfigValue(field, event) {
+    const nextValue = Number(event?.target?.value || 0);
+    set(this.model.makeupConfig, field, nextValue);
   }
 
   @action
@@ -157,8 +149,8 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
         stock: -1,
         product_type: "virtual",
         category: "",
-        badge_text: "",
         featured: false,
+        badge_text: "",
         image_url: "",
         enabled: true,
         sort_order: 0,
@@ -189,6 +181,37 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   @action
+  setMakeupTier(field, event) {
+    this.updateMakeupConfigValue(field, event);
+  }
+
+  @action
+  async saveMakeupConfig() {
+    try {
+      const makeupConfig = this.model.makeupConfig;
+      const res = await ajax("/admin/plugins/discourse-points-mall/manage/makeup-config", {
+        type: "PUT",
+        data: {
+          tier_1: Number(makeupConfig.tier_1 || 0),
+          tier_2: Number(makeupConfig.tier_2 || 0),
+          tier_3: Number(makeupConfig.tier_3 || 0),
+        },
+      });
+
+      Object.entries(res.makeup || {}).forEach(([key, value]) => set(makeupConfig, key, value));
+
+      const makeupProduct = this.model.products.find((product) => product.is_makeup_card);
+      if (makeupProduct) {
+        set(makeupProduct, "points_cost", Number(res.makeup?.tier_1 || makeupProduct.points_cost || 0));
+      }
+
+      this.success();
+    } catch (error) {
+      popupAjaxError(error);
+    }
+  }
+
+  @action
   async deleteProduct(product) {
     try {
       await ajax(`/admin/plugins/discourse-points-mall/manage/products/${product.id}`, {
@@ -211,23 +234,25 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   @action
-  setProductFeatured(product, event) {
-    product.featured = boolFromEvent(event);
-  }
-
-  @action
   setProductEnabled(product, event) {
     product.enabled = boolFromEvent(event);
   }
 
   @action
+  setProductFeatured(product, event) {
+    product.featured = boolFromEvent(event);
+  }
+
+  @action
   setOrderStatus(order, event) {
     set(order, "status", event?.target?.value || "pending");
+    this.orderEditVersion += 1;
   }
 
   @action
   setOrderNotes(order, event) {
     set(order, "notes", event?.target?.value || "");
+    this.orderEditVersion += 1;
   }
 
   @action
@@ -254,6 +279,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       set(order, "notes", order.notes || "");
       set(order, "_original_status", order.status || "pending");
       set(order, "_original_notes", order.notes || "");
+      this.orderEditVersion += 1;
       this.refreshDashboardStats();
       this.success();
     } catch (error) {
@@ -265,6 +291,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   cancelOrderEdit(order) {
     set(order, "status", order._original_status || "pending");
     set(order, "notes", order._original_notes || "");
+    this.orderEditVersion += 1;
   }
 
   @action
