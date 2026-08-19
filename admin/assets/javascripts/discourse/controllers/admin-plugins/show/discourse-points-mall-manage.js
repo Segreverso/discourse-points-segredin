@@ -85,6 +85,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
     return order?.product_type || "virtual";
   }
 
+  @action
   isOrderDirty(order) {
     // Force recomputation after local edit handlers run
     this.orderEditVersion;
