@@ -416,64 +416,50 @@ export default <template>
 
           {{#if @controller.model.products.length}}
             <div class="shop-toolbar">
-              <div class="shop-filter-row">
-                {{#each @controller.shopTypeFilters as |filter|}}
-                  <button
-                    type="button"
-                    class="shop-filter-chip
-                      {{if (eq @controller.shopTypeFilter filter) 'active'}}"
-                    aria-pressed={{if
-                      (eq @controller.shopTypeFilter filter)
-                      "true"
-                      "false"
-                    }}
-                    {{on "click" (fn @controller.setShopTypeFilter filter)}}
-                  >
-                    {{i18n (concat "points_mall.shop.filters.type." filter)}}
-                  </button>
-                {{/each}}
+              <div class="shop-toolbar-search">
+                {{dIcon "magnifying-glass"}}
+                <Input
+                  @value={{@controller.shopKeyword}}
+                  aria-label={{i18n "points_mall.shop.search_placeholder"}}
+                  placeholder={{i18n "points_mall.shop.search_placeholder"}}
+                  class="shop-search-input"
+                  {{on "input" @controller.updateShopKeyword}}
+                />
               </div>
 
-              <div class="shop-filter-row">
-                {{#each @controller.shopCategoryOptions as |option|}}
-                  <button
-                    type="button"
-                    class="shop-filter-chip
-                      {{if
-                        (eq @controller.shopCategoryFilter option.key)
-                        'active'
-                      }}"
-                    aria-pressed={{if
-                      (eq @controller.shopCategoryFilter option.key)
-                      "true"
-                      "false"
-                    }}
-                    {{on
-                      "click"
-                      (fn @controller.setShopCategoryFilter option.key)
-                    }}
-                  >
-                    {{option.label}}
-                  </button>
-                {{/each}}
-              </div>
+              <div class="shop-toolbar-selects">
+                <div class="shop-select-box">
+                  <span class="shop-select-label">{{i18n "points_mall.shop.filters.type_label"}}</span>
+                  <select class="shop-select-control" {{on "change" @controller.setShopTypeFilter}}>
+                    {{#each @controller.shopTypeFilters as |filter|}}
+                      <option value={{filter}} selected={{eq @controller.shopTypeFilter filter}}>
+                        {{i18n (concat "points_mall.shop.filters.type." filter)}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </div>
 
-              <div class="shop-sort-row">
-                {{#each @controller.shopSortOptions as |sort|}}
-                  <button
-                    type="button"
-                    class="shop-sort-chip
-                      {{if (eq @controller.shopSort sort) 'active'}}"
-                    aria-pressed={{if
-                      (eq @controller.shopSort sort)
-                      "true"
-                      "false"
-                    }}
-                    {{on "click" (fn @controller.setShopSort sort)}}
-                  >
-                    {{i18n (concat "points_mall.shop.sort." sort)}}
-                  </button>
-                {{/each}}
+                <div class="shop-select-box">
+                  <span class="shop-select-label">{{i18n "points_mall.shop.filters.category_label"}}</span>
+                  <select class="shop-select-control" {{on "change" @controller.setShopCategoryFilter}}>
+                    {{#each @controller.shopCategoryOptions as |option|}}
+                      <option value={{option.key}} selected={{eq @controller.shopCategoryFilter option.key}}>
+                        {{option.label}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </div>
+
+                <div class="shop-select-box">
+                  <span class="shop-select-label">{{i18n "points_mall.shop.filters.sort_label"}}</span>
+                  <select class="shop-select-control" {{on "change" @controller.setShopSort}}>
+                    {{#each @controller.shopSortOptions as |sort|}}
+                      <option value={{sort}} selected={{eq @controller.shopSort sort}}>
+                        {{i18n (concat "points_mall.shop.sort." sort)}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </div>
               </div>
             </div>
 
