@@ -932,68 +932,138 @@ export default <template>
           {{#if @controller.hasFilteredOrders}}
             <div class="orders-list">
               {{#each @controller.filteredOrders as |order|}}
-                <div class="order-card">
-                  <div class="order-product-thumb">
-                    {{#if order.product.image_url}}
-                      <img
-                        src={{order.product.image_url}}
-                        alt={{order.product.name}}
-                      />
-                    {{else if (eq order.display_product_type "physical")}}
-                      {{dIcon "box"}}
-                    {{else}}
-                      {{dIcon "bolt"}}
-                    {{/if}}
-                  </div>
-
-                  <div class="order-info">
-                    <div class="order-title-row">
-                      <h3>{{order.product.name}}</h3>
-                      <span
-                        class="order-product-type type-{{order.display_product_type}}"
-                      >
-                        {{i18n
-                          (concat
-                            "points_mall.orders.types."
-                            order.display_product_type
-                          )
-                        }}
-                      </span>
+                <div class="order-card status-{{order.status}}">
+                  <div class="order-card-header">
+                    <div class="order-product-thumb">
+                      {{#if order.product.image_url}}
+                        <img
+                          src={{order.product.image_url}}
+                          alt={{order.product.name}}
+                        />
+                      {{else if (eq order.display_product_type "physical")}}
+                        {{dIcon "box"}}
+                      {{else}}
+                        {{dIcon "bolt"}}
+                      {{/if}}
                     </div>
 
-                    <div class="order-meta">
-                      <span class="order-cost">
-                        {{i18n
-                          "points_mall.shop.cost"
-                          points=order.points_spent
-                        }}
-                      </span>
+                    <div class="order-header-info">
+                      <div class="order-title-row">
+                        <h3>{{order.product.name}}</h3>
+                        <span class="order-id-tag">#{{order.id}}</span>
+                      </div>
+                      <div class="order-meta-chips">
+                        <span
+                          class="order-product-type type-{{order.display_product_type}}"
+                        >
+                          {{i18n
+                            (concat
+                              "points_mall.orders.types."
+                              order.display_product_type
+                            )
+                          }}
+                        </span>
+                        <span class="order-cost">
+                          {{order.points_spent}} pts
+                        </span>
+                        <span class="order-date">
+                          {{dIcon "clock"}} {{formatDateFixed order.created_at}}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="order-status-badge-wrap">
                       <span class="order-status status-{{order.status}}">
                         {{i18n
                           (concat "points_mall.orders.status." order.status)
                         }}
                       </span>
-                      <span class="order-date">{{formatDateFixed
-                          order.created_at
-                        }}</span>
                     </div>
-
-                    {{#if order.shipping_info}}
-                      <div class="order-shipping">
-                        <strong>{{i18n
-                            "points_mall.orders.shipping_info"
-                          }}:</strong>
-                        <p>{{order.shipping_info}}</p>
-                      </div>
-                    {{/if}}
-
-                    {{#if order.notes}}
-                      <div class="order-notes">
-                        <strong>{{i18n "points_mall.orders.notes"}}:</strong>
-                        <p>{{order.notes}}</p>
-                      </div>
-                    {{/if}}
                   </div>
+
+                  {{! LINHA DO TEMPO GRÁFICA DE STATUS (STEPPER) }}
+                  <div class="order-stepper-wrap">
+                    <div class="order-stepper">
+                      {{! Step 1: Recebido }}
+                      <div class="stepper-step step-done">
+                        <div class="stepper-circle">
+                          {{dIcon "check"}}
+                        </div>
+                        <span class="stepper-label">Pedido Recebido</span>
+                      </div>
+                      <div class="stepper-line {{if (or (eq order.status "pending") (eq order.status "shipped") (eq order.status "completed") (eq order.status "refunded")) "line-active"}}"></div>
+
+                      {{! Step 2: Em Processamento / Enviado }}
+                      <div class="stepper-step {{if (or (eq order.status "shipped") (eq order.status "completed")) "step-done" (if (eq order.status "pending") "step-current" "")}}">
+                        <div class="stepper-circle">
+                          {{#if (or (eq order.status "shipped") (eq order.status "completed"))}}
+                            {{dIcon "check"}}
+                          {{else if (eq order.status "pending")}}
+                            {{dIcon "hourglass-half"}}
+                          {{else if (eq order.status "refunded")}}
+                            {{dIcon "rotate-left"}}
+                          {{else}}
+                            {{dIcon "circle"}}
+                          {{/if}}
+                        </div>
+                        <span class="stepper-label">
+                          {{if (eq order.status "shipped") "Enviado" (if (eq order.status "refunded") "Estornado" "Processando")}}
+                        </span>
+                      </div>
+                      <div class="stepper-line {{if (or (eq order.status "completed") (eq order.status "refunded")) "line-active"}}"></div>
+
+                      {{! Step 3: Concluído / Reembolsado }}
+                      <div class="stepper-step {{if (eq order.status "completed") "step-done" (if (eq order.status "refunded") "step-refunded" (if (eq order.status "canceled") "step-canceled" ""))}}">
+                        <div class="stepper-circle">
+                          {{#if (eq order.status "completed")}}
+                            {{dIcon "circle-check"}}
+                          {{else if (eq order.status "refunded")}}
+                            {{dIcon "arrow-rotate-left"}}
+                          {{else if (eq order.status "canceled")}}
+                            {{dIcon "xmark"}}
+                          {{else}}
+                            {{dIcon "circle"}}
+                          {{/if}}
+                        </div>
+                        <span class="stepper-label">
+                          {{if (eq order.status "completed") "Entregue & Concluído" (if (eq order.status "refunded") "Reembolsado" (if (eq order.status "canceled") "Cancelado" "Conclusão"))}}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {{! DETALHES DE ENTREGA & BOTÃO DE COPIAR COM 1 CLIQUE }}
+                  {{#if (or order.shipping_info order.notes)}}
+                    <div class="order-details-card">
+                      {{#if order.shipping_info}}
+                        <div class="order-detail-block">
+                          <strong>{{dIcon "location-dot"}} {{i18n "points_mall.orders.shipping_info"}}:</strong>
+                          <p>{{order.shipping_info}}</p>
+                        </div>
+                      {{/if}}
+
+                      {{#if order.notes}}
+                        <div class="order-detail-block">
+                          <strong>{{dIcon "clipboard-list"}} {{i18n "points_mall.orders.notes"}}:</strong>
+                          <p>{{order.notes}}</p>
+                        </div>
+                      {{/if}}
+
+                      <div class="order-copy-action">
+                        <button
+                          type="button"
+                          class="btn btn-default btn-copy-details {{if (eq @controller.copiedOrderId order.id) "copied"}}"
+                          {{on "click" (fn @controller.copyOrderDetails order)}}
+                        >
+                          {{#if (eq @controller.copiedOrderId order.id)}}
+                            {{dIcon "check"}} <span>Copiado!</span>
+                          {{else}}
+                            {{dIcon "copy"}} <span>Copiar Dados de Entrega</span>
+                          {{/if}}
+                        </button>
+                      </div>
+                    </div>
+                  {{/if}}
                 </div>
               {{/each}}
             </div>

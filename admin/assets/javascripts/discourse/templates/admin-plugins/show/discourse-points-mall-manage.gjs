@@ -754,6 +754,16 @@ export default <template>
 
         <div class="points-mall-admin-order-filters">
           <div class="points-mall-admin-order-filter">
+            <span class="points-mall-admin-filter-label">Buscar Pedido</span>
+            <Input
+              @value={{@controller.adminOrderQuery}}
+              placeholder="Digite #ID, usuário ou produto..."
+              class="points-mall-admin-input --search"
+              {{on "input" @controller.updateAdminOrderQuery}}
+            />
+          </div>
+
+          <div class="points-mall-admin-order-filter">
             <span class="points-mall-admin-filter-label">
               {{i18n "points_mall.admin.orders.filters.type_label"}}
             </span>
@@ -865,10 +875,12 @@ export default <template>
                       class="points-mall-admin-select status-select status-{{order.status}}"
                       {{on "change" (fn @controller.setOrderStatus order)}}
                     >
-                      {{#each @controller.model.orderStatuses as |status|}}
-                        <option selected={{eq order.status status}} value={{status}}>
-                          {{i18n (concat "points_mall.orders.status." status)}}
-                        </option>
+                      {{#each @controller.adminOrderStatuses as |status|}}
+                        {{#unless (eq status "all")}}
+                          <option selected={{eq order.status status}} value={{status}}>
+                            {{i18n (concat "points_mall.orders.status." status)}}
+                          </option>
+                        {{/unless}}
                       {{/each}}
                     </select>
                   </td>
@@ -889,9 +901,27 @@ export default <template>
                         type="button"
                         class="btn btn-primary btn-small"
                         {{on "click" (fn @controller.saveOrder order)}}
+                        title="Salvar alterações"
                       >
                         {{i18n "points_mall.admin.actions.save"}}
                       </button>
+
+                      {{#if (eq order.status "refunded")}}
+                        <span class="badge-refunded-text" title="Pedido já reembolsado">
+                          {{dIcon "arrow-rotate-left"}} Reembolsado
+                        </span>
+                      {{else}}
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-small btn-refund"
+                          {{on "click" (fn @controller.refundOrder order)}}
+                          title="Reembolsar pontos ao usuário"
+                        >
+                          {{dIcon "rotate-left"}}
+                          <span>Reembolsar</span>
+                        </button>
+                      {{/if}}
+
                       {{#if (@controller.isOrderDirty order)}}
                         <button
                           type="button"

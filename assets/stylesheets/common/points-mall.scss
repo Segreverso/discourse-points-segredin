@@ -1630,13 +1630,24 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
         }
 
         &.status-processing {
-          background: var(--tertiary-low);
-          color: var(--tertiary);
+          background: var(--highlight-low, rgba(245, 158, 11, 0.15));
+          color: var(--highlight-medium, #d97706);
+        }
+
+        &.status-shipped {
+          background: var(--tertiary-low, rgba(99, 102, 241, 0.15));
+          color: var(--tertiary, #6366f1);
         }
 
         &.status-completed {
           background: var(--success-low);
           color: var(--success);
+        }
+
+        &.status-refunded {
+          background: rgba(239, 68, 68, 0.12);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.25);
         }
 
         &.status-cancelled {
@@ -1650,21 +1661,289 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
       }
     }
 
-    .order-shipping,
-    .order-notes {
-      margin-top: 8px;
-      font-size: 0.9em;
+    /* CARD DE PEDIDO REESTRUTURADO */
+    .order-card {
+      background: var(--secondary);
+      border-radius: 16px;
+      border: 1px solid var(--primary-low);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-      strong {
-        display: block;
-        margin-bottom: 3px;
+      &:hover {
+        border-color: var(--tertiary-medium);
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
       }
 
-      p {
-        margin: 0;
-        color: var(--primary-medium);
-        white-space: pre-wrap;
+      .order-card-header {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+
+        .order-header-info {
+          flex: 1;
+          min-width: 0;
+
+          .order-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+
+            h3 {
+              margin: 0;
+              font-size: 1.15em;
+              font-weight: 700;
+              color: var(--primary);
+            }
+
+            .order-id-tag {
+              font-size: 0.8em;
+              font-weight: 700;
+              color: var(--primary-medium);
+              background: var(--primary-very-low);
+              padding: 2px 8px;
+              border-radius: 6px;
+            }
+          }
+
+          .order-meta-chips {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.85em;
+
+            .order-cost {
+              color: var(--tertiary);
+              font-weight: 700;
+            }
+
+            .order-date {
+              color: var(--primary-medium);
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
+          }
+        }
+
+        .order-status-badge-wrap {
+          flex-shrink: 0;
+        }
       }
+
+      /* LINHA DO TEMPO GRÁFICA (STEPPER) */
+      .order-stepper-wrap {
+        background: var(--primary-very-low);
+        border-radius: 12px;
+        padding: 14px 18px;
+        border: 1px dashed var(--primary-low);
+
+        .order-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+
+          .stepper-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+            min-width: 70px;
+
+            .stepper-circle {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: var(--secondary);
+              border: 2px solid var(--primary-low-mid, #cbd5e1);
+              color: var(--primary-medium);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 0.9em;
+              transition: all 0.25s ease;
+            }
+
+            .stepper-label {
+              font-size: 0.76em;
+              font-weight: 600;
+              color: var(--primary-medium);
+              text-align: center;
+              white-space: nowrap;
+            }
+
+            &.step-done {
+              .stepper-circle {
+                background: var(--success);
+                border-color: var(--success);
+                color: #ffffff;
+                box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+              }
+              .stepper-label {
+                color: var(--primary);
+                font-weight: 700;
+              }
+            }
+
+            &.step-current {
+              .stepper-circle {
+                background: var(--tertiary);
+                border-color: var(--tertiary);
+                color: #ffffff;
+                box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+                animation: pulseCurrentStep 2s infinite ease-in-out;
+              }
+              .stepper-label {
+                color: var(--tertiary);
+                font-weight: 700;
+              }
+            }
+
+            &.step-refunded {
+              .stepper-circle {
+                background: #ef4444;
+                border-color: #ef4444;
+                color: #ffffff;
+              }
+              .stepper-label {
+                color: #ef4444;
+                font-weight: 700;
+              }
+            }
+
+            &.step-canceled {
+              .stepper-circle {
+                background: var(--danger);
+                border-color: var(--danger);
+                color: #ffffff;
+              }
+              .stepper-label {
+                color: var(--danger);
+                font-weight: 700;
+              }
+            }
+          }
+
+          .stepper-line {
+            flex: 1;
+            height: 3px;
+            background: var(--primary-low-mid, #cbd5e1);
+            margin: 0 8px;
+            margin-bottom: 22px;
+            border-radius: 99px;
+            transition: background 0.3s ease;
+
+            &.line-active {
+              background: var(--success);
+            }
+          }
+        }
+      }
+
+      /* DETALHES DE ENTREGA & BOTÃO COPIAR */
+      .order-details-card {
+        background: var(--primary-very-low);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .order-detail-block {
+          font-size: 0.88em;
+
+          strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 3px;
+          }
+
+          p {
+            margin: 0;
+            color: var(--primary-high);
+            white-space: pre-wrap;
+            line-height: 1.45;
+            word-break: break-word;
+            padding-left: 20px;
+          }
+        }
+
+        .order-copy-action {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 4px;
+
+          .btn-copy-details {
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            transition: all 0.2s ease;
+
+            &.copied {
+              background: var(--success-low);
+              color: var(--success);
+              border-color: var(--success);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* REEMBOLSO E BUSCA NO PAINEL ADMIN */
+  .points-mall-admin-input.--search {
+    min-width: 240px;
+    background: var(--secondary);
+    border-radius: 8px;
+  }
+
+  .btn-refund {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    font-weight: 600;
+
+    &:hover {
+      background: #ef4444 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .badge-refunded-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #ef4444;
+    padding: 4px 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+  }
+
+  @keyframes pulseCurrentStep {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
     }
   }
 

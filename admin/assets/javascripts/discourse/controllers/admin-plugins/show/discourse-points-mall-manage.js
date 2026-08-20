@@ -16,6 +16,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   @service toasts;
   @tracked adminOrderTypeFilter = "all";
   @tracked adminOrderStatusFilter = "all";
+  @tracked adminOrderQuery = "";
   @tracked orderEditVersion = 0;
   @tracked editingProductId = null;
 
@@ -77,6 +78,16 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       orders = orders.filter((order) => order.status === this.adminOrderStatusFilter);
     }
 
+    const query = (this.adminOrderQuery || "").trim().toLowerCase();
+    if (query) {
+      orders = orders.filter((order) => {
+        const idMatch = String(order.id).includes(query);
+        const userMatch = (order.username || "").toLowerCase().includes(query);
+        const productMatch = (order.product_name || "").toLowerCase().includes(query);
+        return idMatch || userMatch || productMatch;
+      });
+    }
+
     return orders.map((order) => {
       const displayProductType = this.adminOrderType(order);
       set(order, "display_product_type", displayProductType);
@@ -88,7 +99,11 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   get adminOrderStatuses() {
-    return ["all", ...(this.model.orderStatuses || [])];
+    const list = this.model.orderStatuses || ["pending", "completed", "shipped", "canceled"];
+    if (!list.includes("refunded")) {
+      return ["all", ...list, "refunded"];
+    }
+    return ["all", ...list];
   }
 
   adminOrderType(order) {
@@ -281,6 +296,11 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   @action
+  updateAdminOrderQuery(event) {
+    this.adminOrderQuery = event?.target?.value || "";
+  }
+
+  @action
   setAdminOrderTypeFilter(type) {
     this.adminOrderTypeFilter = type;
   }
@@ -317,6 +337,35 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
     set(order, "status", order._original_status || "pending");
     set(order, "notes", order._original_notes || "");
     this.orderEditVersion += 1;
+  }
+
+  @action
+  async refundOrder(order) {
+    if (!order?.id) return;
+    const confirmText = `Tem certeza que deseja REEMBOLSAR o pedido #${order.id} (${order.product_name || 'Produto'})?\n\n- ${order.points_spent || 0} pontos serão devolvidos ao usuário (${order.username || 'Usuário'}).\n- Caso o produto conceda um grupo VIP, a permissão será revogada.`;
+
+    if (!window.confirm(confirmText)) {
+      return;
+    }
+
+    try {
+      const res = await ajax(`/admin/plugins/discourse-points-mall/manage/orders/${order.id}/refund`, {
+        type: "POST",
+      });
+
+      Object.entries(res.order || {}).forEach(([key, value]) => set(order, key, value));
+      set(order, "_original_status", order.status || "refunded");
+      set(order, "_original_notes", order.notes || "");
+      this.orderEditVersion += 1;
+      this.refreshDashboardStats();
+
+      this.toasts.success({
+        data: { message: "Pedido reembolsado com sucesso! Pontos estornados ao usuário." },
+        duration: "short",
+      });
+    } catch (error) {
+      popupAjaxError(error);
+    }
   }
 
   @action
