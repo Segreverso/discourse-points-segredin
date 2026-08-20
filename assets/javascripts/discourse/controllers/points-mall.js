@@ -40,6 +40,8 @@ export default class PointsMallController extends Controller {
   @tracked shopKeyword = "";
   @tracked shopSort = "featured";
   @tracked orderTypeFilter = "all";
+  @tracked ordersPage = 1;
+  @tracked ordersPerPage = 5;
   @tracked pointsFilter = "all";
   @tracked ledgerPage = 1;
   @tracked ledgerPerPage = 15;
@@ -376,8 +378,39 @@ export default class PointsMallController extends Controller {
     }));
   }
 
-  get hasFilteredOrders() {
-    return this.filteredOrders.length > 0;
+  get paginatedOrders() {
+    const start = (this.ordersPage - 1) * this.ordersPerPage;
+    return this.filteredOrders.slice(start, start + this.ordersPerPage);
+  }
+
+  get ordersTotalPages() {
+    return Math.ceil(this.filteredOrders.length / this.ordersPerPage) || 1;
+  }
+
+  get hasMultipleOrderPages() {
+    return this.ordersTotalPages > 1;
+  }
+
+  get canPrevOrdersPage() {
+    return this.ordersPage > 1;
+  }
+
+  get canNextOrdersPage() {
+    return this.ordersPage < this.ordersTotalPages;
+  }
+
+  @action
+  prevOrdersPage() {
+    if (this.canPrevOrdersPage) {
+      this.ordersPage--;
+    }
+  }
+
+  @action
+  nextOrdersPage() {
+    if (this.canNextOrdersPage) {
+      this.ordersPage++;
+    }
   }
 
   get inventoryItems() {
@@ -493,6 +526,7 @@ export default class PointsMallController extends Controller {
   @action
   setOrderTypeFilter(filter) {
     this.orderTypeFilter = filter;
+    this.ordersPage = 1;
   }
 
   @action

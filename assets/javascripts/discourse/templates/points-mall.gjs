@@ -931,7 +931,7 @@ export default <template>
 
           {{#if @controller.hasFilteredOrders}}
             <div class="orders-list">
-              {{#each @controller.filteredOrders as |order|}}
+              {{#each @controller.paginatedOrders as |order|}}
                 <div class="order-card status-{{order.status}}">
                   <div class="order-card-header">
                     <div class="order-product-thumb">
@@ -1067,6 +1067,32 @@ export default <template>
                 </div>
               {{/each}}
             </div>
+
+            {{#if @controller.hasMultipleOrderPages}}
+              <div class="orders-pagination">
+                <button
+                  type="button"
+                  class="btn btn-default btn-pagination-prev"
+                  disabled={{not @controller.canPrevOrdersPage}}
+                  {{on "click" @controller.prevOrdersPage}}
+                >
+                  {{dIcon "chevron-left"}} <span>Anterior</span>
+                </button>
+
+                <div class="pagination-info">
+                  Página <strong>{{@controller.ordersPage}}</strong> de <strong>{{@controller.ordersTotalPages}}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn btn-default btn-pagination-next"
+                  disabled={{not @controller.canNextOrdersPage}}
+                  {{on "click" @controller.nextOrdersPage}}
+                >
+                  <span>Próxima</span> {{dIcon "chevron-right"}}
+                </button>
+              </div>
+            {{/if}}
           {{else}}
             <div class="empty-state orders-empty">
               <div class="orders-empty-icon">{{dIcon "box"}}</div>
