@@ -225,12 +225,34 @@
   }
 
   .order-card {
-    flex-direction: row;
+    flex-direction: column !important;
+    padding: 14px;
+    gap: 14px;
+
+    .order-card-header {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .order-stepper-wrap {
+      padding: 10px 8px;
+
+      .order-stepper {
+        .stepper-step {
+          min-width: 50px;
+
+          .stepper-label {
+            font-size: 0.7em;
+            white-space: normal;
+          }
+        }
+      }
+    }
   }
 
   .order-product-thumb {
-    width: 58px;
-    height: 58px;
+    width: 48px;
+    height: 48px;
   }
 
   .orders-empty {
