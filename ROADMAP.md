@@ -5,16 +5,19 @@
 
 ---
 
-## 📅 Resumo Geral das Implementações
+## 📅 Histórico de Versões & Marcos Alcançados
 
-| Categoria | Descrição Resumida |
-| :--- | :--- |
-| **Monetização Híbrida** | Suporte a produtos comprados com Pontos do Fórum ou Moeda Real (R$) via Link Externo. |
-| **Resiliência do Ranking** | Ranking dinâmico em 2 camadas (Plugin Gamification + Fallback nativo em SQL de Check-ins). |
-| **Formatação de Datas** | Eliminação de contadores relativos ("18 horas") substituídos por datas fixas `DD/MM/YYYY`. |
-| **Polimento Visual (UI/UX)** | Geometria de bordas (6-8px), alinhamento de grids no desktop e remoção de bug de scroll sticky. |
-| **Extrato & Histórico** | Tradução completa de transações, paginação otimizada e layout responsivo mobile. |
-| **Compilação Strict Mode** | Resolução de escopo de componentes Glimmer (`.gjs`) como `dIcon`, `i18n` e `DButton`. |
+| Versão | Data | Principais Mudanças / Foco |
+| :--- | :--- | :--- |
+| **v0.4.2** | 20/08/2026 | Correção do getter `hasFilteredOrders` no Controller Ember (restauração da renderização dos pedidos). |
+| **v0.4.1** | 20/08/2026 | Compactação de altura de cards no desktop e implementação de Paginação Client-side (5 pedidos/pág). |
+| **v0.4.0** | 20/08/2026 | Redesign da thumbnail no mobile para formato Badge Compacto de 36px com `object-fit: contain`. |
+| **v0.3.9** | 20/08/2026 | Trava de posição do menu "Loja de Pontos" no header (`forceAfter: true` + `order: 99 !important`). |
+| **v0.3.8** | 20/08/2026 | Refatoração flexbox do layout de histórico de pedidos no mobile. |
+| **v0.3.7** | 20/08/2026 | Restauração da linha do tempo (stepper gráfico) e detalhes de entrega nos cartões de pedidos. |
+| **v0.3.6** | 20/08/2026 | Polimento sutil de bordas (`8-10px`), redução de sombras pesadas e ajuste do botão de check-in. |
+| **v0.3.5** | 19/08/2026 | Ranking resiliente em 2 camadas (Gamification + Fallback SQL) e datas estáticas `DD/MM/YYYY`. |
+| **v0.3.0** | 19/08/2026 | Lógica de Produtos Híbridos (Pontos + Compras em R$ via Link Externo). |
 
 ---
 
@@ -39,9 +42,6 @@
     * O clique abre a URL em uma nova aba (`target="_blank" rel="noopener noreferrer"`), **sem deduzir nenhum ponto do saldo do usuário**.
   * Se o produto for tradicional por pontos, mantém o fluxo normal de resgate.
 
-#### ⚙️ Painel de Administração (`admin/assets/javascripts/discourse/templates/admin-plugins/show/discourse-points-mall-manage.gjs`)
-* Adicionados campos de entrada `<Input>` para **Preço R$** (passo `0.01`) e **URL Externa** tanto no formulário de criação de novos produtos quanto na tabela de edição rápida de produtos existentes.
-
 ---
 
 ### 2. 🏆 Sistema de Ranking Resiliente com Multicamadas
@@ -52,7 +52,7 @@ Anteriormente, o ranking dependia exclusivamente do plugin `discourse-gamificati
 * **Camada 1 (Gamification Integration):**
   * Busca pelo `PREFERRED_LEADERBOARD_ID` (2) ou pela primeira lista encontrada (`GamificationLeaderboard.first`).
 * **Camada 2 (Fallback Nativo SQL):**
-  * Se o Gamification não estiver instalado ou não retornar usuários, o sistema executa um agendamento dinâmico SQL direto na tabela `PointsMallCheckin` (ou `DiscourseDailyCheckin::Checkin`).
+  * Se o Gamification não estiver instalado ou não retornar usuários, o sistema executa um agendamento dinâmico SQL direto na tabela `PointsMallCheckin`.
   * Soma os pontos acumulados por usuário (`group(:user_id).sum(:points_earned)`) e ordena os TOP 10.
 * **Resultado:**
   * O ranking funciona **instantaneamente** após o check-in de qualquer usuário, sem depender de tarefas assíncronas lentas do Discourse.
@@ -83,49 +83,54 @@ function formatDateFixed(dateVal) {
 }
 ```
 
-#### 📍 Onde foi aplicado:
-1. `discourse-points-mall-manage.gjs` (Tabela de tendência de check-ins, check-ins recentes e lista de pedidos do Admin).
-2. `points-mall.gjs` (Histórico de check-ins da loja, extrato de transações e lista de pedidos do usuário).
-3. `points-mall/checkin.gjs` & `points-mall/orders.gjs`.
+---
+
+### 4. 📌 Estabilização da Barra de Navegação no Header (Fix de Jittering)
+
+#### 🐛 O Problema
+No desktop, o item "Loja de Pontos" ficava trocando de posição intermitentemente com os botões nativos "Categorias" ou "Recentes" na barra de navegação superior (`#navigation-bar.nav.nav-pills`).
+
+#### 💡 Solução em Duas Camadas
+1. **API Ember (`points-mall.js`)**: Injetada a flag `forceAfter: true` na chamada `addNavigationBarItem`.
+2. **CSS Flexbox (`points-mall.scss`)**: Forçado `.points-mall-nav { order: 99 !important; }` para que o Flexbox trave o item à direita de forma determinística independente da ordem de carregamento assíncrono dos scripts.
 
 ---
 
-### 4. 🎨 Design System, Geometria e Polimento de UI/UX
+### 5. 📱 Otimização Responsiva do Histórico de Pedidos no Mobile
 
-#### 📐 Alinhamento de Grids no Desktop
-* **Correção de Desalinhamento:**
-  * O bloco superior (`checkin-overview-grid`) usava a proporção `1.3fr 1fr`.
-  * O bloco inferior (`checkin-main-grid`) usava a proporção `1.6fr 1fr`.
-* **Ajuste:** Padronizamos ambos os blocos com `grid-template-columns: 1.6fr 1fr;` e `align-items: stretch;`.
-* **Efeito:** O card **"Progresso de Nível"** agora possui a exata mesma largura e alinhamento de borda direita do card **"Ranking de Pontos"**.
+#### 🐛 O Problema
+Em telas móveis (< 480px), o container `.order-product-thumb` possuía dimensões fixas grandes (48px/72px). A imagem sobrepunha tags de categoria, status do pedido e os textos descritivos.
 
-#### 📱 Barra de Ferramentas da Loja (`.shop-toolbar`)
-* **Remoção do Bug de Scroll Sticky:**
-  * Removido o estilo `position: sticky` que fazia a barra de categorias acompanhar o scroll de maneira desalinhada e sobrepor os cards de produtos.
-  * Definido fundo sólido (`--secondary`) e posicionamento relativo para fluidez total em telas mobile e desktop.
-
-#### 📊 Extrato / Histórico de Transações (`.ledger-event-item`)
-* **Tradução e Paginação:**
-  * Removidos textos de fallback em chinês/inglês das transações de pontos.
-  * Implementada paginação client-side para evitar lentidão no DOM quando o usuário possui histórico extenso.
-  * Layout responsivo otimizado para dispositivos móveis.
+#### 💡 A Solução Aplicada (Badge de 36px)
+- **Compactação**: A thumbnail foi adaptada para um **Badge Compacto de 36px × 36px** (`flex: 0 0 36px; border-radius: 8px; padding: 2px;`).
+- **Escala Limpa**: Aplicado `object-fit: contain` na imagem interna e `align-items: center` no container flex `.order-card-header`.
+- **Resultado**: Liberou **mais de 90% da largura útil do celular** para o título, tag de ID (`#4`), valor em pontos e o badge de status.
 
 ---
 
-### 5. 🛡️ Estabilidade & Compilação Strict Mode Ember/Glimmer (`.gjs`)
+### 6. 📐 Compactação de Cards no Desktop & Paginação Client-Side
 
-#### ⚠️ Correção do Erro de Compilação
-No Ember Glimmer Strict Mode, todos os componentes e helpers utilizados dentro do bloco `<template>` precisam estar explicitamente importados no topo do arquivo.
+#### 🎨 Card Enxuto (`.order-card`)
+- **Dimensões e Espaçamentos**: Reduzido o padding vertical de `18px` para `12px 16px`, e o gap vertical entre blocos de `16px` para `10px`.
+- **Thumbnail no Desktop**: Padronizada em `44px × 44px`.
+- **Linha do Tempo (Stepper)**: Círculos de etapas reduzidos de `32px` para `26px` (fonte `0.8em`), linhas de conexão reduzidas para `2px` de altura e padding do container ajustado para `8px 14px`.
 
-* **Importações Restauradas:**
-  * `import dIcon from "discourse/ui-kit/helpers/d-icon";`
-  * `import { i18n } from "discourse-i18n";`
-  * `import DButton from "discourse/ui-kit/d-button";`
-* **Arquivos Protegidos:**
-  * `discourse-points-mall-manage.gjs`
-  * `points-mall.gjs`
-  * `points-mall/checkin.gjs`
-  * `points-mall/orders.gjs`
+#### 📄 Sistema de Paginação (`.orders-pagination`)
+- **Limite por Página**: 5 pedidos por página.
+- **Navegação Interativa**: Botões **Anterior** / **Próxima** com estados desabilitados nativamente na primeira/última página e indicador numérico central (`Página X de Y`).
+- **Reset Dinâmico**: Ao trocar de aba/filtro ("Todos", "Físicos", "Virtuais"), a página reseta automaticamente para a página 1.
+
+---
+
+### 🚨 7. Catálogo de Erros de Compilação & Bugs Corrigidos
+
+#### 🔴 Erro #1: Desbalanceamento de Chaves SCSS (`Discourse::ScssError: unmatched "}"`)
+- **Causa**: Edição parcial em bloco SCSS que removeu um fechamento de chave `}` no arquivo `common/points-mall.scss`.
+- **Prevenção**: Compilação local mandatória com `npx sass` antes de qualquer commit.
+
+#### 🔴 Erro #2: Sobrescrita de Getter Ember (`hasFilteredOrders`)
+- **Causa**: Durante a implementação da paginação no `controllers/points-mall.js`, a substituição de código removeu o getter `get hasFilteredOrders()`. O template `.gjs` lia a propriedade como `undefined` (falsy) e exibia a tela "Nenhum pedido realizado" mesmo existindo pedidos salvos.
+- **Solução**: Restauração do getter boolean `get hasFilteredOrders() { return this.filteredOrders.length > 0; }` na versão `v0.4.2`.
 
 ---
 
@@ -133,30 +138,31 @@ No Ember Glimmer Strict Mode, todos os componentes e helpers utilizados dentro d
 
 ```
 discourse-points-segredin/
-├── ROADMAP.md                                                    # Documentação e Roadmap Oficial
+├── ROADMAP.md                                                    # Documentação e Roadmap Oficial (v0.4.2)
+├── plugin.rb                                                     # Registro de versão v0.4.2 e SVG Icons
 ├── app/
 │   └── controllers/
 │       └── discourse_points_mall/
-│           ├── admin_products_controller.rb                      # Permissões de campos price_brl e external_url
+│           ├── admin_products_controller.rb                      # Whitelist price_brl e external_url
 │           └── checkins_controller.rb                            # Ranking com Fallback nativo em SQL
-├── admin/
-│   └── assets/javascripts/discourse/templates/admin-plugins/show/
-│       └── discourse-points-mall-manage.gjs                     # Admin UI (Campos BRL + Datas Fixas)
-└── assets/
-    ├── javascripts/discourse/templates/
-    │   ├── points-mall.gjs                                       # Loja Principal, Botão Híbrido, Extrato
-    │   └── points-mall/
-    │       ├── checkin.gjs                                       # Datas estáticas no checkin
-    │       └── orders.gjs                                        # Datas estáticas nos pedidos
-    └── stylesheets/
-        ├── common/points-mall.scss                               # Grids 1.6fr 1fr, Botão BRL, Toolbar fix
-        └── mobile/points-mall.scss                               # Responsividade mobile da barra e cards
+├── assets/
+│   ├── javascripts/discourse/
+│   │   ├── initializers/points-mall.js                           # Topbar Nav (forceAfter: true)
+│   │   ├── controllers/points-mall.js                            # Paginação de Pedidos e getters
+│   │   └── templates/
+│   │       ├── points-mall.gjs                                   # Template principal da Loja e Pedidos
+│   │       └── points-mall/
+│   │           ├── checkin.gjs                                   # Datas estáticas no check-in
+│   │           └── orders.gjs                                    # Datas estáticas nos pedidos
+│   └── stylesheets/
+│       ├── common/points-mall.scss                               # order: 99 nav, cards compactos, paginação
+│       └── mobile/points-mall.scss                               # Thumbnail 36px e flexbox mobile
 ```
 
 ---
 
 ## 🚀 Próximas Passos Recomendados (Backlog Futuro)
 
-1. **Gateway Automático Pix/BRL:** Integração via webhook para aprovação e liberação imediata ao comprar via link externo.
-2. **Notificações Push no Fórum:** Notificar o usuário quando um pedido físico mudar para "Enviado".
-3. **Exportação CSV no Admin:** Botão para baixar relatório de check-ins e resgates de produtos.
+1. **Gateway Automático Pix/BRL:** Webhook para aprovação e liberação instantânea ao comprar via link externo.
+2. **Notificações Push no Fórum:** Notificar o usuário quando um pedido físico mudar de status para "Enviado".
+3. **Exportação CSV no Admin:** Botão para baixar relatório de check-ins e resgates de produtos em Excel/CSV.
