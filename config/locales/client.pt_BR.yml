@@ -107,6 +107,8 @@ pt_BR:
               pending: "Pendente"
               processing: "Processando"
               completed: "Concluído"
+              shipped: "Enviado"
+              refunded: "Reembolsado"
               cancelled: "Cancelado"
           roles:
             admin: "Admin"
@@ -286,7 +288,9 @@ pt_BR:
         status:
           pending: "Pendente"
           processing: "Processando"
+          shipped: "Enviado"
           completed: "Concluído"
+          refunded: "Reembolsado"
           cancelled: "Cancelado"
         empty: "Nenhum pedido realizado"
         shipping_info: "Dados de Envio"

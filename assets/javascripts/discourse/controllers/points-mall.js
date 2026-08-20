@@ -43,6 +43,7 @@ export default class PointsMallController extends Controller {
   @tracked pointsFilter = "all";
   @tracked ledgerPage = 1;
   @tracked ledgerPerPage = 15;
+  @tracked copiedOrderId = null;
 
   updateCurrentUserPoints(delta) {
     const current = Number(this.currentUser?.points_balance || 0);
@@ -925,26 +926,24 @@ export default class PointsMallController extends Controller {
   }
 
   @action
-  async equipInventoryItem(item) {
-    if (!item?.order_id || item.expired || !item.equippable) {
-      return;
-    }
+  copyOrderDetails(order) {
+    if (!order) return;
+    const parts = [
+      `Pedido #${order.id} - ${order.product?.name || 'Produto'}`,
+      order.shipping_info ? `Endereço/Dados: ${order.shipping_info}` : null,
+      order.notes ? `Observações/Entrega: ${order.notes}` : null,
+    ].filter(Boolean);
 
-    try {
-      const result = await ajax("/loja/inventario/equipar", {
-        type: "POST",
-        data: { order_id: item.order_id },
-      });
-      this.model.inventory = result.inventory || { items: [], equipped: {} };
-      this.broadcastCosmeticsUpdated(this.model.inventory);
-      this.notifyPropertyChange("model");
+    const textToCopy = parts.join("\n");
+    if (!textToCopy) return;
 
-      this.appEvents.trigger("modal-body:flash", {
-        text: I18n.t("points_mall.inventory.equip_success"),
-        messageClass: "success",
-      });
-    } catch (error) {
-      popupAjaxError(error);
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        this.copiedOrderId = order.id;
+        setTimeout(() => {
+          this.copiedOrderId = null;
+        }, 3000);
+      }).catch(() => {});
     }
   }
 

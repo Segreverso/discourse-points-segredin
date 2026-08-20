@@ -139,6 +139,7 @@ after_initialize do
 
       get "/manage/orders" => "discourse_points_mall/admin_orders#index"
       put "/manage/orders/:id" => "discourse_points_mall/admin_orders#update"
+      post "/manage/orders/:id/refund" => "discourse_points_mall/admin_orders#refund"
 
       get "/manage/checkins" => "discourse_points_mall/admin_checkins#index"
     end

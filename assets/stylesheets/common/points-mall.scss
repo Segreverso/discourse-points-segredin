@@ -1646,13 +1646,24 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
         }
 
         &.status-processing {
-          background: var(--tertiary-low);
-          color: var(--tertiary);
+          background: var(--highlight-low, rgba(245, 158, 11, 0.15));
+          color: var(--highlight-medium, #d97706);
+        }
+
+        &.status-shipped {
+          background: var(--tertiary-low, rgba(99, 102, 241, 0.15));
+          color: var(--tertiary, #6366f1);
         }
 
         &.status-completed {
           background: var(--success-low);
           color: var(--success);
+        }
+
+        &.status-refunded {
+          background: rgba(239, 68, 68, 0.12);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.25);
         }
 
         &.status-cancelled {
@@ -1666,21 +1677,289 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
       }
     }
 
-    .order-shipping,
-    .order-notes {
-      margin-top: 8px;
-      font-size: 0.9em;
+    /* CARD DE PEDIDO REESTRUTURADO */
+    .order-card {
+      background: var(--secondary);
+      border-radius: 16px;
+      border: 1px solid var(--primary-low);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-      strong {
-        display: block;
-        margin-bottom: 3px;
+      &:hover {
+        border-color: var(--tertiary-medium);
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
       }
 
-      p {
-        margin: 0;
-        color: var(--primary-medium);
-        white-space: pre-wrap;
+      .order-card-header {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+
+        .order-header-info {
+          flex: 1;
+          min-width: 0;
+
+          .order-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+
+            h3 {
+              margin: 0;
+              font-size: 1.15em;
+              font-weight: 700;
+              color: var(--primary);
+            }
+
+            .order-id-tag {
+              font-size: 0.8em;
+              font-weight: 700;
+              color: var(--primary-medium);
+              background: var(--primary-very-low);
+              padding: 2px 8px;
+              border-radius: 6px;
+            }
+          }
+
+          .order-meta-chips {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.85em;
+
+            .order-cost {
+              color: var(--tertiary);
+              font-weight: 700;
+            }
+
+            .order-date {
+              color: var(--primary-medium);
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
+          }
+        }
+
+        .order-status-badge-wrap {
+          flex-shrink: 0;
+        }
       }
+
+      /* LINHA DO TEMPO GRÁFICA (STEPPER) */
+      .order-stepper-wrap {
+        background: var(--primary-very-low);
+        border-radius: 12px;
+        padding: 14px 18px;
+        border: 1px dashed var(--primary-low);
+
+        .order-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+
+          .stepper-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+            min-width: 70px;
+
+            .stepper-circle {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: var(--secondary);
+              border: 2px solid var(--primary-low-mid, #cbd5e1);
+              color: var(--primary-medium);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 0.9em;
+              transition: all 0.25s ease;
+            }
+
+            .stepper-label {
+              font-size: 0.76em;
+              font-weight: 600;
+              color: var(--primary-medium);
+              text-align: center;
+              white-space: nowrap;
+            }
+
+            &.step-done {
+              .stepper-circle {
+                background: var(--success);
+                border-color: var(--success);
+                color: #ffffff;
+                box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+              }
+              .stepper-label {
+                color: var(--primary);
+                font-weight: 700;
+              }
+            }
+
+            &.step-current {
+              .stepper-circle {
+                background: var(--tertiary);
+                border-color: var(--tertiary);
+                color: #ffffff;
+                box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+                animation: pulseCurrentStep 2s infinite ease-in-out;
+              }
+              .stepper-label {
+                color: var(--tertiary);
+                font-weight: 700;
+              }
+            }
+
+            &.step-refunded {
+              .stepper-circle {
+                background: #ef4444;
+                border-color: #ef4444;
+                color: #ffffff;
+              }
+              .stepper-label {
+                color: #ef4444;
+                font-weight: 700;
+              }
+            }
+
+            &.step-canceled {
+              .stepper-circle {
+                background: var(--danger);
+                border-color: var(--danger);
+                color: #ffffff;
+              }
+              .stepper-label {
+                color: var(--danger);
+                font-weight: 700;
+              }
+            }
+          }
+
+          .stepper-line {
+            flex: 1;
+            height: 3px;
+            background: var(--primary-low-mid, #cbd5e1);
+            margin: 0 8px;
+            margin-bottom: 22px;
+            border-radius: 99px;
+            transition: background 0.3s ease;
+
+            &.line-active {
+              background: var(--success);
+            }
+          }
+        }
+      }
+
+      /* DETALHES DE ENTREGA & BOTÃO COPIAR */
+      .order-details-card {
+        background: var(--primary-very-low);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .order-detail-block {
+          font-size: 0.88em;
+
+          strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 3px;
+          }
+
+          p {
+            margin: 0;
+            color: var(--primary-high);
+            white-space: pre-wrap;
+            line-height: 1.45;
+            word-break: break-word;
+            padding-left: 20px;
+          }
+        }
+
+        .order-copy-action {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 4px;
+
+          .btn-copy-details {
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            transition: all 0.2s ease;
+
+            &.copied {
+              background: var(--success-low);
+              color: var(--success);
+              border-color: var(--success);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* REEMBOLSO E BUSCA NO PAINEL ADMIN */
+  .points-mall-admin-input.--search {
+    min-width: 240px;
+    background: var(--secondary);
+    border-radius: 8px;
+  }
+
+  .btn-refund {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    font-weight: 600;
+
+    &:hover {
+      background: #ef4444 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .badge-refunded-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #ef4444;
+    padding: 4px 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+  }
+
+  @keyframes pulseCurrentStep {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
     }
   }
 
@@ -2261,6 +2540,316 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     .btn-refresh-summary {
       font-weight: 600;
     }
+  }
+
+  /* Executive Tab Navigation */
+  .points-mall-admin-nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    overflow-x: auto;
+
+    .admin-nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--primary-medium);
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+      .d-icon {
+        font-size: 1em;
+        transition: transform 0.2s;
+      }
+
+      .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 0.76em;
+        font-weight: 800;
+        background: var(--primary-low);
+        color: var(--primary-high);
+
+        &.--pending {
+          background: rgba(244, 166, 25, 0.2);
+          color: #d97706;
+        }
+      }
+
+      &:hover {
+        background: var(--primary-very-low);
+        color: var(--primary-high);
+
+        .d-icon {
+          transform: scale(1.1);
+        }
+      }
+
+      &.active {
+        background: var(--tertiary);
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(47, 104, 236, 0.25);
+
+        .d-icon {
+          color: #fff;
+        }
+
+        .tab-badge {
+          background: rgba(255, 255, 255, 0.25);
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  /* Products Toolbar & Accordion */
+  .points-mall-admin-products-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+
+    h2 {
+      margin: 0 0 4px 0;
+      font-size: 1.2em;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-high);
+    }
+    p {
+      margin: 0;
+      font-size: 0.88em;
+      color: var(--primary-medium);
+    }
+  }
+
+  .points-mall-admin-products-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .btn-action-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 8px 14px;
+      transition: all 0.2s ease;
+
+      &.active {
+        background: var(--tertiary);
+        color: #fff;
+        border-color: transparent;
+      }
+    }
+
+    .products-search-box {
+      .points-mall-admin-input.--search {
+        height: 38px;
+        min-width: 220px;
+        border-radius: 8px;
+      }
+    }
+  }
+
+  /* Collapsible Accordion Animation */
+  .points-mall-admin-card.accordion-open {
+    animation: accordionExpand 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border-color: var(--tertiary);
+    box-shadow: 0 6px 18px rgba(47, 104, 236, 0.12);
+    margin-bottom: 20px;
+  }
+
+  @keyframes accordionExpand {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Products Catalog Grid & Cards */
+  .products-grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .points-mall-admin-product-card {
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--tertiary) 40%, var(--primary-low));
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    &.disabled {
+      opacity: 0.6;
+      background: var(--primary-very-low);
+    }
+
+    .product-card-body {
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .product-thumb-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: var(--primary-very-low);
+      border: 1px solid var(--primary-low);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .badge-featured {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 0.8em;
+      }
+    }
+
+    .product-details {
+      flex: 1;
+      min-width: 0;
+
+      .product-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+
+        h4 {
+          margin: 0;
+          font-size: 0.98em;
+          font-weight: 700;
+          color: var(--primary-high);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .product-type-tag {
+          font-size: 0.72em;
+          font-weight: 700;
+          padding: 2px 7px;
+          border-radius: 999px;
+          text-transform: uppercase;
+
+          &.type-virtual {
+            background: rgba(47, 104, 236, 0.15);
+            color: var(--tertiary);
+          }
+          &.type-physical {
+            background: rgba(244, 166, 25, 0.15);
+            color: #d97706;
+          }
+        }
+      }
+
+      .product-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.82em;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+
+        .meta-points {
+          font-weight: 800;
+          color: var(--tertiary);
+        }
+        .meta-stock {
+          color: var(--primary-medium);
+        }
+        .meta-cat {
+          background: var(--primary-low);
+          padding: 1px 6px;
+          border-radius: 4px;
+          font-size: 0.78em;
+        }
+      }
+
+      .product-vip-badge {
+        font-size: 0.78em;
+        color: #7c3aed;
+        background: rgba(139, 92, 246, 0.1);
+        padding: 3px 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+      }
+    }
+
+    .product-actions-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+  }
+
+  .btn-refund {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+  }
+
+  .badge-refunded-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 0.78em;
   }
 
   /* Admin Sections */
