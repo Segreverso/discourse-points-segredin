@@ -4160,18 +4160,33 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 
   .shop-promo-button {
-    min-height: 38px;
-    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 14px;
     border: 0;
     border-radius: 6px;
-    color: var(--secondary);
-    background: var(--tertiary);
-    font-weight: 700;
-    box-shadow: none;
+    color: var(--secondary) !important;
+    background: var(--tertiary) !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: none !important;
     cursor: pointer;
+    line-height: 1;
+
+    .d-icon,
+    svg {
+      color: inherit !important;
+      fill: currentColor !important;
+      font-size: 0.95em;
+    }
 
     &:hover {
       opacity: 0.9;
+      color: var(--secondary) !important;
+      background: var(--tertiary) !important;
     }
   }
 
