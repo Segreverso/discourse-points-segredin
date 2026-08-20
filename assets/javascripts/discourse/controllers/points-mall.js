@@ -378,6 +378,10 @@ export default class PointsMallController extends Controller {
     }));
   }
 
+  get hasFilteredOrders() {
+    return this.filteredOrders.length > 0;
+  }
+
   get paginatedOrders() {
     const start = (this.ordersPage - 1) * this.ordersPerPage;
     return this.filteredOrders.slice(start, start + this.ordersPerPage);
