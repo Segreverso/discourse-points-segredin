@@ -1,3 +1,11 @@
+/* GARANTE A ORDEM FIXA DO ITEM DA LOJA NA BARRA DE NAVEGAÇÃO SUPERIOR DO DISCOURSE */
+#navigation-bar.nav {
+  .points-mall-nav,
+  .nav-item_points-mall {
+    order: 99 !important;
+  }
+}
+
 .points-mall-container {
   width: 100%;
   max-width: 1640px;

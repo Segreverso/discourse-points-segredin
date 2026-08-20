@@ -84,6 +84,7 @@ export default apiInitializer("1.8.0", (api) => {
       href: "/loja",
       classNames: ["points-mall-nav"],
       customFilter: () => !!currentUser(api),
+      forceAfter: true,
     });
   }
 
