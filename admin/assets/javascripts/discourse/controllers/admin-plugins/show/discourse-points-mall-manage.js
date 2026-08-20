@@ -14,11 +14,49 @@ function boolFromEvent(event) {
 
 export default class AdminPluginsShowDiscoursePointsMallManageController extends Controller {
   @service toasts;
+  @tracked adminActiveTab = "overview";
+  @tracked showNewProductAccordion = false;
+  @tracked showMakeupAccordion = false;
+  @tracked adminProductQuery = "";
   @tracked adminOrderTypeFilter = "all";
   @tracked adminOrderStatusFilter = "all";
   @tracked adminOrderQuery = "";
   @tracked orderEditVersion = 0;
   @tracked editingProductId = null;
+
+  @action
+  setAdminActiveTab(tabName) {
+    this.adminActiveTab = tabName;
+  }
+
+  @action
+  toggleNewProductAccordion() {
+    this.showNewProductAccordion = !this.showNewProductAccordion;
+  }
+
+  @action
+  toggleMakeupAccordion() {
+    this.showMakeupAccordion = !this.showMakeupAccordion;
+  }
+
+  @action
+  updateAdminProductQuery(event) {
+    this.adminProductQuery = event?.target?.value || "";
+  }
+
+  get filteredAdminProducts() {
+    const products = this.model.products || [];
+    const query = (this.adminProductQuery || "").trim().toLowerCase();
+    if (!query) {
+      return products;
+    }
+    return products.filter((p) => {
+      const nameMatch = (p.name || "").toLowerCase().includes(query);
+      const catMatch = (p.category || "").toLowerCase().includes(query);
+      const descMatch = (p.description || "").toLowerCase().includes(query);
+      return nameMatch || catMatch || descMatch;
+    });
+  }
 
   @action
   toggleEditProduct(product) {
@@ -189,6 +227,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
         grant_duration_days: "",
         sort_order: 0,
       });
+      this.showNewProductAccordion = false;
       this.refreshDashboardStats();
       this.success();
     } catch (error) {
