@@ -226,33 +226,125 @@
 
   .order-card {
     flex-direction: column !important;
-    padding: 14px;
-    gap: 14px;
+    padding: 12px !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 
     .order-card-header {
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: flex-start !important;
+      gap: 10px !important;
+      width: 100% !important;
 
-    .order-stepper-wrap {
-      padding: 10px 8px;
+      .order-product-thumb {
+        width: 48px !important;
+        height: 48px !important;
+        flex: 0 0 48px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+      }
 
-      .order-stepper {
-        .stepper-step {
-          min-width: 50px;
+      .order-header-info {
+        flex: 1 !important;
+        min-width: 0 !important;
 
-          .stepper-label {
-            font-size: 0.7em;
-            white-space: normal;
+        .order-title-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
+          margin-bottom: 4px;
+
+          h3 {
+            font-size: 0.95em;
+            margin: 0;
+            line-height: 1.2;
+          }
+
+          .order-id-tag {
+            font-size: 0.72em;
+            padding: 1px 6px;
+          }
+        }
+
+        .order-meta-chips {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
+          font-size: 0.78em;
+
+          .order-product-type {
+            font-size: 0.72em;
+            padding: 1px 6px;
           }
         }
       }
-    }
-  }
 
-  .order-product-thumb {
-    width: 48px;
-    height: 48px;
+      .order-status-badge-wrap {
+        flex-shrink: 0;
+
+        .order-status {
+          font-size: 0.75em;
+          padding: 2px 8px;
+        }
+      }
+    }
+
+    .order-stepper-wrap {
+      padding: 10px 4px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+
+      .order-stepper {
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        gap: 0 !important;
+
+        .stepper-step {
+          flex: 1 !important;
+          min-width: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 4px !important;
+
+          .stepper-circle {
+            width: 26px !important;
+            height: 26px !important;
+            font-size: 0.75em !important;
+            flex-shrink: 0 !important;
+          }
+
+          .stepper-label {
+            font-size: 0.65em !important;
+            line-height: 1.2 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            text-align: center !important;
+            hyphens: auto;
+          }
+        }
+
+        .stepper-line {
+          flex: 1 !important;
+          height: 2px !important;
+          margin: 12px 2px 0 2px !important;
+          flex-shrink: 1 !important;
+        }
+      }
+    }
+
+    .order-details-card {
+      padding: 10px 12px !important;
+      gap: 8px !important;
+      font-size: 0.82em !important;
+    }
   }
 
   .orders-empty {
