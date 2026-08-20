@@ -58,7 +58,6 @@ export default class PointsMallController extends Controller {
     return [
       { name: "checkin", icon: "calendar-check" },
       { name: "shop", icon: "gift" },
-      { name: "inventory", icon: "box" },
       { name: "orders", icon: "list" },
       { name: "ledger", icon: "wallet" },
     ];
