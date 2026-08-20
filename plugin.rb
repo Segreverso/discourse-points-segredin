@@ -2,9 +2,9 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.2.1
+# version: 0.3.1
 # authors: VegaMonika
-# url: https://github.com/VegaMonika/discourse-points-mall
+# url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
 
 enabled_site_setting :points_mall_enabled
