@@ -1,72 +1,71 @@
-# 🗺️ Roadmap Detalhado & Registro Completo de Arquitetura — Points Mall (Segredin)
+# Roadmap Técnico e Documentação de Arquitetura — Discourse Points Mall
 
-> **Documento Oficial de Registro de Alterações e Arquitetura**  
-> Este documento registra de forma exaustiva todas as modificações, refatorações de backend, modelos de banco de dados, regras de interface (UI/UX), correções de bugs e decisões arquiteturais implementadas no plugin **Discourse Points Mall (Segredin)**.
+## Resumo Executivo e Registro do Sistema
 
----
-
-## 📅 Histórico de Versões & Marcos Alcançados
-
-| Versão | Data | Principais Mudanças / Foco |
-| :--- | :--- | :--- |
-| **v0.4.2** | 20/08/2026 | Correção do getter `hasFilteredOrders` no Controller Ember (restauração da renderização dos pedidos). |
-| **v0.4.1** | 20/08/2026 | Compactação de altura de cards no desktop e implementação de Paginação Client-side (5 pedidos/pág). |
-| **v0.4.0** | 20/08/2026 | Redesign da thumbnail no mobile para formato Badge Compacto de 36px com `object-fit: contain`. |
-| **v0.3.9** | 20/08/2026 | Trava de posição do menu "Loja de Pontos" no header (`forceAfter: true` + `order: 99 !important`). |
-| **v0.3.8** | 20/08/2026 | Refatoração flexbox do layout de histórico de pedidos no mobile. |
-| **v0.3.7** | 20/08/2026 | Restauração da linha do tempo (stepper gráfico) e detalhes de entrega nos cartões de pedidos. |
-| **v0.3.6** | 20/08/2026 | Polimento sutil de bordas (`8-10px`), redução de sombras pesadas e ajuste do botão de check-in. |
-| **v0.3.5** | 19/08/2026 | Ranking resiliente em 2 camadas (Gamification + Fallback SQL) e datas estáticas `DD/MM/YYYY`. |
-| **v0.3.0** | 19/08/2026 | Lógica de Produtos Híbridos (Pontos + Compras em R$ via Link Externo). |
+Este documento registra a arquitetura técnica, modelo de dados, controladores Rails/Ember, componentes de interface (Glimmer/GJS), regras SCSS/CSS responsivas, além do histórico de incidentes de compilação e plano de desenvolvimento do plugin **Discourse Points Mall (Segredin)**.
 
 ---
 
-## 🛠️ Detalhamento Técnico das Modificações
+## 1. Histórico de Versões e Alterações
 
-### 1. 💳 Sistema de Pagamento Híbrido (Pontos + R$ / Link Externo)
-
-#### 🗄️ Alterações de Banco de Dados & Backend
-* **Campos Adicionados (`points_mall_products`):**
-  * `price_brl` (`decimal`, 10 posições, 2 decimais): Guarda o preço do produto em Reais (R$).
-  * `external_url` (`text`): Guarda o link de checkout externo (Hotmart, Kiwify, Mercado Pago, etc.).
-* **Controlador Administrativo (`app/controllers/discourse_points_mall/admin_products_controller.rb`):**
-  * Atualizada a whitelist de parâmetros permitidos para incluir `:price_brl` e `:external_url`.
-* **Serializador JSON (`app/serializers/points_mall_product_serializer.rb`):**
-  * Exposição dos atributos `:price_brl` e `:external_url` na API pública e administrativa do Discourse.
-
-#### 🎨 Interface da Loja (`assets/javascripts/discourse/templates/points-mall.gjs`)
-* **Lógica do Botão de Compra (`.featured-card` e `.shop-product-card`):**
-  * Se o produto contiver `external_url` preenchido:
-    * O botão tradicional de resgate de pontos é substituído por um link estético com tag `<a>` e classe `.btn-external-buy`.
-    * O rótulo exibe automaticamente o valor em R$ (ex: `Comprar (R$ 29,90)`).
-    * O clique abre a URL em uma nova aba (`target="_blank" rel="noopener noreferrer"`), **sem deduzir nenhum ponto do saldo do usuário**.
-  * Se o produto for tradicional por pontos, mantém o fluxo normal de resgate.
+| Versão | Data | Módulo Afetado | Resumo da Alteração |
+| :--- | :--- | :--- | :--- |
+| **v0.4.2** | 20/08/2026 | Ember Controller | Restauração da propriedade `hasFilteredOrders` no controller JS para validar o render de pedidos no template GJS. |
+| **v0.4.1** | 20/08/2026 | SCSS Common / Ember JS | Compactação de altura nos cartões de pedidos no desktop e adição de paginação client-side com limite de 5 itens por página. |
+| **v0.4.0** | 20/08/2026 | SCSS Mobile | Redesign das thumbnails de produtos para formato Badge de 36px com alinhamento flexbox e `object-fit: contain`. |
+| **v0.3.9** | 20/08/2026 | JS Initializer / SCSS | Estabilização de ordem da navegação superior no Discourse (`forceAfter: true` + `order: 99 !important`). |
+| **v0.3.8** | 20/08/2026 | SCSS Mobile | Refatoração de layout e responsividade da lista de histórico de pedidos no mobile. |
+| **v0.3.7** | 20/08/2026 | SCSS Common | Restauração da linha do tempo (stepper de status de pedido) e bloco de cópia rápida de código. |
+| **v0.3.6** | 20/08/2026 | SCSS Common | Ajuste de geometria (`border-radius: 8-10px`), eliminação de sombras duplas e alinhamento de cores do botão de check-in. |
+| **v0.3.5** | 19/08/2026 | Rails Backend / GJS | Implementação do Ranking resiliente em 2 camadas (Gamification + SQL Fallback) e formatação de datas fixas (`DD/MM/YYYY`). |
+| **v0.3.0** | 19/08/2026 | Rails DB / GJS / Admin | Arquitetura de produtos híbridos (Pontos da Comunidade ou Comprar em Reais R$ via Link Externo). |
 
 ---
 
-### 2. 🏆 Sistema de Ranking Resiliente com Multicamadas
+## 2. Detalhamento Arquitetural das Funcionalidades
 
-#### 🧠 Lógica de Fallback no Backend (`app/controllers/discourse_points_mall/checkins_controller.rb`)
-Anteriormente, o ranking dependia exclusivamente do plugin `discourse-gamification` no ID `#2`. Se o ID não existisse ou a view estivesse desatualizada, retornava uma lista vazia (*"Sem dados de ranking"*).
+### 2.1. Arquitetura de Produtos Híbridos (Pontos vs. Venda Externa R$)
 
-* **Camada 1 (Gamification Integration):**
-  * Busca pelo `PREFERRED_LEADERBOARD_ID` (2) ou pela primeira lista encontrada (`GamificationLeaderboard.first`).
-* **Camada 2 (Fallback Nativo SQL):**
-  * Se o Gamification não estiver instalado ou não retornar usuários, o sistema executa um agendamento dinâmico SQL direto na tabela `PointsMallCheckin`.
-  * Soma os pontos acumulados por usuário (`group(:user_id).sum(:points_earned)`) e ordena os TOP 10.
-* **Resultado:**
-  * O ranking funciona **instantaneamente** após o check-in de qualquer usuário, sem depender de tarefas assíncronas lentas do Discourse.
+#### Modelagem de Dados e Backend Rails
+- **Campos Adicionados (`points_mall_products`)**:
+  - `price_brl` (`decimal`, precision: 10, scale: 2): Armazena o valor monetário do produto em Reais.
+  - `external_url` (`text`): URL de checkout externo de plataformas parceiras (Hotmart, Kiwify, Mercado Pago).
+- **Permissões Administrativas (`AdminProductsController`)**:
+  - Whitelist de parâmetros `:price_brl` e `:external_url` atualizada nos métodos `create` e `update`.
+- **Serialização da API (`PointsMallProductSerializer`)**:
+  - Exposição direta dos campos no JSON consumido pelo frontend Ember.
+
+#### Comportamento da Interface (`points-mall.gjs`)
+- Quando a propriedade `external_url` está preenchida no objeto do produto:
+  - O botão de resgate por pontos é desativado.
+  - É renderizado um elemento de âncora `<a>` estilizado como `.btn-external-buy`, exibindo o valor em Reais (ex: `Comprar (R$ 29,90)`).
+  - A ação abre o destino em nova aba (`target="_blank" rel="noopener noreferrer"`), sem debitar pontos do saldo do usuário no Discourse.
+- Quando o campo `external_url` é nulo ou vazio, mantém-se a transação nativa por pontos.
 
 ---
 
-### 3. 📅 Formatação de Data Estática (`DD/MM/YYYY`)
+### 2.2. Ranking Resiliente em Duas Camadas (Gamification + SQL Fallback)
 
-#### 🐛 O Problema Encontrado
-O Discourse utiliza o helper `<span class="relative-date">` por padrão. No navegador do cliente, um script JS global intercepta essas tags e força o texto para tempo decorrido relativo (ex: *"18 horas"*, *"5 dias"*), mesmo que o backend envie a data correta.
+#### Resiliência no Controller (`CheckinsController`)
+A dependência única da tabela `gamification_score` era vulnerável a cenários onde a lista `#2` não existia ou não havia sido recalculada pelas tarefas assíncronas do Discourse.
 
-#### 💡 A Solução Aplicada
-Substituímos o helper do Discourse por uma função auxiliar pura em JavaScript (`formatDateFixed`) declarada diretamente nos módulos de template `.gjs`:
+1. **Camada Primária (Gamification Integration)**:
+   - Tentativa de leitura do `GamificationLeaderboard` configurado no ID 2 ou do primeiro registro existente na tabela.
+2. **Camada Secundária (Fallback SQL Nativo)**:
+   - Caso a Camada 1 retorne vazia ou nula, o controller executa uma consulta direta na tabela `PointsMallCheckin`:
+     `PointsMallCheckin.group(:user_id).sum(:points_earned)`
+   - O resultado é ordenado e formatado nos TOP 10 usuários com maior saldo de pontos acumulados.
+   - Isso garante atualização instantânea do ranking após cada check-in individual.
 
+---
+
+### 2.3. Padronização de Formatação de Data Estática (`DD/MM/YYYY`)
+
+#### Resolução do Conflito com Script Global do Discourse
+O Discourse força a alteração dinâmica de tags de data para tempo relativo ("há 2 horas", "há 5 dias"). Para dados transacionais e histórico de pedidos, é mandatória a exibição da data civil fixa.
+
+#### Função Auxiliar de Conversão (`formatDateFixed`)
+Declarada e utilizada nos módulos `.gjs` do frontend:
 ```javascript
 function formatDateFixed(dateVal) {
   if (!dateVal) return "-";
@@ -85,84 +84,80 @@ function formatDateFixed(dateVal) {
 
 ---
 
-### 4. 📌 Estabilização da Barra de Navegação no Header (Fix de Jittering)
+### 2.4. Estabilização do Item de Navegação no Header (Fix de Flutuação/Jittering)
 
-#### 🐛 O Problema
-No desktop, o item "Loja de Pontos" ficava trocando de posição intermitentemente com os botões nativos "Categorias" ou "Recentes" na barra de navegação superior (`#navigation-bar.nav.nav-pills`).
+#### Diagnóstico
+A injeção do botão "Loja de Pontos" na barra de navegação principal (`#navigation-bar.nav.nav-pills`) sofria variação de posição dependendo da ordem assíncrona com que os scripts dos plugins eram executados no cliente.
 
-#### 💡 Solução em Duas Camadas
-1. **API Ember (`points-mall.js`)**: Injetada a flag `forceAfter: true` na chamada `addNavigationBarItem`.
-2. **CSS Flexbox (`points-mall.scss`)**: Forçado `.points-mall-nav { order: 99 !important; }` para que o Flexbox trave o item à direita de forma determinística independente da ordem de carregamento assíncrono dos scripts.
-
----
-
-### 5. 📱 Otimização Responsiva do Histórico de Pedidos no Mobile
-
-#### 🐛 O Problema
-Em telas móveis (< 480px), o container `.order-product-thumb` possuía dimensões fixas grandes (48px/72px). A imagem sobrepunha tags de categoria, status do pedido e os textos descritivos.
-
-#### 💡 A Solução Aplicada (Badge de 36px)
-- **Compactação**: A thumbnail foi adaptada para um **Badge Compacto de 36px × 36px** (`flex: 0 0 36px; border-radius: 8px; padding: 2px;`).
-- **Escala Limpa**: Aplicado `object-fit: contain` na imagem interna e `align-items: center` no container flex `.order-card-header`.
-- **Resultado**: Liberou **mais de 90% da largura útil do celular** para o título, tag de ID (`#4`), valor em pontos e o badge de status.
+#### Solução em Duas Camadas
+1. **Camada Lógica (Initializer JS)**: Injeção do argumento `forceAfter: true` na chamada `addNavigationBarItem` dentro de `initializers/points-mall.js`.
+2. **Camada Estética (Flexbox CSS)**: Aplicação da regra `.points-mall-nav { order: 99 !important; }` no SCSS global (`common/points-mall.scss`), travando o item deterministicamente na ponta direita do contêiner flex.
 
 ---
 
-### 6. 📐 Compactação de Cards no Desktop & Paginação Client-Side
+### 2.5. Redesign Responsivo e Compactação da Lista de Pedidos
 
-#### 🎨 Card Enxuto (`.order-card`)
-- **Dimensões e Espaçamentos**: Reduzido o padding vertical de `18px` para `12px 16px`, e o gap vertical entre blocos de `16px` para `10px`.
-- **Thumbnail no Desktop**: Padronizada em `44px × 44px`.
-- **Linha do Tempo (Stepper)**: Círculos de etapas reduzidos de `32px` para `26px` (fonte `0.8em`), linhas de conexão reduzidas para `2px` de altura e padding do container ajustado para `8px 14px`.
+#### Otimização Mobile (Badge 36px)
+- **Problema**: Em resoluções móbiveis (< 480px), as thumbnails dos produtos usavam dimensões de 48px a 72px, estourando horizontalmente sobre o título do pedido e a linha do tempo.
+- **Implementação**:
+  - Redimensionamento da classe `.order-product-thumb` para o formato **Badge Compacto de 36px × 36px** (`flex: 0 0 36px; border-radius: 8px; padding: 2px;`).
+  - Utilização de `object-fit: contain` nas imagens e `align-items: center` no contêiner `.order-card-header`.
+  - Liberação de 90%+ da área útil de tela no celular para o título, código identificador `#ID`, custo em pontos e badges de status.
 
-#### 📄 Sistema de Paginação (`.orders-pagination`)
-- **Limite por Página**: 5 pedidos por página.
-- **Navegação Interativa**: Botões **Anterior** / **Próxima** com estados desabilitados nativamente na primeira/última página e indicador numérico central (`Página X de Y`).
-- **Reset Dinâmico**: Ao trocar de aba/filtro ("Todos", "Físicos", "Virtuais"), a página reseta automaticamente para a página 1.
+#### Compactação Desktop
+- Redução do padding interno do cartão `.order-card` de 18px para `12px 16px`.
+- Diminuição dos nós da linha do tempo (stepper) de 32px para `26px` (fonte `0.8em`), linhas conectoras ajustadas para `2px` de espessura e padding interno para `8px 14px`.
 
----
-
-### 🚨 7. Catálogo de Erros de Compilação & Bugs Corrigidos
-
-#### 🔴 Erro #1: Desbalanceamento de Chaves SCSS (`Discourse::ScssError: unmatched "}"`)
-- **Causa**: Edição parcial em bloco SCSS que removeu um fechamento de chave `}` no arquivo `common/points-mall.scss`.
-- **Prevenção**: Compilação local mandatória com `npx sass` antes de qualquer commit.
-
-#### 🔴 Erro #2: Sobrescrita de Getter Ember (`hasFilteredOrders`)
-- **Causa**: Durante a implementação da paginação no `controllers/points-mall.js`, a substituição de código removeu o getter `get hasFilteredOrders()`. O template `.gjs` lia a propriedade como `undefined` (falsy) e exibia a tela "Nenhum pedido realizado" mesmo existindo pedidos salvos.
-- **Solução**: Restauração do getter boolean `get hasFilteredOrders() { return this.filteredOrders.length > 0; }` na versão `v0.4.2`.
+#### Sistema de Paginação Client-Side (`.orders-pagination`)
+- **Capacidade**: Limite de 5 pedidos por página.
+- **Navegação**: Controles para avançar (`nextOrdersPage`) e voltar (`prevOrdersPage`), com indicação centralizada do número da página atual em relação ao total (`Página X de Y`).
+- **Reset de Estado**: Alternar entre as abas de filtro ("Todos", "Físicos", "Virtuais") reseta automaticamente a propriedade `ordersPage` para a primeira página.
 
 ---
 
-## 📁 Arquivos Modificados no Projeto
+## 3. Catálogo de Erros de Compilação e Resolução de Incêndios
+
+### 3.1. Incidente de Compilação SCSS (`Discourse::ScssError: unmatched "}"`)
+- **Causa**: Edição parcial no bloco `.order-copy-action` dentro de `common/points-mall.scss` que resultou no fechamento incorreto de chaves aninhadas.
+- **Impacto**: Aborto na tarefa `rake assets:precompile` durante o build do Docker no Discourse.
+- **Protocolo de Mitigação**: Obrigatoriedade de execução prévia de compilação sintática via Dart Sass (`npx sass`) no ambiente local antes do envio para controle de versão.
+
+### 3.2. Incidente de Ocultação de Pedidos por Ausência de Getter Ember
+- **Causa**: Durante a implementação do fluxo de paginação no controller JS `points-mall.js`, o getter `hasFilteredOrders` foi sobrescrito involuntariamente.
+- **Impacto**: O template `.gjs` lia `@controller.hasFilteredOrders` como valor indefinido (falso) e desviava o fluxo para o bloco alternativo, exibindo "Nenhum pedido realizado" mesmo quando a API enviava registros válidos.
+- **Resolução (v0.4.2)**: Restauração imediata do método `get hasFilteredOrders() { return this.filteredOrders.length > 0; }`.
+
+---
+
+## 4. Estrutura de Arquivos do Projeto
 
 ```
 discourse-points-segredin/
-├── ROADMAP.md                                                    # Documentação e Roadmap Oficial (v0.4.2)
-├── plugin.rb                                                     # Registro de versão v0.4.2 e SVG Icons
+├── ROADMAP.md                                                    # Documentação Técnica e Roadmap Oficial (v0.4.2)
+├── plugin.rb                                                     # Registro da versão v0.4.2 e SVG Icons do Discourse
 ├── app/
 │   └── controllers/
 │       └── discourse_points_mall/
-│           ├── admin_products_controller.rb                      # Whitelist price_brl e external_url
-│           └── checkins_controller.rb                            # Ranking com Fallback nativo em SQL
+│           ├── admin_products_controller.rb                      # Sanitização de parâmetros price_brl e external_url
+│           └── checkins_controller.rb                            # Algoritmo de ranking com Fallback SQL
 ├── assets/
 │   ├── javascripts/discourse/
-│   │   ├── initializers/points-mall.js                           # Topbar Nav (forceAfter: true)
-│   │   ├── controllers/points-mall.js                            # Paginação de Pedidos e getters
+│   │   ├── initializers/points-mall.js                           # Registro do item no header (forceAfter: true)
+│   │   ├── controllers/points-mall.js                            # Lógica de paginação, filtros e getters
 │   │   └── templates/
-│   │       ├── points-mall.gjs                                   # Template principal da Loja e Pedidos
+│   │       ├── points-mall.gjs                                   # Layout principal da loja e histórico de pedidos
 │   │       └── points-mall/
-│   │           ├── checkin.gjs                                   # Datas estáticas no check-in
-│   │           └── orders.gjs                                    # Datas estáticas nos pedidos
+│   │           ├── checkin.gjs                                   # Visualização de check-ins com datas estáticas
+│   │           └── orders.gjs                                    # Visualização de pedidos com datas estáticas
 │   └── stylesheets/
-│       ├── common/points-mall.scss                               # order: 99 nav, cards compactos, paginação
-│       └── mobile/points-mall.scss                               # Thumbnail 36px e flexbox mobile
+│       ├── common/points-mall.scss                               # Regras desktop compactas, nav flex order e paginação
+│       └── mobile/points-mall.scss                               # Layout responsivo e thumbnail em badge compacto (36px)
 ```
 
 ---
 
-## 🚀 Próximas Passos Recomendados (Backlog Futuro)
+## 5. Cronograma de Desenvolvimento Futuro (Backlog)
 
-1. **Gateway Automático Pix/BRL:** Webhook para aprovação e liberação instantânea ao comprar via link externo.
-2. **Notificações Push no Fórum:** Notificar o usuário quando um pedido físico mudar de status para "Enviado".
-3. **Exportação CSV no Admin:** Botão para baixar relatório de check-ins e resgates de produtos em Excel/CSV.
+1. **Integração de Gateway de Pagamento Automático**: Implementação de webhooks para conciliação bancária imediata e confirmação de pedidos externos.
+2. **Notificações do Sistema para Alteração de Status**: Notificar o usuário via mensagens nativas do Discourse quando um pedido for marcado como enviado ou entregue.
+3. **Módulo de Exportação de Dados Administrativos**: Disponibilizar gerador de relatórios em CSV/Excel para auditoria de resgates e movimentação de pontos.
