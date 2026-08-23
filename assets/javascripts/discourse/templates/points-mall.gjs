@@ -879,6 +879,72 @@ export default <template>
 
 
 
+      {{#if (eq @controller.activeTab "inventory")}}
+        <div class="points-mall-inventory">
+          <div class="orders-header">
+            <div class="orders-title-wrap">
+              <div class="orders-title-icon">{{dIcon "box"}}</div>
+              <div>
+                <h2>{{i18n "points_mall.inventory.title"}}</h2>
+                <p>{{i18n "points_mall.inventory.subtitle"}}</p>
+              </div>
+            </div>
+          </div>
+
+          {{#if @controller.model.inventory.items.length}}
+            <div class="inventory-grid">
+              {{#each @controller.model.inventory.items as |item|}}
+                <div class="inventory-card {{if item.equipped 'equipped'}} {{if item.expired 'expired'}}">
+                  <div class="inventory-card-header">
+                    <div class="inventory-item-icon">
+                      {{#if item.image_url}}
+                        <img src={{item.image_url}} alt={{item.name}} />
+                      {{else}}
+                        {{dIcon "gift"}}
+                      {{/if}}
+                    </div>
+                    <div class="inventory-item-meta">
+                      <h3>{{item.name}}</h3>
+                      <span class="inventory-kind-badge">{{item.kind_label}}</span>
+                    </div>
+                  </div>
+
+                  <p class="inventory-item-desc">{{item.description}}</p>
+
+                  <div class="inventory-card-footer">
+                    <span class="inventory-remaining">{{item.remaining_text}}</span>
+
+                    {{#if item.equipped}}
+                      <button
+                        type="button"
+                        class="btn btn-default unequip-btn"
+                        {{on "click" (fn @controller.unequipCosmetic item.kind)}}
+                      >
+                        {{i18n "points_mall.inventory.unequip"}}
+                      </button>
+                    {{else if item.equippable}}
+                      <button
+                        type="button"
+                        class="btn btn-primary equip-btn"
+                        {{on "click" (fn @controller.equipCosmetic item.order_id)}}
+                      >
+                        {{i18n "points_mall.inventory.equip"}}
+                      </button>
+                    {{/if}}
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="orders-empty">
+              <div class="orders-empty-icon">{{dIcon "box"}}</div>
+              <h3>{{i18n "points_mall.inventory.empty_title"}}</h3>
+              <p>{{i18n "points_mall.inventory.empty_subtitle"}}</p>
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+
       {{#if (eq @controller.activeTab "orders")}}
         <div class="points-mall-orders">
           <div class="orders-header">

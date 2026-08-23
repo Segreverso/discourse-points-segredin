@@ -61,6 +61,7 @@ export default class PointsMallController extends Controller {
     return [
       { name: "checkin", icon: "calendar-check" },
       { name: "shop", icon: "gift" },
+      { name: "inventory", icon: "box" },
       { name: "orders", icon: "list" },
       { name: "ledger", icon: "wallet" },
     ];
@@ -484,6 +485,38 @@ export default class PointsMallController extends Controller {
   @action
   switchTab(tab) {
     this.activeTab = tab;
+  }
+
+  @action
+  async equipCosmetic(orderId) {
+    try {
+      const res = await ajax("/points-mall/inventory/equip.json", {
+        type: "POST",
+        data: { order_id: orderId },
+      });
+      if (res && res.inventory && this.model) {
+        this.model.inventory = res.inventory;
+      }
+      window.location.reload();
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  async unequipCosmetic(kind) {
+    try {
+      const res = await ajax("/points-mall/inventory/unequip.json", {
+        type: "POST",
+        data: { kind },
+      });
+      if (res && res.inventory && this.model) {
+        this.model.inventory = res.inventory;
+      }
+      window.location.reload();
+    } catch (e) {
+      popupAjaxError(e);
+    }
   }
 
   @action
