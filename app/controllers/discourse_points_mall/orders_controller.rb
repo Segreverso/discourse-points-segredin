@@ -160,7 +160,7 @@ module DiscoursePointsMall
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "???????????",
+                   description: "Resgate de Voucher / Cartão",
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
@@ -352,13 +352,13 @@ module DiscoursePointsMall
 
     def grant_cosmetic!(user, product)
       config = cosmetic_config(product)
-      return [false, "装饰商品配置不存在", nil] unless config
+      return [false, "Configuração do item cosmético não encontrada", nil] unless config
 
       required_group = config[:requires_group]
       if required_group.present?
         group = ::Group.find_by(name: required_group)
         unless group && ::GroupUser.exists?(group_id: group.id, user_id: user.id)
-          return [false, "该商品仅限 #{required_group} 用户兑换", nil]
+          return [false, "Este item é exclusivo para membros do grupo #{required_group}", nil]
         end
       end
 

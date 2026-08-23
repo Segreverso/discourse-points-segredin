@@ -30,6 +30,48 @@ function formatBrl(val) {
   return num.toFixed(2).replace(".", ",");
 }
 
+function formatOrderNotes(notes) {
+  if (!notes) {
+    return "";
+  }
+  const trimmed = String(notes).trim();
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    try {
+      const data = JSON.parse(trimmed);
+      const parts = [];
+      if (data.kind) {
+        const kindMap = {
+          avatar_frame: "Moldura de Avatar",
+          title: "Título Especial",
+          card_border: "Borda de Perfil",
+          profile_background: "Fundo de Perfil",
+          theme_skin: "Skin de Tema",
+        };
+        parts.push(`Tipo: ${kindMap[data.kind] || data.kind}`);
+      }
+      if (data.expires_at) {
+        const d = new Date(data.expires_at);
+        if (!isNaN(d.getTime())) {
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2, "0");
+          const mins = String(d.getMinutes()).padStart(2, "0");
+          parts.push(`Validade até ${day}/${month}/${year} às ${hours}:${mins}`);
+        }
+      } else if (data.duration_days) {
+        parts.push(`Duração: ${data.duration_days} dias`);
+      } else if (data.expires_at === null) {
+        parts.push("Validade: Permanente");
+      }
+      return parts.length ? parts.join(" • ") : "Item cosmético ativado";
+    } catch (e) {
+      return notes;
+    }
+  }
+  return notes;
+}
+
 export default <template>
   <div class="admin-detail points-mall-admin">
     {{! CABEÇALHO DO PAINEL }}
@@ -918,7 +960,7 @@ export default <template>
                       </select>
                     </td>
 
-                    <td class="col-notes">
+                    <td class="col-notes" title={{formatOrderNotes order.notes}}>
                       <Input
                         @value={{order.notes}}
                         class="points-mall-admin-input --notes"
