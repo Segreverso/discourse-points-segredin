@@ -923,14 +923,21 @@ export default <template>
 
       {{#if (eq @controller.activeTab "inventory")}}
         <div class="points-mall-inventory">
-          <div class="orders-header">
-            <div class="orders-title-wrap">
-              <div class="orders-title-icon">{{dIcon "box"}}</div>
+          <div class="inventory-header">
+            <div class="inventory-title-wrap">
+              <div class="inventory-title-icon">{{dIcon "box-open"}}</div>
               <div>
                 <h2>{{i18n "points_mall.inventory.title"}}</h2>
                 <p>{{i18n "points_mall.inventory.subtitle"}}</p>
               </div>
             </div>
+
+            {{#if @controller.model.inventory.items.length}}
+              <span class="inventory-total-pill">
+                {{dIcon "sparkles"}}
+                {{@controller.model.inventory.items.length}} {{if (eq @controller.model.inventory.items.length 1) "cosmético" "cosméticos"}}
+              </span>
+            {{/if}}
           </div>
 
           {{#if @controller.model.inventory.items.length}}

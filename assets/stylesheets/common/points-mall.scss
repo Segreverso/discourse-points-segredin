@@ -5248,90 +5248,260 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 }
 
-/* --- User Inventory Grid & Card --- */
+/* --- User Inventory Tab & Grid --- */
+.points-mall-inventory {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .inventory-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 12px;
+    background: var(--secondary);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    margin-bottom: 0.25rem;
+
+    .inventory-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+
+      .inventory-title-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--tertiary);
+        background: color-mix(in srgb, var(--tertiary) 12%, var(--secondary));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tertiary) 25%, transparent);
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 2px 0 0 0;
+        font-size: 0.85rem;
+        color: var(--primary-medium);
+      }
+    }
+
+    .inventory-total-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: color-mix(in srgb, var(--tertiary) 10%, var(--secondary));
+      color: var(--tertiary);
+      border: 1px solid color-mix(in srgb, var(--tertiary) 25%, transparent);
+    }
+  }
+}
+
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
 }
 
 .inventory-card {
+  position: relative;
   background: var(--secondary);
   border: 1px solid var(--primary-low);
-  border-radius: 12px;
-  padding: 1.25rem;
+  border-radius: 14px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 0.85rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-low-mid);
   }
 
   &.equipped {
     border-color: #10b981;
-    box-shadow: 0 0 0 1px #10b981;
+    box-shadow: 0 0 0 1px #10b981, 0 6px 20px rgba(16, 185, 129, 0.15);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, #10b981 6%, var(--secondary)) 0%,
+      var(--secondary) 100%
+    );
   }
 
-  .inventory-card-header {
+  &.expired {
+    opacity: 0.65;
+    filter: grayscale(40%);
+  }
+
+  .inventory-corner-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
+    border-radius: 12px;
+
+    &.equipped {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    &.expired {
+      background: var(--primary-low-mid);
+      color: var(--primary-medium);
+    }
+  }
+
+  .inventory-card-image {
+    width: 100%;
+    height: 100px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--primary) 4%, var(--secondary));
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--primary-low);
 
-    .inventory-item-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      background: var(--primary-low);
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.25s ease;
+    }
+
+    .inventory-image-placeholder {
+      font-size: 2rem;
+      color: var(--primary-low-mid);
+    }
+  }
+
+  &:hover .inventory-card-image img {
+    transform: scale(1.05);
+  }
+
+  .inventory-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    .inventory-badges {
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
-    .inventory-item-meta {
-      h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-      }
-
-      .inventory-kind-badge {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        background: var(--primary-low);
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-weight: 600;
-      }
+    .inventory-kind-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: color-mix(in srgb, var(--tertiary) 12%, var(--secondary));
+      color: var(--tertiary);
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid color-mix(in srgb, var(--tertiary) 20%, transparent);
     }
-  }
 
-  .inventory-item-desc {
-    margin: 1rem 0;
-    font-size: 0.9rem;
-    color: var(--primary-medium);
-  }
-
-  .inventory-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid var(--primary-low);
-    padding-top: 0.75rem;
-
-    .inventory-remaining {
-      font-size: 0.85rem;
+    .inventory-remaining-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      font-weight: 600;
       color: var(--primary-medium);
+    }
+
+    h3 {
+      margin: 0.2rem 0 0 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inventory-item-desc {
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      color: var(--primary-medium);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+  }
+
+  .inventory-card-action {
+    margin-top: 0.25rem;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 0.75rem;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+
+      &.unequip-btn {
+        background: transparent;
+        border: 1px solid var(--primary-low-mid);
+        color: var(--primary-high);
+
+        &:hover {
+          background: color-mix(in srgb, var(--danger) 10%, var(--secondary));
+          border-color: var(--danger);
+          color: var(--danger);
+        }
+      }
+
+      &.equip-btn {
+        background: var(--tertiary);
+        border: 1px solid var(--tertiary);
+        color: #ffffff;
+
+        &:hover {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+        }
+      }
     }
   }
 }

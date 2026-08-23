@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.4.27** | 23/08/2026 | Ember Route & Controller / SCSS / i18n | **Persistência de Aba (`?tab=`) & Redesign do Inventário**: Implementação de query parameter `?tab=` para manter navegação ao recarregar, alteração de título para "Cosméticos Adquiridos" e redesign completo e responsivo dos cards de cosméticos. |
 | **v0.4.26** | 23/08/2026 | Rails API / Admin Templates | **Nomenclatura Concisa "Aura Dourada"**: Remoção da palavra VIP do cosmético `gold_vip` (passando para "Aura Dourada"), reservando o benefício VIP exclusivo à "Aura Rubi" (`ruby_red`). |
 | **v0.4.25** | 23/08/2026 | Rails API / Admin GJS / i18n | **Nomenclatura "Aura de Avatar"**: Padronização do termo "Aura de Avatar" (e "Brilho do Nome") nas categorias, seletores admin e i18n para melhor legibilidade nos cards e interface. |
 | **v0.4.24** | 23/08/2026 | Rails API / JS Initializer / SCSS | **Moldura & Nickname VIP Automáticos (`apoiador`)**: Atribuição automática da Moldura de Avatar `ruby_red` e do Brilho de Nickname `ruby_red` para membros do grupo VIP `apoiador` via `public_cosmetics`. |

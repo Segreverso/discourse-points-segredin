@@ -2,6 +2,10 @@ import DiscourseRoute from "discourse/routes/discourse";
 import { ajax } from "discourse/lib/ajax";
 
 export default class PointsMallRoute extends DiscourseRoute {
+  queryParams = {
+    tab: { refreshModel: false },
+  };
+
   beforeModel() {
     if (!this.currentUser) {
       this.transitionTo("login");

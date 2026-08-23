@@ -327,7 +327,7 @@ pt_BR:
           other: "Outros"
       inventory:
         title: "Inventário"
-        subtitle: "Cosméticos e itens ativados"
+        subtitle: "Cosméticos Adquiridos"
         skin_ticket: "Tickets de Skin"
         equipped_title: "Equipados"
         equipped_tip: "Itens ativos no seu perfil"

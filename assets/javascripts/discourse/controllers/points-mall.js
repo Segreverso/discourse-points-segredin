@@ -22,6 +22,8 @@ export default class PointsMallController extends Controller {
   @service currentUser;
   @service appEvents;
 
+  queryParams = [{ activeTab: "tab" }];
+
   @tracked activeTab = "checkin";
 
   @tracked purchaseModalOpen = false;
