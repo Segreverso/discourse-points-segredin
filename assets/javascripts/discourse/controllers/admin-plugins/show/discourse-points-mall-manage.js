@@ -99,7 +99,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       };
 
       if (this.form.id) {
-        const res = await ajax(`/admin/plugins/points-mall/products/${this.form.id}.json`, {
+        const res = await ajax(`/admin/plugins/discourse-points-mall/manage/products/${this.form.id}.json`, {
           type: "PUT",
           data: payload,
         });
@@ -109,7 +109,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
           this.products = [...this.products];
         }
       } else {
-        const res = await ajax("/admin/plugins/points-mall/products.json", {
+        const res = await ajax("/admin/plugins/discourse-points-mall/manage/products.json", {
           type: "POST",
           data: payload,
         });
@@ -133,7 +133,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
     }
 
     try {
-      await ajax(`/admin/plugins/points-mall/products/${product.id}.json`, {
+      await ajax(`/admin/plugins/discourse-points-mall/manage/products/${product.id}.json`, {
         type: "DELETE",
       });
       this.products = this.products.filter((p) => p.id !== product.id);

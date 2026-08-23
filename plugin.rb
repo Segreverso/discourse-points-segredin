@@ -2,7 +2,7 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.6
+# version: 0.4.7
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
@@ -127,21 +127,23 @@ after_initialize do
       resources :addresses, path: "enderecos", only: %i[index create update destroy]
     end
 
-    scope "/admin/plugins/discourse-points-mall", constraints: AdminConstraint.new do
-      get "/" => "admin/plugins#index", format: false
-      get "/manage" => "admin/plugins#index", format: false
+    %w[/admin/plugins/discourse-points-mall /admin/plugins/points-mall].each do |prefix|
+      scope prefix, constraints: AdminConstraint.new do
+        get "/" => "admin/plugins#index", format: false
+        get "/manage" => "admin/plugins#index", format: false
 
-      get "/manage/products" => "discourse_points_mall/admin_products#index"
-      post "/manage/products" => "discourse_points_mall/admin_products#create"
-      put "/manage/products/:id" => "discourse_points_mall/admin_products#update"
-      delete "/manage/products/:id" => "discourse_points_mall/admin_products#destroy"
-      put "/manage/makeup-config" => "discourse_points_mall/admin_products#update_makeup_config"
+        get "/manage/products" => "discourse_points_mall/admin_products#index"
+        post "/manage/products" => "discourse_points_mall/admin_products#create"
+        put "/manage/products/:id" => "discourse_points_mall/admin_products#update"
+        delete "/manage/products/:id" => "discourse_points_mall/admin_products#destroy"
+        put "/manage/makeup-config" => "discourse_points_mall/admin_products#update_makeup_config"
 
-      get "/manage/orders" => "discourse_points_mall/admin_orders#index"
-      put "/manage/orders/:id" => "discourse_points_mall/admin_orders#update"
-      post "/manage/orders/:id/refund" => "discourse_points_mall/admin_orders#refund"
+        get "/manage/orders" => "discourse_points_mall/admin_orders#index"
+        put "/manage/orders/:id" => "discourse_points_mall/admin_orders#update"
+        post "/manage/orders/:id/refund" => "discourse_points_mall/admin_orders#refund"
 
-      get "/manage/checkins" => "discourse_points_mall/admin_checkins#index"
+        get "/manage/checkins" => "discourse_points_mall/admin_checkins#index"
+      end
     end
   end
 
