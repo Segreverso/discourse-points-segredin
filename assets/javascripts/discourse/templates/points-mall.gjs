@@ -947,36 +947,38 @@ export default <template>
                     </span>
                   {{/if}}
 
-                  <div class="inventory-card-header">
-                    <div class="inventory-item-icon">
-                      {{#if item.image_url}}
-                        <img src={{item.image_url}} alt={{item.name}} />
-                      {{else}}
+                  <div class="inventory-card-image">
+                    {{#if item.image_url}}
+                      <img src={{item.image_url}} alt={{item.name}} />
+                    {{else}}
+                      <div class="inventory-image-placeholder">
                         {{dIcon "gift"}}
-                      {{/if}}
-                    </div>
-                    <div class="inventory-item-meta">
-                      <h3>{{item.name}}</h3>
-                      <span class="inventory-kind-badge">{{item.kind_label}}</span>
-                    </div>
+                      </div>
+                    {{/if}}
                   </div>
 
-                  {{#if item.description}}
-                    <p class="inventory-item-desc">{{item.description}}</p>
-                  {{/if}}
+                  <div class="inventory-card-body">
+                    <div class="inventory-badges">
+                      <span class="inventory-kind-badge">{{item.kind_label}}</span>
+                      <span class="inventory-remaining-badge">
+                        {{dIcon "clock"}} {{item.remaining_text}}
+                      </span>
+                    </div>
 
-                  <div class="inventory-card-footer">
-                    <span class="inventory-remaining">
-                      {{dIcon "clock"}} {{item.remaining_text}}
-                    </span>
+                    <h3>{{item.name}}</h3>
+                    {{#if item.description}}
+                      <p class="inventory-item-desc">{{item.description}}</p>
+                    {{/if}}
+                  </div>
 
+                  <div class="inventory-card-action">
                     {{#if item.equipped}}
                       <button
                         type="button"
                         class="btn btn-default unequip-btn"
                         {{on "click" (fn @controller.unequipCosmetic item.kind)}}
                       >
-                        {{i18n "points_mall.inventory.unequip"}}
+                        {{dIcon "xmark"}} {{i18n "points_mall.inventory.unequip"}}
                       </button>
                     {{else if item.equippable}}
                       <button
@@ -984,7 +986,15 @@ export default <template>
                         class="btn btn-primary equip-btn"
                         {{on "click" (fn @controller.equipCosmetic item.order_id)}}
                       >
-                        {{i18n "points_mall.inventory.equip"}}
+                        {{dIcon "wand-magic-sparkles"}} {{i18n "points_mall.inventory.equip"}}
+                      </button>
+                    {{else if item.expired}}
+                      <button
+                        type="button"
+                        class="btn btn-default expired-btn"
+                        disabled
+                      >
+                        Expirado
                       </button>
                     {{/if}}
                   </div>
