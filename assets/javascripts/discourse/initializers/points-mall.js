@@ -19,7 +19,7 @@ function getUsernameFromAvatar(img) {
     return null;
   }
 
-  // 1. Check parent <a> data-user-card attribute
+  // 1. Check parent <a> data-user-card attribute (Post stream, User cards)
   const cardLink = img.closest("[data-user-card]");
   if (cardLink) {
     const val = cardLink.getAttribute("data-user-card");
@@ -78,7 +78,7 @@ function applyAvatarFramesToDom(api) {
 
       let frameVal = null;
 
-      if (isCurrentUserImg && curUsername) {
+      if (isCurrentUserImg && curUsername && userFrameCache.has(curUsername)) {
         frameVal = userFrameCache.get(curUsername);
       } else {
         const targetUser = getUsernameFromAvatar(img);
@@ -110,11 +110,32 @@ function applyThemeSkin(themeSkin) {
   root.classList.toggle("jn-theme-skin-starrail-neon", themeSkin === "starrail_neon");
 }
 
+async function fetchPublicUserCosmetics(api) {
+  try {
+    const response = await fetch("/loja/cosmeticos", {
+      headers: { Accept: "application/json" },
+    });
+    if (response.ok) {
+      const payload = await response.json();
+      if (payload?.frames) {
+        Object.entries(payload.frames).forEach(([user, frame]) => {
+          if (user && frame) {
+            userFrameCache.set(user.toLowerCase().trim(), frame);
+          }
+        });
+      }
+    }
+  } catch (_e) {
+    // Non-blocking catch
+  }
+  applyAvatarFramesToDom(api);
+}
+
 async function refreshCurrentUserCosmetics(api) {
   const curUser = currentUser(api);
   const username = curUser?.username;
   if (!username) {
-    applyAvatarFramesToDom(api);
+    fetchPublicUserCosmetics(api);
     return;
   }
 
@@ -123,29 +144,28 @@ async function refreshCurrentUserCosmetics(api) {
       credentials: "same-origin",
       headers: { Accept: "application/json" },
     });
-    if (!response.ok) {
-      applyAvatarFramesToDom(api);
-      return;
+    if (response.ok) {
+      const payload = await response.json();
+      const frame = payload?.inventory?.equipped?.avatar_frame?.value;
+      const themeSkin = payload?.inventory?.equipped?.theme_skin?.value;
+
+      if (frame) {
+        userFrameCache.set(username.toLowerCase().trim(), frame);
+      } else {
+        userFrameCache.delete(username.toLowerCase().trim());
+      }
+      applyThemeSkin(themeSkin);
     }
-
-    const payload = await response.json();
-    const frame = payload?.inventory?.equipped?.avatar_frame?.value;
-    const themeSkin = payload?.inventory?.equipped?.theme_skin?.value;
-
-    if (frame) {
-      userFrameCache.set(username.toLowerCase().trim(), frame);
-    } else {
-      userFrameCache.delete(username.toLowerCase().trim());
-    }
-
-    applyAvatarFramesToDom(api);
-    applyThemeSkin(themeSkin);
   } catch (_error) {
-    applyAvatarFramesToDom(api);
+    // Non-blocking catch
   }
+
+  fetchPublicUserCosmetics(api);
 }
 
 export default apiInitializer("1.8.0", (api) => {
+  api.includePostAttributes?.("user_jn_cosmetic_avatar_frame");
+
   if (currentUser(api)) {
     api.addNavigationBarItem({
       name: "points-mall",
@@ -171,13 +191,13 @@ export default apiInitializer("1.8.0", (api) => {
         userFrameCache.delete(username.toLowerCase().trim());
       }
     }
-    applyAvatarFramesToDom(api);
+    fetchPublicUserCosmetics(api);
     applyThemeSkin(inventory?.equipped?.theme_skin?.value);
   });
 
   api.onPageChange(() => {
-    window.setTimeout(() => applyAvatarFramesToDom(api), 100);
-    window.setTimeout(() => applyAvatarFramesToDom(api), 500);
+    window.setTimeout(() => fetchPublicUserCosmetics(api), 100);
+    window.setTimeout(() => applyAvatarFramesToDom(api), 400);
   });
 
   // Observe DOM mutations to catch lazily rendered avatars in infinite scroll stream

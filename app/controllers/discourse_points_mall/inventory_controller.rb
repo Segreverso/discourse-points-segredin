@@ -6,7 +6,9 @@ module DiscoursePointsMall
   class InventoryController < ::ApplicationController
     requires_plugin DiscoursePointsMall::PLUGIN_NAME
 
-    before_action :ensure_logged_in
+    before_action :ensure_logged_in, except: [:public_cosmetics]
+
+    skip_before_action :ensure_logged_in, only: [:public_cosmetics]
 
     rescue_from StandardError do |error|
       Rails.logger.error("[points-mall] InventoryController error: #{error.full_message}")
@@ -18,6 +20,17 @@ module DiscoursePointsMall
         },
         error: error.message,
       }, status: 200
+    end
+
+    def public_cosmetics
+      frames = UserCustomField
+        .where(name: "jn_cosmetic_avatar_frame")
+        .where.not(value: [nil, ""])
+        .joins(:user)
+        .pluck("users.username_lower", "user_custom_fields.value")
+        .to_h
+
+      render json: { frames: frames }
     end
 
     KIND_FIELDS = {

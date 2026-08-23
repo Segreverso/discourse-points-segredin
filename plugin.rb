@@ -2,7 +2,7 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.16
+# version: 0.4.17
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
@@ -131,6 +131,8 @@ after_initialize do
 
         get "/inventario" => "inventory#index"
         get "/inventory" => "inventory#index"
+        get "/cosmeticos" => "inventory#public_cosmetics"
+        get "/cosmetics" => "inventory#public_cosmetics"
         post "/inventario/equipar" => "inventory#equip"
         post "/inventory/equip" => "inventory#equip"
         post "/inventario/desequipar" => "inventory#unequip"
@@ -170,6 +172,10 @@ after_initialize do
 
   add_to_serializer(:user_card, :jn_cosmetic_avatar_frame) do
     object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
+  end
+
+  add_to_serializer(:post, :user_jn_cosmetic_avatar_frame) do
+    object.user&.custom_fields&.[]("jn_cosmetic_avatar_frame") rescue nil
   end
 
   module ::Jobs
