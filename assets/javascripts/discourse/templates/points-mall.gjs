@@ -954,28 +954,30 @@ export default <template>
                     </span>
                   {{/if}}
 
-                  <div class="inventory-card-image">
-                    {{#if item.image_url}}
-                      <img src={{item.image_url}} alt={{item.name}} />
-                    {{else}}
-                      <div class="inventory-image-placeholder">
-                        {{dIcon "gift"}}
-                      </div>
-                    {{/if}}
-                  </div>
-
-                  <div class="inventory-card-body">
-                    <div class="inventory-badges">
-                      <span class="inventory-kind-badge">{{item.kind_label}}</span>
-                      <span class="inventory-remaining-badge">
-                        {{dIcon "clock"}} {{item.remaining_text}}
-                      </span>
+                  <div class="inventory-card-main">
+                    <div class="inventory-card-image">
+                      {{#if item.image_url}}
+                        <img src={{item.image_url}} alt={{item.name}} />
+                      {{else}}
+                        <div class="inventory-image-placeholder">
+                          {{dIcon "sparkles"}}
+                        </div>
+                      {{/if}}
                     </div>
 
-                    <h3>{{item.name}}</h3>
-                    {{#if item.description}}
-                      <p class="inventory-item-desc">{{item.description}}</p>
-                    {{/if}}
+                    <div class="inventory-card-content">
+                      <div class="inventory-badges">
+                        <span class="inventory-kind-badge">{{item.kind_label}}</span>
+                        <span class="inventory-remaining-badge">
+                          {{dIcon "clock"}} {{item.remaining_text}}
+                        </span>
+                      </div>
+
+                      <h3>{{item.name}}</h3>
+                      {{#if item.description}}
+                        <p class="inventory-item-desc">{{item.description}}</p>
+                      {{/if}}
+                    </div>
                   </div>
 
                   <div class="inventory-card-action">

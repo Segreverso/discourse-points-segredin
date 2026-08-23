@@ -36,4 +36,33 @@ export default class PointsMallRoute extends DiscourseRoute {
       inventory: inventory.inventory || { items: [], equipped: {} },
     };
   }
+
+  setupController(controller, model, transition) {
+    super.setupController(controller, model, transition);
+
+    const validTabs = ["checkin", "shop", "inventory", "orders", "ledger"];
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryTab = transition?.to?.queryParams?.tab || urlParams.get("tab");
+    const savedTab = localStorage.getItem("pm_active_tab");
+
+    let tabToUse = "checkin";
+    if (queryTab && validTabs.includes(queryTab)) {
+      tabToUse = queryTab;
+    } else if (savedTab && validTabs.includes(savedTab)) {
+      tabToUse = savedTab;
+    }
+
+    controller.activeTab = tabToUse;
+    localStorage.setItem("pm_active_tab", tabToUse);
+
+    if (urlParams.get("tab") !== tabToUse) {
+      try {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set("tab", tabToUse);
+        window.history.replaceState(null, "", newUrl.toString());
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
 }

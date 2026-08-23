@@ -5248,44 +5248,43 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 }
 
-/* --- User Inventory Tab & Grid --- */
+/* --- User Inventory Tab & Bento Grid --- */
 .points-mall-inventory {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 
   .inventory-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.25rem;
+    padding: 0.85rem 1.15rem;
     border: 1px solid var(--primary-low);
     border-radius: 12px;
     background: var(--secondary);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-    margin-bottom: 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 
     .inventory-title-wrap {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
 
       .inventory-title-icon {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         color: var(--tertiary);
         background: color-mix(in srgb, var(--tertiary) 12%, var(--secondary));
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tertiary) 25%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tertiary) 20%, transparent);
       }
 
       h2 {
         margin: 0;
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: var(--primary);
         line-height: 1.2;
@@ -5293,7 +5292,7 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 
       p {
         margin: 2px 0 0 0;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: var(--primary-medium);
       }
     }
@@ -5301,10 +5300,10 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     .inventory-total-pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.85rem;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       background: color-mix(in srgb, var(--tertiary) 10%, var(--secondary));
       color: var(--tertiary);
@@ -5315,7 +5314,7 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 1rem;
 }
 
@@ -5324,27 +5323,26 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   background: var(--secondary);
   border: 1px solid var(--primary-low);
   border-radius: 14px;
-  padding: 1rem;
+  padding: 1.1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 0.85rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     border-color: var(--primary-low-mid);
   }
 
   &.equipped {
     border-color: #10b981;
-    box-shadow: 0 0 0 1px #10b981, 0 6px 20px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 0 1px #10b981, 0 4px 16px rgba(16, 185, 129, 0.12);
     background: linear-gradient(
       180deg,
-      color-mix(in srgb, #10b981 6%, var(--secondary)) 0%,
+      color-mix(in srgb, #10b981 5%, var(--secondary)) 0%,
       var(--secondary) 100%
     );
   }
@@ -5356,13 +5354,13 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
 
   .inventory-corner-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 12px;
     z-index: 2;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -5372,7 +5370,7 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     &.equipped {
       background: #10b981;
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
     }
 
     &.expired {
@@ -5381,55 +5379,64 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     }
   }
 
+  .inventory-card-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
   .inventory-card-image {
-    width: 100%;
-    height: 100px;
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--primary) 4%, var(--secondary));
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--tertiary) 8%, var(--secondary));
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 1px solid var(--primary-low);
+    border: 1px solid color-mix(in srgb, var(--tertiary) 20%, transparent);
 
     img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: transform 0.25s ease;
     }
 
     .inventory-image-placeholder {
-      font-size: 2rem;
-      color: var(--primary-low-mid);
+      font-size: 1.5rem;
+      color: var(--tertiary);
     }
   }
 
   &:hover .inventory-card-image img {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 
-  .inventory-card-body {
+  .inventory-card-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
+    min-width: 0;
 
     .inventory-badges {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
+      padding-right: 70px;
     }
 
     .inventory-kind-badge {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       background: color-mix(in srgb, var(--tertiary) 12%, var(--secondary));
       color: var(--tertiary);
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 6px;
       border: 1px solid color-mix(in srgb, var(--tertiary) 20%, transparent);
     }
@@ -5437,26 +5444,26 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     .inventory-remaining-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      font-size: 0.72rem;
+      gap: 0.25rem;
+      font-size: 0.7rem;
       font-weight: 600;
       color: var(--primary-medium);
     }
 
     h3 {
-      margin: 0.2rem 0 0 0;
-      font-size: 0.98rem;
+      margin: 0.15rem 0 0 0;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--primary);
-      line-height: 1.35;
+      line-height: 1.3;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .inventory-item-desc {
       margin: 0;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       line-height: 1.35;
       color: var(--primary-medium);
       display: -webkit-box;
@@ -5468,13 +5475,13 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
   }
 
   .inventory-card-action {
-    margin-top: 0.25rem;
+    margin-top: 0.15rem;
 
     .btn {
       width: 100%;
       justify-content: center;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       padding: 0.45rem 0.75rem;
       gap: 0.4rem;

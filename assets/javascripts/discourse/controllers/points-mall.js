@@ -525,7 +525,21 @@ export default class PointsMallController extends Controller {
 
   @action
   switchTab(tab) {
+    const validTabs = ["checkin", "shop", "inventory", "orders", "ledger"];
+    if (!validTabs.includes(tab)) {
+      return;
+    }
+
     this.activeTab = tab;
+    localStorage.setItem("pm_active_tab", tab);
+
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", tab);
+      window.history.replaceState(null, "", url.toString());
+    } catch (e) {
+      // ignore
+    }
   }
 
   @action
