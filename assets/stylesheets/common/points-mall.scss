@@ -592,98 +592,88 @@ img[class*="jn-avatar-frame-"] {
 /* 1. Dourado VIP (Estilo Naruto Aura) */
 img.jn-avatar-frame-gold-vip {
   box-shadow:
-    0 0 0 2px #ffe066,
-    0 0 10px rgba(255, 215, 0, 0.9),
-    0 0 20px rgba(255, 170, 0, 0.75),
-    0 0 32px rgba(255, 215, 0, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #ffd700,
+    0 0 25px #ffd700 !important;
 }
 .user-profile-avatar img.jn-avatar-frame-gold-vip,
 .user-card-avatar img.jn-avatar-frame-gold-vip {
   box-shadow:
-    0 0 0 3px #ffe066,
-    0 0 16px rgba(255, 215, 0, 0.95),
-    0 0 30px rgba(255, 170, 0, 0.8),
-    0 0 48px rgba(255, 215, 0, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #ffd700,
+    0 0 35px #ffd700 !important;
 }
 
 /* 2. Vermelho Ruby / Sakura Red */
 img.jn-avatar-frame-ruby-red,
 img.jn-avatar-frame-sakura-red {
   box-shadow:
-    0 0 0 2px #ff4d6d,
-    0 0 10px rgba(255, 77, 109, 0.9),
-    0 0 20px rgba(201, 24, 74, 0.75),
-    0 0 32px rgba(255, 77, 109, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #ff4d6d,
+    0 0 25px #ff4d6d !important;
 }
 .user-profile-avatar img.jn-avatar-frame-ruby-red,
 .user-card-avatar img.jn-avatar-frame-ruby-red,
 .user-profile-avatar img.jn-avatar-frame-sakura-red,
 .user-card-avatar img.jn-avatar-frame-sakura-red {
   box-shadow:
-    0 0 0 3px #ff4d6d,
-    0 0 16px rgba(255, 77, 109, 0.95),
-    0 0 30px rgba(201, 24, 74, 0.8),
-    0 0 48px rgba(255, 77, 109, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #ff4d6d,
+    0 0 35px #ff4d6d !important;
 }
 
 /* 3. Azul Bebê / Soft Blue */
 img.jn-avatar-frame-baby-blue,
 img.jn-avatar-frame-soft-blue {
   box-shadow:
-    0 0 0 2px #80deea,
-    0 0 10px rgba(128, 222, 234, 0.9),
-    0 0 20px rgba(0, 172, 193, 0.75),
-    0 0 32px rgba(178, 235, 242, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #80deea,
+    0 0 25px #80deea !important;
 }
 .user-profile-avatar img.jn-avatar-frame-baby-blue,
 .user-card-avatar img.jn-avatar-frame-baby-blue,
 .user-profile-avatar img.jn-avatar-frame-soft-blue,
 .user-card-avatar img.jn-avatar-frame-soft-blue {
   box-shadow:
-    0 0 0 3px #80deea,
-    0 0 16px rgba(128, 222, 234, 0.95),
-    0 0 30px rgba(0, 172, 193, 0.8),
-    0 0 48px rgba(178, 235, 242, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #80deea,
+    0 0 35px #80deea !important;
 }
 
 /* 4. Roxo Meio Rosado / Pinkish Purple / Purple Deep */
 img.jn-avatar-frame-pinkish-purple,
 img.jn-avatar-frame-purple-deep {
   box-shadow:
-    0 0 0 2px #e040fb,
-    0 0 10px rgba(224, 64, 251, 0.9),
-    0 0 20px rgba(171, 71, 188, 0.75),
-    0 0 32px rgba(224, 64, 251, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #e040fb,
+    0 0 25px #e040fb !important;
 }
 .user-profile-avatar img.jn-avatar-frame-pinkish-purple,
 .user-card-avatar img.jn-avatar-frame-pinkish-purple,
 .user-profile-avatar img.jn-avatar-frame-purple-deep,
 .user-card-avatar img.jn-avatar-frame-purple-deep {
   box-shadow:
-    0 0 0 3px #e040fb,
-    0 0 16px rgba(224, 64, 251, 0.95),
-    0 0 30px rgba(171, 71, 188, 0.8),
-    0 0 48px rgba(224, 64, 251, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #e040fb,
+    0 0 35px #e040fb !important;
 }
 
 /* 5. Rosa Cintilante / Neon Pink */
 img.jn-avatar-frame-sparkling-pink,
 img.jn-avatar-frame-neon-pink {
   box-shadow:
-    0 0 0 2px #ff4081,
-    0 0 10px rgba(255, 64, 129, 0.9),
-    0 0 20px rgba(245, 0, 87, 0.75),
-    0 0 32px rgba(255, 128, 171, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #ff4081,
+    0 0 25px #ff4081 !important;
 }
 .user-profile-avatar img.jn-avatar-frame-sparkling-pink,
 .user-card-avatar img.jn-avatar-frame-sparkling-pink,
 .user-profile-avatar img.jn-avatar-frame-neon-pink,
 .user-card-avatar img.jn-avatar-frame-neon-pink {
   box-shadow:
-    0 0 0 3px #ff4081,
-    0 0 16px rgba(255, 64, 129, 0.95),
-    0 0 30px rgba(245, 0, 87, 0.8),
-    0 0 48px rgba(255, 128, 171, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #ff4081,
+    0 0 35px #ff4081 !important;
 }
 
 /* 6. Azul Neon / Cyan Electric / Neon Aqua */
@@ -691,10 +681,9 @@ img.jn-avatar-frame-neon-blue,
 img.jn-avatar-frame-cyan-electric,
 img.jn-avatar-frame-neon-aqua {
   box-shadow:
-    0 0 0 2px #00e5ff,
-    0 0 10px rgba(0, 229, 255, 0.9),
-    0 0 20px rgba(0, 184, 212, 0.75),
-    0 0 32px rgba(0, 229, 255, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #00e5ff,
+    0 0 25px #00e5ff !important;
 }
 .user-profile-avatar img.jn-avatar-frame-neon-blue,
 .user-card-avatar img.jn-avatar-frame-neon-blue,
@@ -703,30 +692,27 @@ img.jn-avatar-frame-neon-aqua {
 .user-profile-avatar img.jn-avatar-frame-neon-aqua,
 .user-card-avatar img.jn-avatar-frame-neon-aqua {
   box-shadow:
-    0 0 0 3px #00e5ff,
-    0 0 16px rgba(0, 229, 255, 0.95),
-    0 0 30px rgba(0, 184, 212, 0.8),
-    0 0 48px rgba(0, 229, 255, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #00e5ff,
+    0 0 35px #00e5ff !important;
 }
 
 /* 7. Verde Cintilante / Green Kenny */
 img.jn-avatar-frame-sparkling-green,
 img.jn-avatar-frame-green-kenny {
   box-shadow:
-    0 0 0 2px #00ff7f,
-    0 0 10px rgba(0, 255, 127, 0.9),
-    0 0 20px rgba(0, 200, 83, 0.75),
-    0 0 32px rgba(0, 255, 127, 0.45) !important;
+    0 0 5px #ffffff,
+    0 0 15px #00ff7f,
+    0 0 25px #00ff7f !important;
 }
 .user-profile-avatar img.jn-avatar-frame-sparkling-green,
 .user-card-avatar img.jn-avatar-frame-sparkling-green,
 .user-profile-avatar img.jn-avatar-frame-green-kenny,
 .user-card-avatar img.jn-avatar-frame-green-kenny {
   box-shadow:
-    0 0 0 3px #00ff7f,
-    0 0 16px rgba(0, 255, 127, 0.95),
-    0 0 30px rgba(0, 200, 83, 0.8),
-    0 0 48px rgba(0, 255, 127, 0.5) !important;
+    0 0 8px #ffffff,
+    0 0 22px #00ff7f,
+    0 0 35px #00ff7f !important;
 }
 
 html.jn-theme-skin-starrail-neon {
