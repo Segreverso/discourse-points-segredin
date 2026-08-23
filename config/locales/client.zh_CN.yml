@@ -100,6 +100,9 @@ zh_CN:
               all: "全部"
               physical: "实物"
               virtual: "虚拟"
+              cosmetic: "装扮"
+              avatar_frame: "头像框"
+              user_flair: "光环"
             status:
               all: "全部"
               pending: "待处理"
@@ -226,6 +229,7 @@ zh_CN:
             all: "全部类型"
             physical: "实物商品"
             virtual: "虚拟商品"
+            cosmetic: "外观装扮"
           category:
             all: "全部分类"
             uncategorized: "未分类"
@@ -252,6 +256,9 @@ zh_CN:
         type:
           virtual: "虚拟商品"
           physical: "实体商品"
+          cosmetic: "外观装扮"
+          avatar_frame: "头像框"
+          user_flair: "用户光环"
       checkout:
         virtual_title: "确认兑换"
         physical_title: "实物兑换 · %{product}"
@@ -300,13 +307,20 @@ zh_CN:
           all: "全部兑换"
           physical: "实物商品"
           virtual: "虚拟商品"
+          cosmetic: "外观装扮"
         filters:
           all: "全部"
           physical: "实物商品"
           virtual: "虚拟商品"
+          cosmetic: "外观装扮"
+          avatar_frame: "头像框"
+          user_flair: "光环"
         types:
           physical: "实物商品"
           virtual: "虚拟商品"
+          cosmetic: "外观装扮"
+          avatar_frame: "头像框"
+          user_flair: "用户光环"
         status:
           pending: "待处理"
           processing: "处理中"

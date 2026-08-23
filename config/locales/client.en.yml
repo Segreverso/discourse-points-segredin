@@ -102,6 +102,9 @@ en:
               all: "All"
               physical: "Physical"
               virtual: "Virtual"
+              cosmetic: "Cosmetic"
+              avatar_frame: "Avatar Frame"
+              user_flair: "User Flair"
             status:
               all: "All"
               pending: "Pending"
@@ -202,6 +205,7 @@ en:
             all: "All Types"
             physical: "Physical"
             virtual: "Virtual"
+            cosmetic: "Cosmetics"
           category:
             all: "All Categories"
             uncategorized: "Uncategorized"
@@ -228,6 +232,9 @@ en:
         type:
           virtual: "Virtual"
           physical: "Physical"
+          cosmetic: "Cosmetic"
+          avatar_frame: "Avatar Frame"
+          user_flair: "User Flair"
       checkout:
         virtual_title: "Confirm Redemption"
         physical_title: "Physical Redemption · %{product}"
@@ -276,13 +283,20 @@ en:
           all: "All"
           physical: "Physical"
           virtual: "Virtual"
+          cosmetic: "Cosmetics"
         filters:
           all: "All"
           physical: "Physical"
           virtual: "Virtual"
+          cosmetic: "Cosmetics"
+          avatar_frame: "Avatar Frames"
+          user_flair: "User Flairs"
         types:
           physical: "Physical Product"
           virtual: "Virtual Product"
+          cosmetic: "Cosmetic Item"
+          avatar_frame: "Avatar Frame"
+          user_flair: "User Flair"
         status:
           pending: "Pending"
           processing: "Processing"

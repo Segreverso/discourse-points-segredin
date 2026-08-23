@@ -353,18 +353,20 @@ export default class PointsMallController extends Controller {
   }
 
   get orderTypeFilters() {
-    return ["all", "physical", "virtual"];
+    return ["all", "physical", "virtual", "cosmetic"];
   }
 
   get orderSummary() {
     const orders = this.model.orders || [];
     const physical = orders.filter((order) => this.orderProductType(order) === "physical").length;
     const virtual = orders.filter((order) => this.orderProductType(order) === "virtual").length;
+    const cosmetic = orders.filter((order) => this.orderProductType(order) === "cosmetic").length;
 
     return {
       all: orders.length,
       physical,
       virtual,
+      cosmetic,
     };
   }
 

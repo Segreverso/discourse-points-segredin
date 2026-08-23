@@ -1061,6 +1061,10 @@ export default <template>
                 <span>{{i18n "points_mall.orders.summary.virtual"}}</span>
                 <strong>{{@controller.orderSummary.virtual}}</strong>
               </article>
+              <article class="orders-summary-item">
+                <span>{{i18n "points_mall.orders.summary.cosmetic"}}</span>
+                <strong>{{@controller.orderSummary.cosmetic}}</strong>
+              </article>
             </div>
           </div>
 

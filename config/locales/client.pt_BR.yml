@@ -102,6 +102,9 @@ pt_BR:
               all: "Todos"
               physical: "Físico"
               virtual: "Virtual"
+              cosmetic: "Cosmético"
+              avatar_frame: "Moldura de Avatar"
+              user_flair: "Borda / Brilho"
             status:
               all: "Todos"
               pending: "Pendente"
@@ -204,6 +207,7 @@ pt_BR:
             all: "Todos"
             physical: "Físicos"
             virtual: "Virtuais"
+            cosmetic: "Cosméticos"
           category:
             all: "Todas Categorias"
             uncategorized: "Sem Categoria"
@@ -230,6 +234,9 @@ pt_BR:
         type:
           virtual: "Virtual"
           physical: "Físico"
+          cosmetic: "Cosmético"
+          avatar_frame: "Moldura de Avatar"
+          user_flair: "Borda / Brilho"
       checkout:
         virtual_title: "Confirmar Resgate"
         physical_title: "Resgate Físico · %{product}"
@@ -278,13 +285,20 @@ pt_BR:
           all: "Todos"
           physical: "Físicos"
           virtual: "Virtuais"
+          cosmetic: "Cosméticos"
         filters:
           all: "Todos"
           physical: "Físicos"
           virtual: "Virtuais"
+          cosmetic: "Cosméticos"
+          avatar_frame: "Molduras"
+          user_flair: "Brilhos"
         types:
           physical: "Produto Físico"
           virtual: "Produto Virtual"
+          cosmetic: "Cosmético"
+          avatar_frame: "Moldura de Avatar"
+          user_flair: "Borda / Brilho"
         status:
           pending: "Pendente"
           processing: "Processando"
