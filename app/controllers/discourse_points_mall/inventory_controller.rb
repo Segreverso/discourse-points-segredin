@@ -30,7 +30,22 @@ module DiscoursePointsMall
         .pluck("users.username_lower", "user_custom_fields.value")
         .to_h
 
-      render json: { frames: frames }
+      flairs = UserCustomField
+        .where(name: ["jn_cosmetic_svip_glow", "jn_cosmetic_card_border"])
+        .where.not(value: [nil, ""])
+        .joins(:user)
+        .pluck("users.username_lower", "user_custom_fields.value")
+        .to_h
+
+      # Membros do grupo 'apoiador' (VIP) ganham o brilho de nickname vermelho VIP automaticamente
+      vip_group = Group.find_by("LOWER(name) = ?", "apoiador")
+      if vip_group
+        GroupUser.where(group_id: vip_group.id).joins(:user).pluck("users.username_lower").each do |uname|
+          flairs[uname] ||= "ruby_red"
+        end
+      end
+
+      render json: { frames: frames, flairs: flairs }
     end
 
     KIND_FIELDS = {

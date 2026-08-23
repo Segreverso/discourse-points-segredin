@@ -2,6 +2,7 @@ import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 
 const userFrameCache = new Map();
+const userFlairCache = new Map();
 
 function currentUser(api) {
   return api.getCurrentUser?.() || api.container?.lookup?.("service:current-user");
@@ -12,6 +13,13 @@ function formatFrameClass(frameValue) {
     return "";
   }
   return `jn-avatar-frame-${frameValue.toLowerCase().trim().replace(/_/g, "-")}`;
+}
+
+function formatFlairClass(flairValue) {
+  if (!flairValue) {
+    return "";
+  }
+  return `jn-user-flair-${flairValue.toLowerCase().trim().replace(/_/g, "-")}`;
 }
 
 function getUsernameFromAvatar(img) {
@@ -104,6 +112,65 @@ function applyAvatarFramesToDom(api) {
     });
 }
 
+function applyUserFlairsToDom(api) {
+  const curUser = currentUser(api);
+  const curUsername = curUser?.username ? curUser.username.toLowerCase().trim() : null;
+
+  document
+    .querySelectorAll(".names a[data-user-card], .names .username, a.mention, .user-card .username, .user-profile .username")
+    .forEach((el) => {
+      let username = el.getAttribute("data-user-card") || el.dataset?.userCard;
+
+      if (!username) {
+        const cardLink = el.closest("[data-user-card]");
+        if (cardLink) {
+          username = cardLink.getAttribute("data-user-card");
+        }
+      }
+
+      if (!username && el.classList.contains("mention")) {
+        username = el.textContent.replace(/^@/, "").trim();
+      }
+
+      if (!username && el.getAttribute("href")) {
+        const match = (el.getAttribute("href") || "").match(/\/u\/([^\/]+)/i);
+        if (match && match[1]) {
+          username = decodeURIComponent(match[1]);
+        }
+      }
+
+      if (!username) {
+        return;
+      }
+
+      username = username.toLowerCase().trim();
+
+      let flairVal = userFlairCache.get(username) || userFrameCache.get(username);
+      if (curUsername && username === curUsername && !flairVal) {
+        flairVal = userFlairCache.get(curUsername) || userFrameCache.get(curUsername);
+      }
+
+      const classList = Array.from(el.classList);
+      classList.forEach((cls) => {
+        if (cls.startsWith("jn-user-flair-")) {
+          el.classList.remove(cls);
+        }
+      });
+
+      if (flairVal) {
+        const flairClass = formatFlairClass(flairVal);
+        el.classList.add("jn-user-flair-active", flairClass);
+      } else {
+        el.classList.remove("jn-user-flair-active");
+      }
+    });
+}
+
+function applyCosmeticsToDom(api) {
+  applyAvatarFramesToDom(api);
+  applyUserFlairsToDom(api);
+}
+
 function applyThemeSkin(themeSkin) {
   const root = document.documentElement;
   root.dataset.jnThemeSkin = themeSkin || "";
@@ -124,11 +191,18 @@ async function fetchPublicUserCosmetics(api) {
           }
         });
       }
+      if (payload?.flairs) {
+        Object.entries(payload.flairs).forEach(([user, flair]) => {
+          if (user && flair) {
+            userFlairCache.set(user.toLowerCase().trim(), flair);
+          }
+        });
+      }
     }
   } catch (_e) {
     // Non-blocking catch
   }
-  applyAvatarFramesToDom(api);
+  applyCosmeticsToDom(api);
 }
 
 async function refreshCurrentUserCosmetics(api) {
@@ -147,12 +221,19 @@ async function refreshCurrentUserCosmetics(api) {
     if (response.ok) {
       const payload = await response.json();
       const frame = payload?.inventory?.equipped?.avatar_frame?.value;
+      const flair = payload?.inventory?.equipped?.svip_glow?.value || payload?.inventory?.equipped?.card_border?.value;
       const themeSkin = payload?.inventory?.equipped?.theme_skin?.value;
 
       if (frame) {
         userFrameCache.set(username.toLowerCase().trim(), frame);
       } else {
         userFrameCache.delete(username.toLowerCase().trim());
+      }
+
+      if (flair) {
+        userFlairCache.set(username.toLowerCase().trim(), flair);
+      } else {
+        userFlairCache.delete(username.toLowerCase().trim());
       }
       applyThemeSkin(themeSkin);
     }
@@ -184,11 +265,17 @@ export default apiInitializer("1.8.0", (api) => {
     const curUser = currentUser(api);
     const username = curUser?.username;
     const frame = inventory?.equipped?.avatar_frame?.value;
+    const flair = inventory?.equipped?.svip_glow?.value || inventory?.equipped?.card_border?.value;
     if (username) {
       if (frame) {
         userFrameCache.set(username.toLowerCase().trim(), frame);
       } else {
         userFrameCache.delete(username.toLowerCase().trim());
+      }
+      if (flair) {
+        userFlairCache.set(username.toLowerCase().trim(), flair);
+      } else {
+        userFlairCache.delete(username.toLowerCase().trim());
       }
     }
     fetchPublicUserCosmetics(api);
@@ -197,7 +284,7 @@ export default apiInitializer("1.8.0", (api) => {
 
   api.onPageChange(() => {
     window.setTimeout(() => fetchPublicUserCosmetics(api), 100);
-    window.setTimeout(() => applyAvatarFramesToDom(api), 400);
+    window.setTimeout(() => applyCosmeticsToDom(api), 400);
   });
 
   // Observe DOM mutations to catch lazily rendered avatars in infinite scroll stream
@@ -207,7 +294,7 @@ export default apiInitializer("1.8.0", (api) => {
       clearTimeout(debounceTimer);
     }
     debounceTimer = setTimeout(() => {
-      applyAvatarFramesToDom(api);
+      applyCosmeticsToDom(api);
     }, 150);
   });
 
