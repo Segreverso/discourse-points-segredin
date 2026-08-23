@@ -937,6 +937,16 @@ export default <template>
             <div class="inventory-grid">
               {{#each @controller.model.inventory.items as |item|}}
                 <div class="inventory-card {{if item.equipped 'equipped'}} {{if item.expired 'expired'}}">
+                  {{#if item.equipped}}
+                    <span class="inventory-corner-badge equipped">
+                      {{dIcon "check"}} Equipado
+                    </span>
+                  {{else if item.expired}}
+                    <span class="inventory-corner-badge expired">
+                      Expirado
+                    </span>
+                  {{/if}}
+
                   <div class="inventory-card-header">
                     <div class="inventory-item-icon">
                       {{#if item.image_url}}
@@ -951,10 +961,14 @@ export default <template>
                     </div>
                   </div>
 
-                  <p class="inventory-item-desc">{{item.description}}</p>
+                  {{#if item.description}}
+                    <p class="inventory-item-desc">{{item.description}}</p>
+                  {{/if}}
 
                   <div class="inventory-card-footer">
-                    <span class="inventory-remaining">{{item.remaining_text}}</span>
+                    <span class="inventory-remaining">
+                      {{dIcon "clock"}} {{item.remaining_text}}
+                    </span>
 
                     {{#if item.equipped}}
                       <button

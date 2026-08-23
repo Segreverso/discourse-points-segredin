@@ -253,87 +253,191 @@
   .inventory-equipped-grid,
   .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
   }
 
-  .inventory-equipped-item,
   .inventory-card {
+    background: var(--secondary);
+    border-radius: 12px;
     border: 1px solid var(--primary-low);
-    border-radius: 12px;
-    background: var(--primary-very-low);
-    padding: 14px;
-  }
-
-  .inventory-equipped-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-
-    span,
-    small {
-      display: block;
-      color: var(--primary-medium);
-      font-size: 0.86em;
-    }
-
-    strong {
-      display: block;
-      margin: 2px 0;
-      color: var(--primary-high);
-      font-size: 1.08em;
-    }
-  }
-
-  .inventory-empty-inline {
-    padding: 18px;
-    border: 1px dashed var(--primary-low);
-    border-radius: 12px;
-    color: var(--primary-medium);
-    text-align: center;
-  }
-
-  .inventory-card {
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-height: 220px;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--primary-low-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    }
 
     &.equipped {
       border-color: var(--tertiary);
-      box-shadow: 0 0 0 1px var(--tertiary-low), 0 10px 26px rgba(0, 0, 0, 0.08);
+      background: linear-gradient(160deg, var(--secondary), color-mix(in srgb, var(--tertiary) 5%, var(--secondary)));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--tertiary) 30%, transparent), 0 4px 16px rgba(0, 0, 0, 0.06);
     }
 
     &.expired {
-      opacity: 0.66;
+      opacity: 0.65;
     }
 
-    &:hover:not(.expired) {
-      transform: translateY(-1px);
-      border-color: var(--tertiary-low);
+    .inventory-corner-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72em;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+
+      &.equipped {
+        background: var(--success);
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+      }
+
+      &.expired {
+        background: var(--danger-low);
+        color: var(--danger);
+      }
     }
 
-    h3 {
-      margin: 0;
-      color: var(--primary-high);
-      font-size: 1.12em;
-      line-height: 1.25;
+    .inventory-card-header {
+      padding: 12px 14px 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    p {
-      flex: 1;
-      margin: 0;
-      color: var(--primary-medium);
-      line-height: 1.55;
-    }
-
-    .btn,
-    .btn-primary,
-    .btn-disabled {
-      width: 100%;
+    .inventory-item-icon {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      border-radius: 10px;
+      background: var(--primary-very-low);
+      border: 1px solid var(--primary-low);
+      display: flex;
+      align-items: center;
       justify-content: center;
+      overflow: hidden;
+      padding: 4px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 6px;
+      }
+
+      .d-icon {
+        font-size: 1.4em;
+        color: var(--primary-medium);
+      }
+    }
+
+    .inventory-item-meta {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        margin: 0 0 4px 0;
+        font-size: 0.98em;
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .inventory-kind-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7em;
+        font-weight: 600;
+        color: var(--tertiary);
+        background: var(--tertiary-low);
+      }
+    }
+
+    .inventory-item-desc {
+      padding: 0 14px;
+      margin: 0 0 10px 0;
+      color: var(--primary-medium);
+      font-size: 0.8em;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .inventory-card-footer {
+      margin-top: auto;
+      padding: 10px 14px;
+      border-top: 1px solid var(--primary-low);
+      background: var(--primary-very-low);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+
+      .inventory-remaining {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.78em;
+        font-weight: 600;
+        color: var(--primary-medium);
+
+        .d-icon {
+          font-size: 0.9em;
+        }
+      }
+
+      .btn,
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-size: 0.8em;
+        font-weight: 700;
+        gap: 5px;
+        transition: all 0.15s ease;
+
+        &.unequip-btn {
+          background: var(--primary-low);
+          color: var(--primary-high);
+          border: 1px solid var(--primary-low-mid);
+
+          &:hover {
+            background: var(--danger-low);
+            color: var(--danger);
+            border-color: var(--danger-low);
+          }
+        }
+
+        &.equip-btn {
+          background: var(--tertiary);
+          color: var(--secondary);
+
+          &:hover {
+            filter: brightness(1.08);
+          }
+        }
+      }
     }
   }
 
@@ -506,26 +610,96 @@ img.jn-avatar-frame-gold-vip {
     0 0 64px rgba(212, 175, 55, 0.6) !important;
 }
 
-/* 2. Rosa Neon / Pink Flare */
-img.jn-avatar-frame-neon-pink {
+/* 2. Vermelho Ruby / Sakura Red */
+img.jn-avatar-frame-ruby-red,
+img.jn-avatar-frame-sakura-red {
   box-shadow:
-    0 0 0 2px #ff66cc,
-    0 0 0 4px #ff1493,
-    0 0 0 6px #c71585,
-    0 0 18px rgba(255, 20, 147, 0.9),
+    0 0 0 2px #ff8080,
+    0 0 0 4px #ff2a5f,
+    0 0 0 6px #b3002d,
+    0 0 18px rgba(255, 42, 95, 0.9),
     0 0 32px rgba(255, 105, 180, 0.7) !important;
 }
-.user-profile-avatar img.jn-avatar-frame-neon-pink,
-.user-card-avatar img.jn-avatar-frame-neon-pink {
+.user-profile-avatar img.jn-avatar-frame-ruby-red,
+.user-card-avatar img.jn-avatar-frame-ruby-red,
+.user-profile-avatar img.jn-avatar-frame-sakura-red,
+.user-card-avatar img.jn-avatar-frame-sakura-red {
   box-shadow:
-    0 0 0 3px #ff66cc,
-    0 0 0 6px #ff1493,
-    0 0 0 9px #c71585,
-    0 0 26px rgba(255, 20, 147, 0.95),
+    0 0 0 3px #ff8080,
+    0 0 0 6px #ff2a5f,
+    0 0 0 9px #b3002d,
+    0 0 26px rgba(255, 42, 95, 0.95),
     0 0 48px rgba(255, 105, 180, 0.8) !important;
 }
 
-/* 3. Cyan Elétrico / Electric Aqua */
+/* 3. Azul Bebê / Soft Blue */
+img.jn-avatar-frame-baby-blue,
+img.jn-avatar-frame-soft-blue {
+  box-shadow:
+    0 0 0 2px #e0f7fa,
+    0 0 0 4px #80deea,
+    0 0 0 6px #00acc1,
+    0 0 18px rgba(128, 222, 234, 0.95),
+    0 0 32px rgba(178, 235, 242, 0.8) !important;
+}
+.user-profile-avatar img.jn-avatar-frame-baby-blue,
+.user-card-avatar img.jn-avatar-frame-baby-blue,
+.user-profile-avatar img.jn-avatar-frame-soft-blue,
+.user-card-avatar img.jn-avatar-frame-soft-blue {
+  box-shadow:
+    0 0 0 3px #e0f7fa,
+    0 0 0 6px #80deea,
+    0 0 0 9px #00acc1,
+    0 0 26px rgba(128, 222, 234, 0.98),
+    0 0 48px rgba(178, 235, 242, 0.85) !important;
+}
+
+/* 4. Roxo Meio Rosado / Pinkish Purple / Purple Deep */
+img.jn-avatar-frame-pinkish-purple,
+img.jn-avatar-frame-purple-deep {
+  box-shadow:
+    0 0 0 2px #f06292,
+    0 0 0 4px #ab47bc,
+    0 0 0 6px #6a1b9a,
+    0 0 18px rgba(171, 71, 188, 0.95),
+    0 0 32px rgba(240, 98, 146, 0.8) !important;
+}
+.user-profile-avatar img.jn-avatar-frame-pinkish-purple,
+.user-card-avatar img.jn-avatar-frame-pinkish-purple,
+.user-profile-avatar img.jn-avatar-frame-purple-deep,
+.user-card-avatar img.jn-avatar-frame-purple-deep {
+  box-shadow:
+    0 0 0 3px #f06292,
+    0 0 0 6px #ab47bc,
+    0 0 0 9px #6a1b9a,
+    0 0 26px rgba(171, 71, 188, 0.98),
+    0 0 48px rgba(240, 98, 146, 0.85) !important;
+}
+
+/* 5. Rosa Cintilante / Neon Pink */
+img.jn-avatar-frame-sparkling-pink,
+img.jn-avatar-frame-neon-pink {
+  box-shadow:
+    0 0 0 2px #ff80ab,
+    0 0 0 4px #ff4081,
+    0 0 0 6px #c2185b,
+    0 0 18px rgba(255, 64, 129, 0.95),
+    0 0 32px rgba(255, 128, 171, 0.8) !important;
+}
+.user-profile-avatar img.jn-avatar-frame-sparkling-pink,
+.user-card-avatar img.jn-avatar-frame-sparkling-pink,
+.user-profile-avatar img.jn-avatar-frame-neon-pink,
+.user-card-avatar img.jn-avatar-frame-neon-pink {
+  box-shadow:
+    0 0 0 3px #ff80ab,
+    0 0 0 6px #ff4081,
+    0 0 0 9px #c2185b,
+    0 0 26px rgba(255, 64, 129, 0.98),
+    0 0 48px rgba(255, 128, 171, 0.85) !important;
+}
+
+/* 6. Azul Neon / Cyan Electric / Neon Aqua */
+img.jn-avatar-frame-neon-blue,
 img.jn-avatar-frame-cyan-electric,
 img.jn-avatar-frame-neon-aqua {
   box-shadow:
@@ -535,6 +709,8 @@ img.jn-avatar-frame-neon-aqua {
     0 0 18px rgba(0, 229, 255, 0.9),
     0 0 30px rgba(255, 108, 196, 0.6) !important;
 }
+.user-profile-avatar img.jn-avatar-frame-neon-blue,
+.user-card-avatar img.jn-avatar-frame-neon-blue,
 .user-profile-avatar img.jn-avatar-frame-cyan-electric,
 .user-card-avatar img.jn-avatar-frame-cyan-electric,
 .user-profile-avatar img.jn-avatar-frame-neon-aqua,
@@ -547,26 +723,8 @@ img.jn-avatar-frame-neon-aqua {
     0 0 46px rgba(255, 108, 196, 0.7) !important;
 }
 
-/* 4. Roxo Profundo / Purple Deep */
-img.jn-avatar-frame-purple-deep {
-  box-shadow:
-    0 0 0 2px #b366ff,
-    0 0 0 4px #8a2be2,
-    0 0 0 6px #4b0082,
-    0 0 18px rgba(138, 43, 226, 0.9),
-    0 0 32px rgba(147, 112, 219, 0.7) !important;
-}
-.user-profile-avatar img.jn-avatar-frame-purple-deep,
-.user-card-avatar img.jn-avatar-frame-purple-deep {
-  box-shadow:
-    0 0 0 3px #b366ff,
-    0 0 0 6px #8a2be2,
-    0 0 0 9px #4b0082,
-    0 0 26px rgba(138, 43, 226, 0.95),
-    0 0 48px rgba(147, 112, 219, 0.8) !important;
-}
-
-/* 5. Verde Kenny / Emerald Green */
+/* 7. Verde Cintilante / Green Kenny */
+img.jn-avatar-frame-sparkling-green,
 img.jn-avatar-frame-green-kenny {
   box-shadow:
     0 0 0 2px #66ffb2,
@@ -575,6 +733,8 @@ img.jn-avatar-frame-green-kenny {
     0 0 18px rgba(0, 255, 127, 0.9),
     0 0 32px rgba(50, 205, 50, 0.7) !important;
 }
+.user-profile-avatar img.jn-avatar-frame-sparkling-green,
+.user-card-avatar img.jn-avatar-frame-sparkling-green,
 .user-profile-avatar img.jn-avatar-frame-green-kenny,
 .user-card-avatar img.jn-avatar-frame-green-kenny {
   box-shadow:
@@ -583,25 +743,6 @@ img.jn-avatar-frame-green-kenny {
     0 0 0 9px #00b359,
     0 0 26px rgba(0, 255, 127, 0.95),
     0 0 48px rgba(50, 205, 50, 0.8) !important;
-}
-
-/* 6. Vermelho Sakura / Ruby Red */
-img.jn-avatar-frame-sakura-red {
-  box-shadow:
-    0 0 0 2px #ff8080,
-    0 0 0 4px #ff2a5f,
-    0 0 0 6px #b3002d,
-    0 0 18px rgba(255, 42, 95, 0.9),
-    0 0 32px rgba(255, 105, 180, 0.7) !important;
-}
-.user-profile-avatar img.jn-avatar-frame-sakura-red,
-.user-card-avatar img.jn-avatar-frame-sakura-red {
-  box-shadow:
-    0 0 0 3px #ff8080,
-    0 0 0 6px #ff2a5f,
-    0 0 0 9px #b3002d,
-    0 0 26px rgba(255, 42, 95, 0.95),
-    0 0 48px rgba(255, 105, 180, 0.8) !important;
 }
 
 html.jn-theme-skin-starrail-neon {

@@ -33,6 +33,36 @@ module DiscoursePointsMall
         value: "sakura_red",
         duration_days: 30,
       },
+      "cosmetic_avatar_frame_ruby_red_30d" => {
+        kind: "avatar_frame",
+        value: "ruby_red",
+        duration_days: 30,
+      },
+      "cosmetic_avatar_frame_baby_blue_30d" => {
+        kind: "avatar_frame",
+        value: "baby_blue",
+        duration_days: 30,
+      },
+      "cosmetic_avatar_frame_pinkish_purple_30d" => {
+        kind: "avatar_frame",
+        value: "pinkish_purple",
+        duration_days: 30,
+      },
+      "cosmetic_avatar_frame_sparkling_pink_30d" => {
+        kind: "avatar_frame",
+        value: "sparkling_pink",
+        duration_days: 30,
+      },
+      "cosmetic_avatar_frame_neon_blue_30d" => {
+        kind: "avatar_frame",
+        value: "neon_blue",
+        duration_days: 30,
+      },
+      "cosmetic_avatar_frame_sparkling_green_30d" => {
+        kind: "avatar_frame",
+        value: "sparkling_green",
+        duration_days: 30,
+      },
       "cosmetic_title_vip_30d" => {
         kind: "title",
         title: "Membro VIP",
