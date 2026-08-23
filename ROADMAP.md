@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.4.24** | 23/08/2026 | Rails API / JS Initializer / SCSS | **Moldura & Nickname VIP Automáticos (`apoiador`)**: Atribuição automática da Moldura de Avatar `ruby_red` e do Brilho de Nickname `ruby_red` para membros do grupo VIP `apoiador` via `public_cosmetics`. |
 | **v0.4.23** | 23/08/2026 | Rails API / JS Initializer / SCSS | **Automação do Nickname VIP (`apoiador`)**: Suporte ao brilho vermelho (`ruby_red`) para membros do grupo `apoiador` via `public_cosmetics` + extensão do `applyCosmeticsToDom` para nicknames sem layout shift. |
 | **v0.4.22** | 23/08/2026 | Localização i18n (`client.*.yml`) | **Cobertura Trilingue de i18n**: Resolução de chaves ausentes (`[pt_BR.points_mall.orders.types.cosmetic]`) e padronização dos tipos `cosmetic`, `avatar_frame` e `user_flair` em `pt_BR`, `en` e `zh_CN`. |
 | **v0.4.21** | 23/08/2026 | SCSS Common / Ember Controller | **Inventário Compacto & Paginação de Cosméticos**: Redesign dos cards do inventário para grid denso (`minmax(170px, 1fr)`), thumbnails de 56px e paginação client-side (8 itens por página). |
@@ -86,6 +87,7 @@ def public_cosmetics
   if vip_group
     GroupUser.where(group_id: vip_group.id).joins(:user).pluck("users.username_lower").each do |uname|
       flairs[uname] ||= "ruby_red"
+      frames[uname] ||= "ruby_red"
     end
   end
 

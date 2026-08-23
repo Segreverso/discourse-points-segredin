@@ -37,11 +37,12 @@ module DiscoursePointsMall
         .pluck("users.username_lower", "user_custom_fields.value")
         .to_h
 
-      # Membros do grupo 'apoiador' (VIP) ganham o brilho de nickname vermelho VIP automaticamente
+      # Membros do grupo 'apoiador' (VIP) ganham a moldura de avatar e o brilho de nickname em Vermelho Ruby automaticamente
       vip_group = Group.find_by("LOWER(name) = ?", "apoiador")
       if vip_group
         GroupUser.where(group_id: vip_group.id).joins(:user).pluck("users.username_lower").each do |uname|
           flairs[uname] ||= "ruby_red"
+          frames[uname] ||= "ruby_red"
         end
       end
 
