@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.4.29** | 23/08/2026 | GJS / SCSS Common | **Layout Vertical Proporcional do Inventário**: Correção de sobreposição de texto flexbox no inventário. Redesenho para card vertical com imagem container de 110px (`object-fit: contain`), badges organizadas e botão de ação sem colisão. |
 | **v0.4.28** | 23/08/2026 | Ember Route & Controller / GJS / SCSS | **Garantia de Persistência em Refresh + Card Horizontal Bento**: Implementação de `setupController` com fallback triplo (QueryParam + LocalStorage + ReplaceState) e refatoração do layout do card do inventário para formato Bento horizontal (64x64px lateral), otimizando o aproveitamento de espaço. |
 | **v0.4.27** | 23/08/2026 | Ember Route & Controller / SCSS / i18n | **Persistência de Aba (`?tab=`) & Redesign do Inventário**: Implementação de query parameter `?tab=` para manter navegação ao recarregar, alteração de título para "Cosméticos Adquiridos" e redesign completo e responsivo dos cards de cosméticos. |
 | **v0.4.26** | 23/08/2026 | Rails API / Admin Templates | **Nomenclatura Concisa "Aura Dourada"**: Remoção da palavra VIP do cosmético `gold_vip` (passando para "Aura Dourada"), reservando o benefício VIP exclusivo à "Aura Rubi" (`ruby_red`). |
