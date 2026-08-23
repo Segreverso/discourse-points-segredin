@@ -164,6 +164,14 @@ after_initialize do
     object.points_balance
   end
 
+  add_to_serializer(:basic_user, :jn_cosmetic_avatar_frame) do
+    object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
+  end
+
+  add_to_serializer(:user_card, :jn_cosmetic_avatar_frame) do
+    object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
+  end
+
   module ::Jobs
     class PointsMallExpireCosmetics < ::Jobs::Scheduled
       every 1.day
