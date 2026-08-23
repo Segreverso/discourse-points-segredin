@@ -77,6 +77,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
           ? -1
           : Number(product.stock),
       product_type: product.product_type || "virtual",
+      product_key: (product.product_key || "").trim(),
       category: (product.category || "").trim(),
       featured: !!product.featured,
       badge_text: (product.badge_text || "").trim(),
@@ -216,6 +217,7 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
         points_cost: 100,
         stock: -1,
         product_type: "virtual",
+        product_key: "",
         category: "",
         featured: false,
         badge_text: "",
@@ -304,6 +306,11 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   @action
   setProductType(product, event) {
     product.product_type = event.target.value;
+  }
+
+  @action
+  setProductKey(product, event) {
+    set(product, "product_key", event.target.value);
   }
 
   @action

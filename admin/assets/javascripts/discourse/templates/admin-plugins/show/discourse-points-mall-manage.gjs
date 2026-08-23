@@ -312,12 +312,33 @@ export default <template>
                   class="points-mall-admin-select"
                   {{on "change" (fn @controller.setProductType @controller.model.newProduct)}}
                 >
-                  {{#each @controller.model.productTypes as |type|}}
-                    <option
-                      selected={{eq @controller.model.newProduct.product_type type}}
-                      value={{type}}
-                    >{{type}}</option>
-                  {{/each}}
+                  <option selected={{eq @controller.model.newProduct.product_type "cosmetic"}} value="cosmetic">Cosmético (Moldura / Título)</option>
+                  <option selected={{eq @controller.model.newProduct.product_type "virtual"}} value="virtual">Virtual</option>
+                  <option selected={{eq @controller.model.newProduct.product_type "physical"}} value="physical">Físico</option>
+                  <option selected={{eq @controller.model.newProduct.product_type "group"}} value="group">Grupo VIP</option>
+                </select>
+              </div>
+
+              <div class="form-group col-span-2">
+                <label>Chave do Cosmético / Moldura (product_key)</label>
+                <select
+                  class="points-mall-admin-select"
+                  {{on "change" (fn @controller.setProductKey @controller.model.newProduct)}}
+                >
+                  <option value="">Nenhum (Item normal)</option>
+                  <optgroup label="Molduras de Avatar (Gradientes Animados)">
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                  </optgroup>
+                  <optgroup label="Títulos Especiais">
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_title_explorador_30d"}} value="cosmetic_title_explorador_30d">Título: Explorador</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_title_guardiao_30d"}} value="cosmetic_title_guardiao_30d">Título: Guardião das Águas</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -609,12 +630,33 @@ export default <template>
                           class="points-mall-admin-select"
                           {{on "change" (fn @controller.setProductType product)}}
                         >
-                          {{#each @controller.model.productTypes as |type|}}
-                            <option
-                              selected={{eq product.product_type type}}
-                              value={{type}}
-                            >{{type}}</option>
-                          {{/each}}
+                          <option selected={{eq product.product_type "cosmetic"}} value="cosmetic">Cosmético</option>
+                          <option selected={{eq product.product_type "virtual"}} value="virtual">Virtual</option>
+                          <option selected={{eq product.product_type "physical"}} value="physical">Físico</option>
+                          <option selected={{eq product.product_type "group"}} value="group">Grupo VIP</option>
+                        </select>
+                      </div>
+
+                      <div class="form-group col-span-2">
+                        <label>Chave Cosmético / Moldura</label>
+                        <select
+                          class="points-mall-admin-select"
+                          {{on "change" (fn @controller.setProductKey product)}}
+                        >
+                          <option value="">Nenhum (Item normal)</option>
+                          <optgroup label="Molduras de Avatar">
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                          </optgroup>
+                          <optgroup label="Títulos Especiais">
+                            <option selected={{eq product.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>
+                            <option selected={{eq product.product_key "cosmetic_title_explorador_30d"}} value="cosmetic_title_explorador_30d">Título: Explorador</option>
+                            <option selected={{eq product.product_key "cosmetic_title_guardiao_30d"}} value="cosmetic_title_guardiao_30d">Título: Guardião das Águas</option>
+                          </optgroup>
                         </select>
                       </div>
 
