@@ -1,5 +1,5 @@
 import { Input } from "@ember/component";
-import { fn } from "@ember/helper";
+import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import DButton from "discourse/ui-kit/d-button";
 
@@ -136,7 +136,7 @@ export default <template>
                 <select
                   class="ember-select"
                   value={{@controller.form.product_type}}
-                  {{on "change" (fn (mut @controller.form.product_type))}}
+                  {{on "change" @controller.setProductType}}
                 >
                   <option value="cosmetic">Cosmético (Moldura / Título)</option>
                   <option value="virtual">Item Virtual</option>
@@ -149,7 +149,7 @@ export default <template>
                 <select
                   class="ember-select"
                   value={{@controller.form.product_key}}
-                  {{on "change" (fn (mut @controller.form.product_key))}}
+                  {{on "change" @controller.setProductKey}}
                 >
                   <option value="">Nenhum (Item normal)</option>
                   <option value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>

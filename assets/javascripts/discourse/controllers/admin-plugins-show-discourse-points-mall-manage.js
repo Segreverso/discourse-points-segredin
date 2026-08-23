@@ -65,6 +65,16 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
   }
 
   @action
+  setProductType(event) {
+    this.form = { ...this.form, product_type: event.target.value };
+  }
+
+  @action
+  setProductKey(event) {
+    this.form = { ...this.form, product_key: event.target.value };
+  }
+
+  @action
   async saveProduct() {
     if (!this.form.name) {
       return alert("Por favor, preencha o nome do produto.");
