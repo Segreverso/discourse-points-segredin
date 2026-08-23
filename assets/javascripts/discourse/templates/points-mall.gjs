@@ -935,7 +935,7 @@ export default <template>
 
           {{#if @controller.model.inventory.items.length}}
             <div class="inventory-grid">
-              {{#each @controller.model.inventory.items as |item|}}
+              {{#each @controller.paginatedInventoryItems as |item|}}
                 <div class="inventory-card {{if item.equipped 'equipped'}} {{if item.expired 'expired'}}">
                   {{#if item.equipped}}
                     <span class="inventory-corner-badge equipped">
@@ -1001,6 +1001,32 @@ export default <template>
                 </div>
               {{/each}}
             </div>
+
+            {{#if @controller.hasMultipleInventoryPages}}
+              <div class="inventory-pagination">
+                <button
+                  type="button"
+                  class="btn btn-default btn-pagination-prev"
+                  disabled={{not @controller.canPrevInventoryPage}}
+                  {{on "click" @controller.prevInventoryPage}}
+                >
+                  {{dIcon "chevron-left"}} <span>Anterior</span>
+                </button>
+
+                <div class="pagination-info">
+                  Página <strong>{{@controller.inventoryPage}}</strong> de <strong>{{@controller.inventoryTotalPages}}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn btn-default btn-pagination-next"
+                  disabled={{not @controller.canNextInventoryPage}}
+                  {{on "click" @controller.nextInventoryPage}}
+                >
+                  <span>Próxima</span> {{dIcon "chevron-right"}}
+                </button>
+              </div>
+            {{/if}}
           {{else}}
             <div class="orders-empty">
               <div class="orders-empty-icon">{{dIcon "box"}}</div>

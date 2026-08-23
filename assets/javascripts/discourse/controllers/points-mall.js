@@ -42,6 +42,8 @@ export default class PointsMallController extends Controller {
   @tracked orderTypeFilter = "all";
   @tracked ordersPage = 1;
   @tracked ordersPerPage = 5;
+  @tracked inventoryPage = 1;
+  @tracked inventoryPerPage = 8;
   @tracked pointsFilter = "all";
   @tracked ledgerPage = 1;
   @tracked ledgerPerPage = 15;
@@ -432,6 +434,41 @@ export default class PointsMallController extends Controller {
 
   get hasInventoryItems() {
     return this.inventoryItems.length > 0;
+  }
+
+  get paginatedInventoryItems() {
+    const start = (this.inventoryPage - 1) * this.inventoryPerPage;
+    return this.inventoryItems.slice(start, start + this.inventoryPerPage);
+  }
+
+  get inventoryTotalPages() {
+    return Math.ceil(this.inventoryItems.length / this.inventoryPerPage) || 1;
+  }
+
+  get hasMultipleInventoryPages() {
+    return this.inventoryTotalPages > 1;
+  }
+
+  get canPrevInventoryPage() {
+    return this.inventoryPage > 1;
+  }
+
+  get canNextInventoryPage() {
+    return this.inventoryPage < this.inventoryTotalPages;
+  }
+
+  @action
+  prevInventoryPage() {
+    if (this.canPrevInventoryPage) {
+      this.inventoryPage--;
+    }
+  }
+
+  @action
+  nextInventoryPage() {
+    if (this.canNextInventoryPage) {
+      this.inventoryPage++;
+    }
   }
 
   get activeInventoryItems() {
