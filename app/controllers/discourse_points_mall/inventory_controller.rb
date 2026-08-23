@@ -82,7 +82,7 @@ module DiscoursePointsMall
 
     KIND_LABELS = {
       "title" => "Título Especial",
-      "avatar_frame" => "Moldura Neon / Flare",
+      "avatar_frame" => "Aura de Avatar",
       "card_border" => "Borda de Perfil",
       "profile_background" => "Fundo de Perfil",
       "post_signature" => "Assinatura de Post",

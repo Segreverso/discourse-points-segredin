@@ -368,7 +368,7 @@ export default <template>
                   {{on "change" (fn @controller.setProductKey @controller.model.newProduct)}}
                 >
                   <option value="">Nenhum (Item normal)</option>
-                  <optgroup label="Molduras de Avatar (Brilhos & Neon)">
+                  <optgroup label="Auras de Avatar (Brilhos & Neon)">
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP 24K (gold_vip)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Vermelho Ruby (ruby_red)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Azul Bebê (baby_blue)</option>
@@ -692,7 +692,7 @@ export default <template>
                           {{on "change" (fn @controller.setProductKey product)}}
                         >
                           <option value="">Nenhum (Item normal)</option>
-                          <optgroup label="Molduras de Avatar">
+                          <optgroup label="Auras de Avatar">
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP 24K (gold_vip)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Vermelho Ruby (ruby_red)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Azul Bebê (baby_blue)</option>

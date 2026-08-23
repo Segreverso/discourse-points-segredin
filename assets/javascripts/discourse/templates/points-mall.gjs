@@ -41,7 +41,7 @@ function formatOrderNotes(notes) {
       const parts = [];
       if (data.kind) {
         const kindMap = {
-          avatar_frame: "Moldura de Avatar",
+          avatar_frame: "Aura de Avatar",
           title: "Título Especial",
           card_border: "Borda de Perfil",
           profile_background: "Fundo de Perfil",

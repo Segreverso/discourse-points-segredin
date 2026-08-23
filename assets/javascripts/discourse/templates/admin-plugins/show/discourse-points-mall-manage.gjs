@@ -326,7 +326,7 @@ export default <template>
                   {{on "change" (fn @controller.setProductKey @controller.model.newProduct)}}
                 >
                   <option value="">Nenhum (Item normal)</option>
-                  <optgroup label="Molduras de Avatar (Gradientes Animados)">
+                  <optgroup label="Auras de Avatar (Gradientes Animados)">
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
@@ -644,7 +644,7 @@ export default <template>
                           {{on "change" (fn @controller.setProductKey product)}}
                         >
                           <option value="">Nenhum (Item normal)</option>
-                          <optgroup label="Molduras de Avatar">
+                          <optgroup label="Auras de Avatar">
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
