@@ -2,7 +2,7 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.9
+# version: 0.4.10
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
@@ -74,6 +74,7 @@ end
 require_relative "lib/discourse_points_mall/engine"
 require_relative "lib/discourse_points_mall/points_manager"
 require_relative "lib/discourse_points_mall/makeup_pricing"
+require_relative "lib/discourse_points_mall/cosmetics"
 
 after_initialize do
   add_to_class(:user, :points_balance) do

@@ -8,53 +8,17 @@ module DiscoursePointsMall
 
     before_action :ensure_logged_in
 
-    COSMETIC_PRODUCTS = {
-      "cosmetic_avatar_frame_gold_vip_30d" => {
-        kind: "avatar_frame",
-        value: "gold_vip",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_neon_pink_30d" => {
-        kind: "avatar_frame",
-        value: "neon_pink",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_cyan_electric_30d" => {
-        kind: "avatar_frame",
-        value: "cyan_electric",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_purple_deep_30d" => {
-        kind: "avatar_frame",
-        value: "purple_deep",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_green_kenny_30d" => {
-        kind: "avatar_frame",
-        value: "green_kenny",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_sakura_red_30d" => {
-        kind: "avatar_frame",
-        value: "sakura_red",
-        duration_days: 30,
-      },
-      "cosmetic_title_vip_30d" => {
-        kind: "title",
-        value: "Membro VIP",
-        duration_days: 30,
-      },
-      "cosmetic_title_explorador_30d" => {
-        kind: "title",
-        value: "Explorador",
-        duration_days: 30,
-      },
-      "cosmetic_title_guardiao_30d" => {
-        kind: "title",
-        value: "Guardião das Águas",
-        duration_days: 30,
-      },
-    }.freeze
+    rescue_from StandardError do |error|
+      Rails.logger.error("[points-mall] InventoryController error: #{error.full_message}")
+      render json: {
+        inventory: {
+          items: [],
+          equipped: {},
+          theme_skin_ticket_count: 0,
+        },
+        error: error.message,
+      }, status: 200
+    end
 
     KIND_FIELDS = {
       "title" => {
@@ -105,7 +69,7 @@ module DiscoursePointsMall
       order = cosmetic_order(params[:order_id])
       return render_json_error("Item de cosmético não encontrado", status: 404) unless order
 
-      config = COSMETIC_PRODUCTS[order.product.product_key]
+      config = DiscoursePointsMall::Cosmetics.find_config(order.product)
       return render_json_error("Este item de cosmético já expirou", status: 422) if expired_order?(order, config)
 
       apply_cosmetic!(current_user, config, expires_at_for(order, config))
@@ -133,11 +97,12 @@ module DiscoursePointsMall
         ::PointsMallOrder
           .where(user_id: current_user.id, status: "completed")
           .includes(:product)
-          .select { |order| COSMETIC_PRODUCTS.key?(order.product&.product_key) }
+          .select { |order| order.product && DiscoursePointsMall::Cosmetics.cosmetic?(order.product) }
 
       items =
         orders.map { |order| item_payload(order) }
-          .sort_by { |item| [item[:expired] ? 1 : 0, item[:equipped] ? 0 : 1, -Time.zone.parse(item[:granted_at]).to_i] }
+          .compact
+          .sort_by { |item| [item[:expired] ? 1 : 0, item[:equipped] ? 0 : 1, -(parse_time(item[:granted_at])&.to_i || 0)] }
 
       {
         inventory: {
@@ -150,7 +115,17 @@ module DiscoursePointsMall
 
     def item_payload(order)
       product = order.product
-      config = COSMETIC_PRODUCTS[product.product_key]
+      return nil unless product
+
+      config = DiscoursePointsMall::Cosmetics.find_config(product)
+      return nil unless config
+
+      # If the order status was manually marked completed, ensure custom fields are populated
+      if equipped?(config[:kind], cosmetic_value(config)) == false && current_user.custom_fields[KIND_FIELDS.dig(config[:kind], :value)].blank?
+        expires_at = expires_at_for(order, config)
+        apply_cosmetic!(current_user, config, expires_at)
+      end
+
       expires_at = expires_at_for(order, config)
       expired = expires_at.present? && expires_at <= Time.zone.now
       value = cosmetic_value(config)
@@ -176,12 +151,16 @@ module DiscoursePointsMall
         equipped: !expired && equipped?(config[:kind], value),
         equippable: !expired,
       }
+    rescue StandardError => e
+      Rails.logger.warn("[points-mall] item_payload error for order #{order&.id}: #{e.class} #{e.message}")
+      nil
     end
 
     def theme_skin_ticket_count(orders)
       order_count =
         orders.count do |order|
-          COSMETIC_PRODUCTS[order.product&.product_key]&.dig(:kind) == "theme_skin"
+          config = DiscoursePointsMall::Cosmetics.find_config(order.product)
+          config&.dig(:kind) == "theme_skin"
         end
 
       [current_user.custom_fields["jn_theme_skin_ticket_count"].to_i, order_count].max
@@ -213,7 +192,7 @@ module DiscoursePointsMall
         .includes(:product)
         .find_by(id: order_id)
         .tap do |order|
-          return nil unless order && COSMETIC_PRODUCTS.key?(order.product&.product_key)
+          return nil unless order && DiscoursePointsMall::Cosmetics.cosmetic?(order.product)
         end
     end
 
@@ -230,7 +209,7 @@ module DiscoursePointsMall
     def expires_at_for(order, config)
       note_expires = order_notes(order)["expires_at"].presence
       return Time.zone.parse(note_expires) if note_expires
-      return nil unless config[:duration_days]
+      return nil unless config && config[:duration_days]
 
       order.created_at + config[:duration_days].days
     rescue StandardError
@@ -276,7 +255,7 @@ module DiscoursePointsMall
     end
 
     def display_value_for(kind, value, fallback = nil)
-      named = COSMETIC_PRODUCTS.values.find { |config| config[:kind].to_s == kind.to_s && cosmetic_value(config).to_s == value.to_s }
+      named = DiscoursePointsMall::Cosmetics::CATALOG.values.find { |config| config[:kind].to_s == kind.to_s && cosmetic_value(config).to_s == value.to_s }
       return fallback if fallback.present?
       return named[:title] if named&.dig(:title).present?
 

@@ -336,11 +336,11 @@ module DiscoursePointsMall
     end
 
     def cosmetic_product?(product)
-      product.respond_to?(:product_key) && COSMETIC_PRODUCTS.key?(product.product_key)
+      DiscoursePointsMall::Cosmetics.cosmetic?(product)
     end
 
     def cosmetic_config(product)
-      COSMETIC_PRODUCTS[product.product_key]
+      DiscoursePointsMall::Cosmetics.find_config(product)
     end
 
     def cosmetic_expires_at(config)
