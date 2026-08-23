@@ -4737,3 +4737,76 @@ html.jn-theme-skin-starrail-neon .inventory-card.equipped {
     background: var(--secondary);
   }
 }
+
+/* =========================================================
+ * COSMÉTICOS NATIVOS - MOLDURAS NEON E FLARING (CONIC GRADIENTS)
+ * ======================================================= */
+
+@keyframes pm-avatar-shine {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.avatar-frame-gold-vip,
+.avatar-frame-neon-pink,
+.avatar-frame-cyan-electric,
+.avatar-frame-purple-deep,
+.avatar-frame-green-kenny,
+.avatar-frame-sakura-red {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  padding: 3px !important;
+  animation: pm-avatar-shine 3s linear infinite !important;
+
+  img.avatar {
+    display: block !important;
+    border-radius: 50% !important;
+    background: #000000 !important;
+  }
+}
+
+.avatar-frame-gold-vip {
+  background: conic-gradient(from 0deg, #FFD700, #ffffff, #FFD700, #000000, #FFD700) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px #FFD700, 0 0 25px #FFD700 !important;
+  }
+}
+
+.avatar-frame-neon-pink {
+  background: conic-gradient(from 0deg, #FF00FF, #ffffff, #FF00FF, #000000, #FF00FF) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px #FF00FF, 0 0 25px #FF00FF !important;
+  }
+}
+
+.avatar-frame-cyan-electric {
+  background: conic-gradient(from 0deg, #00FFFF, #ffffff, #00FFFF, #000000, #00FFFF) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px #00FFFF, 0 0 25px #00FFFF !important;
+  }
+}
+
+.avatar-frame-purple-deep {
+  background: conic-gradient(from 0deg, rgb(88, 24, 124), #ffffff, rgb(88, 24, 124), #000000, rgb(88, 24, 124)) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px rgb(88, 24, 124), 0 0 25px rgb(88, 24, 124) !important;
+  }
+}
+
+.avatar-frame-green-kenny {
+  background: conic-gradient(from 0deg, #00FF00, #ffffff, #00FF00, #000000, #00FF00) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px #00FF00, 0 0 25px #00FF00 !important;
+  }
+}
+
+.avatar-frame-sakura-red {
+  background: conic-gradient(from 0deg, #FF003C, #ffffff, #FF003C, #000000, #FF003C) !important;
+  img.avatar {
+    box-shadow: 0 0 5px #fff, 0 0 15px #FF003C, 0 0 25px #FF003C !important;
+  }
+}

@@ -9,50 +9,50 @@ module DiscoursePointsMall
     before_action :ensure_logged_in
 
     COSMETIC_PRODUCTS = {
-      "cosmetic_title_launch_trainer_30d" => {
-        kind: "title",
-        value: "开服训练家",
-        duration_days: 30,
-      },
-      "cosmetic_title_shiny_collector_30d" => {
-        kind: "title",
-        value: "闪光收藏家",
-        duration_days: 30,
-      },
-      "cosmetic_title_zenless_resident_30d" => {
-        kind: "title",
-        value: "绝区零居民",
-        duration_days: 30,
-      },
-      "cosmetic_avatar_frame_neon_30d" => {
+      "cosmetic_avatar_frame_gold_vip_30d" => {
         kind: "avatar_frame",
-        value: "neon_aqua",
+        value: "gold_vip",
         duration_days: 30,
       },
-      "cosmetic_card_border_holo_30d" => {
-        kind: "card_border",
-        value: "holo_gold",
+      "cosmetic_avatar_frame_neon_pink_30d" => {
+        kind: "avatar_frame",
+        value: "neon_pink",
         duration_days: 30,
       },
-      "cosmetic_profile_bg_zzz_30d" => {
-        kind: "profile_background",
-        value: "zenless_blue",
+      "cosmetic_avatar_frame_cyan_electric_30d" => {
+        kind: "avatar_frame",
+        value: "cyan_electric",
         duration_days: 30,
       },
-      "cosmetic_post_signature_sakura_30d" => {
-        kind: "post_signature",
-        value: "sakura_tail",
+      "cosmetic_avatar_frame_purple_deep_30d" => {
+        kind: "avatar_frame",
+        value: "purple_deep",
         duration_days: 30,
       },
-      "cosmetic_svip_glow_30d" => {
-        kind: "svip_glow",
-        value: "aurora",
+      "cosmetic_avatar_frame_green_kenny_30d" => {
+        kind: "avatar_frame",
+        value: "green_kenny",
         duration_days: 30,
       },
-      "cosmetic_theme_skin_ticket" => {
-        kind: "theme_skin",
-        value: "starrail_neon",
-        duration_days: nil,
+      "cosmetic_avatar_frame_sakura_red_30d" => {
+        kind: "avatar_frame",
+        value: "sakura_red",
+        duration_days: 30,
+      },
+      "cosmetic_title_vip_30d" => {
+        kind: "title",
+        value: "Membro VIP",
+        duration_days: 30,
+      },
+      "cosmetic_title_explorador_30d" => {
+        kind: "title",
+        value: "Explorador",
+        duration_days: 30,
+      },
+      "cosmetic_title_guardiao_30d" => {
+        kind: "title",
+        value: "Guardião das Águas",
+        duration_days: 30,
       },
     }.freeze
 
@@ -88,13 +88,13 @@ module DiscoursePointsMall
     }.freeze
 
     KIND_LABELS = {
-      "title" => "称号",
-      "avatar_frame" => "头像框",
-      "card_border" => "名片边框",
-      "profile_background" => "个人页背景",
-      "post_signature" => "发帖小尾巴",
-      "svip_glow" => "SVIP 特效",
-      "theme_skin" => "主题 UI",
+      "title" => "Título Especial",
+      "avatar_frame" => "Moldura Neon / Flare",
+      "card_border" => "Borda de Perfil",
+      "profile_background" => "Fundo de Perfil",
+      "post_signature" => "Assinatura de Post",
+      "svip_glow" => "Brilho SVIP",
+      "theme_skin" => "Skin de Tema",
     }.freeze
 
     def index
@@ -103,27 +103,27 @@ module DiscoursePointsMall
 
     def equip
       order = cosmetic_order(params[:order_id])
-      return render_json_error("未找到该装饰", status: 404) unless order
+      return render_json_error("Item de cosmético não encontrado", status: 404) unless order
 
       config = COSMETIC_PRODUCTS[order.product.product_key]
-      return render_json_error("该装饰已过期", status: 422) if expired_order?(order, config)
+      return render_json_error("Este item de cosmético já expirou", status: 422) if expired_order?(order, config)
 
       apply_cosmetic!(current_user, config, expires_at_for(order, config))
       render json: inventory_payload
     rescue StandardError => e
       Rails.logger.warn("[points-mall] inventory equip failed: #{e.class}: #{e.message}")
-      render_json_error("装备失败，请稍后再试", status: 422)
+      render_json_error("Falha ao equipar o item. Tente novamente em instantes.", status: 422)
     end
 
     def unequip
       kind = params[:kind].to_s
-      return render_json_error("不支持该装饰类型", status: 422) unless KIND_FIELDS.key?(kind)
+      return render_json_error("Tipo de cosmético não suportado", status: 422) unless KIND_FIELDS.key?(kind)
 
       remove_cosmetic!(current_user, kind)
       render json: inventory_payload
     rescue StandardError => e
       Rails.logger.warn("[points-mall] inventory unequip failed: #{e.class}: #{e.message}")
-      render_json_error("卸下失败，请稍后再试", status: 422)
+      render_json_error("Falha ao desequipar o item. Tente novamente em instantes.", status: 422)
     end
 
     private
@@ -257,20 +257,22 @@ module DiscoursePointsMall
     def display_time(time)
       return nil unless time
 
-      time.in_time_zone.strftime("%Y-%m-%d %H:%M")
+      time.in_time_zone.strftime("%d/%m/%Y %H:%M")
     end
 
     def remaining_text(time)
       return nil unless time
 
       seconds = (time - Time.zone.now).to_i
-      return "已过期" if seconds <= 0
+      return "Expirado" if seconds <= 0
 
       days = seconds / 1.day
-      return "剩余 #{days} 天" if days.positive?
+      return "Resta #{days} dia" if days == 1
+      return "Restam #{days} dias" if days.positive?
 
       hours = [seconds / 1.hour, 1].max
-      "剩余 #{hours} 小时"
+      return "Resta #{hours} hora" if hours == 1
+      "Restam #{hours} horas"
     end
 
     def display_value_for(kind, value, fallback = nil)
@@ -279,20 +281,26 @@ module DiscoursePointsMall
       return named[:title] if named&.dig(:title).present?
 
       case value.to_s
-      when "neon_aqua"
-        "霓虹水蓝"
-      when "holo_gold"
-        "全息金"
-      when "zenless_blue"
-        "新艾利都夜景"
-      when "sakura_tail"
-        "樱花轨迹"
-      when "aurora"
-        "极光发光名牌"
-      when "starrail_neon"
-        "星轨霓虹"
+      when "gold_vip"
+        "Dourado VIP Neon"
+      when "neon_pink"
+        "Rosa Neon"
+      when "cyan_electric"
+        "Cyan Elétrico"
+      when "purple_deep"
+        "Roxo Profundo"
+      when "green_kenny"
+        "Verde Kenny"
+      when "sakura_red"
+        "Vermelho Sakura"
+      when "Membro VIP"
+        "Membro VIP"
+      when "Explorador"
+        "Explorador"
+      when "Guardião das Águas"
+        "Guardião das Águas"
       else
-        value.to_s.tr("_", " ")
+        value.to_s.tr("_", " ").titleize
       end
     end
 
