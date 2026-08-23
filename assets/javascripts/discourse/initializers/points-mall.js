@@ -10,9 +10,9 @@ function usernameFromApi(api) {
 }
 
 function clearAvatarFrames() {
-  document
-    .querySelectorAll("img.jn-avatar-frame-neon-aqua")
-    .forEach((node) => node.classList.remove("jn-avatar-frame-neon-aqua"));
+  document.querySelectorAll("img[class*='jn-avatar-frame-']").forEach((node) => {
+    node.className = node.className.replace(/\bjn-avatar-frame-\S+/g, "").trim();
+  });
 }
 
 function applyThemeSkin(themeSkin) {
@@ -25,11 +25,12 @@ function applyAvatarFrame(username, frame) {
   clearAvatarFrames();
   document.documentElement.dataset.jnAvatarFrame = frame || "";
 
-  if (!username || frame !== "neon_aqua") {
+  if (!frame) {
     return;
   }
 
-  const normalized = encodeURIComponent(username.toLowerCase());
+  const frameClass = `jn-avatar-frame-${frame.toLowerCase().replace(/_/g, "-")}`;
+
   const selectors = [
     ".header-dropdown-toggle.current-user img.avatar",
     ".current-user img.avatar",
@@ -40,13 +41,15 @@ function applyAvatarFrame(username, frame) {
 
   document.querySelectorAll(selectors.join(",")).forEach((img) => {
     const src = (img.getAttribute("src") || "").toLowerCase();
+    const alt = (img.getAttribute("alt") || "").toLowerCase();
+    const userLower = username ? username.toLowerCase() : "";
+
     if (
       img.closest(".header-dropdown-toggle.current-user") ||
       img.closest(".current-user") ||
-      src.includes(`/${normalized}/`) ||
-      src.includes(`/${username.toLowerCase()}/`)
+      (userLower && (src.includes(`/${encodeURIComponent(userLower)}/`) || src.includes(`/${userLower}/`) || alt === userLower))
     ) {
-      img.classList.add("jn-avatar-frame-neon-aqua");
+      img.classList.add("jn-avatar-frame-active", frameClass);
     }
   });
 }
@@ -89,11 +92,13 @@ export default apiInitializer("1.8.0", (api) => {
   }
 
   refreshCurrentUserCosmetics(api);
+
   window.addEventListener("jn:cosmetics-updated", (event) => {
     const inventory = event?.detail?.inventory || {};
     applyAvatarFrame(usernameFromApi(api), inventory?.equipped?.avatar_frame?.value);
     applyThemeSkin(inventory?.equipped?.theme_skin?.value);
   });
+
   api.onPageChange(() => {
     window.setTimeout(() => refreshCurrentUserCosmetics(api), 150);
   });

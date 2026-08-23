@@ -120,12 +120,6 @@ module DiscoursePointsMall
       config = DiscoursePointsMall::Cosmetics.find_config(product)
       return nil unless config
 
-      # If the order status was manually marked completed, ensure custom fields are populated
-      if equipped?(config[:kind], cosmetic_value(config)) == false && current_user.custom_fields[KIND_FIELDS.dig(config[:kind], :value)].blank?
-        expires_at = expires_at_for(order, config)
-        apply_cosmetic!(current_user, config, expires_at)
-      end
-
       expires_at = expires_at_for(order, config)
       expired = expires_at.present? && expires_at <= Time.zone.now
       value = cosmetic_value(config)

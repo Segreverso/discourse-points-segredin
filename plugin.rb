@@ -2,12 +2,18 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.11
+# version: 0.4.12
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
 
 enabled_site_setting :points_mall_enabled
+
+User.register_custom_field_type("jn_cosmetic_avatar_frame", :string)
+User.register_custom_field_type("jn_cosmetic_title", :string)
+
+DiscoursePluginRegistry.serialized_current_user_fields << "jn_cosmetic_avatar_frame"
+DiscoursePluginRegistry.serialized_current_user_fields << "jn_cosmetic_title"
 
 register_asset "stylesheets/common/points-mall.scss"
 register_asset "stylesheets/mobile/points-mall.scss", :mobile

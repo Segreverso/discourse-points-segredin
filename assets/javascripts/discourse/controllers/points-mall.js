@@ -496,6 +496,11 @@ export default class PointsMallController extends Controller {
       });
       if (res && res.inventory && this.model) {
         this.model.inventory = res.inventory;
+        window.dispatchEvent(
+          new CustomEvent("jn:cosmetics-updated", {
+            detail: { inventory: res.inventory },
+          })
+        );
       }
       window.location.reload();
     } catch (e) {
@@ -512,6 +517,11 @@ export default class PointsMallController extends Controller {
       });
       if (res && res.inventory && this.model) {
         this.model.inventory = res.inventory;
+        window.dispatchEvent(
+          new CustomEvent("jn:cosmetics-updated", {
+            detail: { inventory: res.inventory },
+          })
+        );
       }
       window.location.reload();
     } catch (e) {
