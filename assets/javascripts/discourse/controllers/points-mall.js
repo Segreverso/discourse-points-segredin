@@ -490,7 +490,7 @@ export default class PointsMallController extends Controller {
   @action
   async equipCosmetic(orderId) {
     try {
-      const res = await ajax("/points-mall/inventory/equip.json", {
+      const res = await ajax("/loja/inventario/equipar", {
         type: "POST",
         data: { order_id: orderId },
       });
@@ -506,7 +506,7 @@ export default class PointsMallController extends Controller {
   @action
   async unequipCosmetic(kind) {
     try {
-      const res = await ajax("/points-mall/inventory/unequip.json", {
+      const res = await ajax("/loja/inventario/desequipar", {
         type: "POST",
         data: { kind },
       });

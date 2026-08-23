@@ -2,7 +2,7 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.10
+# version: 0.4.11
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
@@ -111,21 +111,28 @@ after_initialize do
   )
 
   Discourse::Application.routes.append do
-    scope module: "discourse_points_mall", path: "/loja" do
-      get "/" => "pages#index", format: false
-      resources :products, path: "produtos", only: [:index, :show]
-      resources :orders, path: "pedidos", only: [:index, :create, :show]
-      resources :checkins, path: "checkin", only: [:index, :create]
-      get "/checkin/resumo" => "checkins#summary"
-      post "/checkin/recuperar" => "checkins#makeup"
-      get "/extrato" => "points#ledger"
-      get "/shouts" => "shouts#index"
-      post "/shouts" => "shouts#create"
-      delete "/shouts/:id" => "shouts#destroy"
-      get "/inventario" => "inventory#index"
-      post "/inventario/equipar" => "inventory#equip"
-      post "/inventario/desequipar" => "inventory#unequip"
-      resources :addresses, path: "enderecos", only: %i[index create update destroy]
+    %w[/loja /points-mall].each do |prefix|
+      scope module: "discourse_points_mall", path: prefix do
+        get "/" => "pages#index", format: false
+        resources :products, path: "produtos", only: [:index, :show]
+        resources :orders, path: "pedidos", only: [:index, :create, :show]
+        resources :checkins, path: "checkin", only: [:index, :create]
+        get "/checkin/resumo" => "checkins#summary"
+        post "/checkin/recuperar" => "checkins#makeup"
+        get "/extrato" => "points#ledger"
+        get "/shouts" => "shouts#index"
+        post "/shouts" => "shouts#create"
+        delete "/shouts/:id" => "shouts#destroy"
+
+        get "/inventario" => "inventory#index"
+        get "/inventory" => "inventory#index"
+        post "/inventario/equipar" => "inventory#equip"
+        post "/inventory/equip" => "inventory#equip"
+        post "/inventario/desequipar" => "inventory#unequip"
+        post "/inventory/unequip" => "inventory#unequip"
+
+        resources :addresses, path: "enderecos", only: %i[index create update destroy]
+      end
     end
 
     %w[/admin/plugins/discourse-points-mall /admin/plugins/points-mall].each do |prefix|
