@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.4.26** | 23/08/2026 | Rails API / Admin Templates | **Nomenclatura Concisa "Aura Dourada"**: Remoção da palavra VIP do cosmético `gold_vip` (passando para "Aura Dourada"), reservando o benefício VIP exclusivo à "Aura Rubi" (`ruby_red`). |
 | **v0.4.25** | 23/08/2026 | Rails API / Admin GJS / i18n | **Nomenclatura "Aura de Avatar"**: Padronização do termo "Aura de Avatar" (e "Brilho do Nome") nas categorias, seletores admin e i18n para melhor legibilidade nos cards e interface. |
 | **v0.4.24** | 23/08/2026 | Rails API / JS Initializer / SCSS | **Moldura & Nickname VIP Automáticos (`apoiador`)**: Atribuição automática da Moldura de Avatar `ruby_red` e do Brilho de Nickname `ruby_red` para membros do grupo VIP `apoiador` via `public_cosmetics`. |
 | **v0.4.23** | 23/08/2026 | Rails API / JS Initializer / SCSS | **Automação do Nickname VIP (`apoiador`)**: Suporte ao brilho vermelho (`ruby_red`) para membros do grupo `apoiador` via `public_cosmetics` + extensão do `applyCosmeticsToDom` para nicknames sem layout shift. |

@@ -327,12 +327,13 @@ export default <template>
                 >
                   <option value="">Nenhum (Item normal)</option>
                   <optgroup label="Auras de Avatar (Gradientes Animados)">
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Aura Verde Esmeralda (green_kenny)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Aura Cerejeira (sakura_red)</option>
                   </optgroup>
                   <optgroup label="Títulos Especiais">
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>
@@ -645,12 +646,13 @@ export default <template>
                         >
                           <option value="">Nenhum (Item normal)</option>
                           <optgroup label="Auras de Avatar">
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP Neon (gold_vip)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Aura Verde Esmeralda (green_kenny)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Aura Cerejeira (sakura_red)</option>
                           </optgroup>
                           <optgroup label="Títulos Especiais">
                             <option selected={{eq product.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>

@@ -369,18 +369,18 @@ export default <template>
                 >
                   <option value="">Nenhum (Item normal)</option>
                   <optgroup label="Auras de Avatar (Brilhos & Neon)">
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP 24K (gold_vip)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Vermelho Ruby (ruby_red)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Azul Bebê (baby_blue)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Roxo Meio Rosado (pinkish_purple)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Rosa Cintilante (sparkling_pink)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Azul Neon (neon_blue)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Verde Cintilante (sparkling_green)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
-                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Aura Azul Bebê (baby_blue)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Aura Magenta (pinkish_purple)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Aura Rosa Estelar (sparkling_pink)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Aura Azul Névoa (neon_blue)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Aura Verde Jade (sparkling_green)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Aura Verde Esmeralda (green_kenny)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Aura Cerejeira (sakura_red)</option>
                   </optgroup>
                   <optgroup label="Títulos Especiais">
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>
@@ -693,18 +693,18 @@ export default <template>
                         >
                           <option value="">Nenhum (Item normal)</option>
                           <optgroup label="Auras de Avatar">
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Dourado VIP 24K (gold_vip)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Vermelho Ruby (ruby_red)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Azul Bebê (baby_blue)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Roxo Meio Rosado (pinkish_purple)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Rosa Cintilante (sparkling_pink)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Azul Neon (neon_blue)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Verde Cintilante (sparkling_green)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Rosa Neon (neon_pink)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Cyan Elétrico (cyan_electric)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Roxo Profundo (purple_deep)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Verde Kenny (green_kenny)</option>
-                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Vermelho Sakura (sakura_red)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Aura Azul Bebê (baby_blue)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Aura Magenta (pinkish_purple)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Aura Rosa Estelar (sparkling_pink)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Aura Azul Névoa (neon_blue)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Aura Verde Jade (sparkling_green)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_green_kenny_30d"}} value="cosmetic_avatar_frame_green_kenny_30d">Aura Verde Esmeralda (green_kenny)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sakura_red_30d"}} value="cosmetic_avatar_frame_sakura_red_30d">Aura Cerejeira (sakura_red)</option>
                           </optgroup>
                           <optgroup label="Títulos Especiais">
                             <option selected={{eq product.product_key "cosmetic_title_vip_30d"}} value="cosmetic_title_vip_30d">Título: Membro VIP</option>
