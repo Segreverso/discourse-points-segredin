@@ -91,6 +91,7 @@ module DiscoursePointsMall
           :points_cost,
           :stock,
           :product_type,
+          :product_key,
           :category,
           :featured,
           :badge_text,
@@ -133,8 +134,9 @@ module DiscoursePointsMall
         attrs.delete(:featured)
       end
 
-      unless ::PointsMallProduct.has_badge_text?
-        attrs.delete(:badge_text)
+      attrs[:product_key] = attrs[:product_key].to_s.strip.presence if attrs.key?(:product_key)
+      unless ::PointsMallProduct.has_product_key?
+        attrs.delete(:product_key)
       end
 
       attrs[:enabled] = to_bool(attrs[:enabled]) if attrs.key?(:enabled)

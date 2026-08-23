@@ -9,7 +9,7 @@ class PointsMallProduct < ActiveRecord::Base
 
   validates :name, presence: true
   validates :points_cost, presence: true, numericality: { greater_than: 0 }
-  validates :product_type, presence: true, inclusion: { in: %w[virtual physical] }
+  validates :product_type, presence: true, inclusion: { in: %w[virtual physical cosmetic group] }
   validates :product_key, uniqueness: true, allow_nil: true, if: -> { self.class.has_product_key? }
 
   scope :enabled, -> { where(enabled: true) }
