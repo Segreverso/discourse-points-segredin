@@ -245,7 +245,11 @@ async function refreshCurrentUserCosmetics(api) {
 }
 
 export default apiInitializer("1.8.0", (api) => {
-  api.includePostAttributes?.("user_jn_cosmetic_avatar_frame");
+  if (api.addTrackedPostProperties) {
+    api.addTrackedPostProperties("user_jn_cosmetic_avatar_frame");
+  } else if (api.includePostAttributes) {
+    api.includePostAttributes("user_jn_cosmetic_avatar_frame");
+  }
 
   if (currentUser(api)) {
     api.addNavigationBarItem({
