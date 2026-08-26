@@ -34,7 +34,35 @@ function defaultMakeupConfig() {
 }
 
 export default class AdminPluginsShowDiscoursePointsMallManage extends DiscourseRoute {
+  beforeModel(transition) {
+    super.beforeModel?.(transition);
+    const plugin = this.modelFor("adminPlugins.show");
+    if (plugin && plugin.id && plugin.id !== "discourse-points-mall" && plugin.id !== "points-mall") {
+      transition?.abort?.();
+      return;
+    }
+  }
+
   async model() {
+    const plugin = this.modelFor("adminPlugins.show");
+    if (plugin && plugin.id && plugin.id !== "discourse-points-mall" && plugin.id !== "points-mall") {
+      return {
+        products: [],
+        orders: [],
+        groups: [],
+        checkinSummary: {},
+        checkinTrend: [],
+        checkinTopUsers: [],
+        recentCheckins: [],
+        dashboardStats: {},
+        newProduct: defaultProduct(),
+        makeupConfig: defaultMakeupConfig(),
+        productTypes: ["virtual", "physical"],
+        orderTypes: ["all", "physical", "virtual"],
+        orderStatuses: ["pending", "processing", "completed", "cancelled"],
+      };
+    }
+
     const [productsRes, ordersRes, checkinsRes] =
       await Promise.all([
         ajax("/admin/plugins/discourse-points-mall/manage/products").catch(() => ({
