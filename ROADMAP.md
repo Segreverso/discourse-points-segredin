@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.4.32** | 26/08/2026 | JS Initializers (`points-mall.js`) | **Remoção do Item no Top Navigation Bar (`#navigation-bar`)**: Removida a chamada `api.addNavigationBarItem` para desativar a injeção do botão "Loja de Pontos" na barra superior de navegação (`nav-pills`), permitindo que a navegação seja gerenciada customizadamente na barra lateral (`sidebar`). |
 | **v0.4.31** | 26/08/2026 | Ember Route Map & Admin Routes | **Isolamento Estrito das Rotas Admin (`/admin/plugins`)**: Alterado o caminho em `admin-discourse-points-mall-plugin-route-map.js` de `{ path: "/" }` para `{ path: "/discourse-points-mall" }` e inserida verificação em `beforeModel` para impedir que o painel de admin da loja seja indevidamente renderizado ao visualizar outros plugins no painel do Discourse (`segredin.com`). |
 | **v0.4.30** | 25/08/2026 | JS Initializers | **Compatibilidade Discourse v3.5+ (`addTrackedPostProperties`)**: Substituição do método obsoleto `api.includePostAttributes` por `api.addTrackedPostProperties` com fallback retrocompatível para versões anteriores do Discourse. |
 | **v0.4.29** | 23/08/2026 | GJS / SCSS Common | **Layout Vertical Proporcional do Inventário**: Correção de sobreposição de texto flexbox no inventário. Redesenho para card vertical com imagem container de 110px (`object-fit: contain`), badges organizadas e botão de ação sem colisão. |
