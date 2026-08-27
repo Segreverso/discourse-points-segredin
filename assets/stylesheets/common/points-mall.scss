@@ -636,14 +636,28 @@
    ========================================================================== */
 
 /* Prevent Discourse containers from clipping avatar frame auras */
+/* Broad coverage for all known Discourse avatar wrappers */
 .topic-avatar,
 .user-card-avatar,
 .user-profile-avatar,
 .card-huge-avatar,
 .avatar-wrapper,
+.main-avatar,
 .jn-podium-avatar,
 .jn-leaderboard-avatar,
 a[data-sgd-flare] {
+  overflow: visible !important;
+}
+
+/* :has() precision - only activate overflow:visible when a framed img is inside */
+.topic-avatar:has(img.jn-avatar-frame-active),
+.user-card-avatar:has(img.jn-avatar-frame-active),
+.user-profile-avatar:has(img.jn-avatar-frame-active),
+.card-huge-avatar:has(img.jn-avatar-frame-active),
+.avatar-wrapper:has(img.jn-avatar-frame-active),
+.main-avatar:has(img.jn-avatar-frame-active),
+.jn-podium-avatar:has(img.jn-avatar-frame-active),
+.jn-leaderboard-avatar:has(img.jn-avatar-frame-active) {
   overflow: visible !important;
 }
 
