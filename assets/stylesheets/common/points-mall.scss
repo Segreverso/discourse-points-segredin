@@ -635,7 +635,7 @@
    ESTILOS DE MOLDURAS E FLARES DE AVATAR (POINTS MALL COSMETICS)
    ========================================================================== */
 
-/* Prevent Discourse containers from clipping avatar frame auras into square boxes */
+/* Prevent Discourse containers from clipping avatar frame auras */
 .topic-avatar,
 .user-card-avatar,
 .user-profile-avatar,
@@ -645,6 +645,18 @@
 .jn-leaderboard-avatar,
 a[data-sgd-flare] {
   overflow: visible !important;
+}
+
+/* Guarantee ALL avatars are 100% round circles with zero square corners */
+img.avatar,
+.avatar-wrapper img,
+.user-card-avatar img,
+.user-profile-avatar img,
+.topic-avatar img,
+img[class*="jn-avatar-frame-"] {
+  border-radius: 50% !important;
+  padding: 0 !important;
+  object-fit: cover !important;
 }
 
 @keyframes jn-frame-pulse {
@@ -667,174 +679,129 @@ a[data-sgd-flare] {
 img.jn-avatar-frame-active,
 img[class*="jn-avatar-frame-"] {
   border-radius: 50% !important;
+  padding: 0 !important;
   transition: box-shadow 0.3s ease, filter 0.3s ease, transform 0.3s ease;
   animation: jn-frame-pulse 4s ease-in-out infinite;
   overflow: visible !important;
 }
 
-/* Avatar Frame Base Structure */
-img[class*="jn-avatar-frame-"] {
-  border-radius: 50% !important;
-  padding: 3px !important;
-  box-sizing: border-box !important;
-}
-.user-profile-avatar img[class*="jn-avatar-frame-"],
-.user-card-avatar img[class*="jn-avatar-frame-"] {
-  padding: 4px !important;
-}
-
-/* 1. Dourado VIP (Aura Solar & Textura Conica) */
-img.jn-avatar-frame-gold-vip {
-  background: conic-gradient(#ffffff 0deg, #ffd700 90deg, #ffa000 180deg, #ffd700 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #ffd700,
-    0 0 20px rgba(255, 215, 0, 0.65),
-    0 0 32px rgba(255, 160, 0, 0.35) !important;
-}
+/* 1. Dourado VIP (Aura Solar & Anel Conico Circundante) */
+img.jn-avatar-frame-gold-vip,
 .user-profile-avatar img.jn-avatar-frame-gold-vip,
 .user-card-avatar img.jn-avatar-frame-gold-vip {
-  background: conic-gradient(#ffffff 0deg, #ffd700 90deg, #ffa000 180deg, #ffd700 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #ffd700,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #ffd700,
-    0 0 26px rgba(255, 215, 0, 0.75),
-    0 0 42px rgba(255, 160, 0, 0.45) !important;
+    0 0 24px rgba(255, 215, 0, 0.75),
+    0 0 40px rgba(255, 160, 0, 0.45) !important;
 }
 
 /* 2. Vermelho Ruby / Sakura Red */
 img.jn-avatar-frame-ruby-red,
-img.jn-avatar-frame-sakura-red {
-  background: conic-gradient(#ffffff 0deg, #ff4d6d 90deg, #d50000 180deg, #ff4d6d 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #ff4d6d,
-    0 0 20px rgba(255, 77, 109, 0.65),
-    0 0 32px rgba(213, 0, 0, 0.35) !important;
-}
+img.jn-avatar-frame-sakura-red,
 .user-profile-avatar img.jn-avatar-frame-ruby-red,
 .user-card-avatar img.jn-avatar-frame-ruby-red,
 .user-profile-avatar img.jn-avatar-frame-sakura-red,
 .user-card-avatar img.jn-avatar-frame-sakura-red {
-  background: conic-gradient(#ffffff 0deg, #ff4d6d 90deg, #d50000 180deg, #ff4d6d 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #ff4d6d,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #ff4d6d,
-    0 0 26px rgba(255, 77, 109, 0.75),
-    0 0 42px rgba(213, 0, 0, 0.45) !important;
+    0 0 24px rgba(255, 77, 109, 0.75),
+    0 0 40px rgba(213, 0, 0, 0.45) !important;
 }
 
 /* 3. Azul Bebe / Soft Blue */
 img.jn-avatar-frame-baby-blue,
-img.jn-avatar-frame-soft-blue {
-  background: conic-gradient(#ffffff 0deg, #80deea 90deg, #00acc1 180deg, #80deea 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #80deea,
-    0 0 20px rgba(128, 222, 234, 0.65),
-    0 0 32px rgba(0, 172, 193, 0.35) !important;
-}
+img.jn-avatar-frame-soft-blue,
 .user-profile-avatar img.jn-avatar-frame-baby-blue,
 .user-card-avatar img.jn-avatar-frame-baby-blue,
 .user-profile-avatar img.jn-avatar-frame-soft-blue,
 .user-card-avatar img.jn-avatar-frame-soft-blue {
-  background: conic-gradient(#ffffff 0deg, #80deea 90deg, #00acc1 180deg, #80deea 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #80deea,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #80deea,
-    0 0 26px rgba(128, 222, 234, 0.75),
-    0 0 42px rgba(0, 172, 193, 0.45) !important;
+    0 0 24px rgba(128, 222, 234, 0.75),
+    0 0 40px rgba(0, 172, 193, 0.45) !important;
 }
 
 /* 4. Roxo Deep */
 img.jn-avatar-frame-pinkish-purple,
-img.jn-avatar-frame-purple-deep {
-  background: conic-gradient(#ffffff 0deg, #e040fb 90deg, #aa00ff 180deg, #e040fb 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #e040fb,
-    0 0 20px rgba(224, 64, 251, 0.65),
-    0 0 32px rgba(170, 0, 255, 0.35) !important;
-}
+img.jn-avatar-frame-purple-deep,
 .user-profile-avatar img.jn-avatar-frame-pinkish-purple,
 .user-card-avatar img.jn-avatar-frame-pinkish-purple,
 .user-profile-avatar img.jn-avatar-frame-purple-deep,
 .user-card-avatar img.jn-avatar-frame-purple-deep {
-  background: conic-gradient(#ffffff 0deg, #e040fb 90deg, #aa00ff 180deg, #e040fb 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #e040fb,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #e040fb,
-    0 0 26px rgba(224, 64, 251, 0.75),
-    0 0 42px rgba(170, 0, 255, 0.45) !important;
+    0 0 24px rgba(224, 64, 251, 0.75),
+    0 0 40px rgba(170, 0, 255, 0.45) !important;
 }
 
 /* 5. Rosa Neon */
 img.jn-avatar-frame-sparkling-pink,
-img.jn-avatar-frame-neon-pink {
-  background: conic-gradient(#ffffff 0deg, #ff4081 90deg, #f50057 180deg, #ff4081 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #ff4081,
-    0 0 20px rgba(255, 64, 129, 0.65),
-    0 0 32px rgba(245, 0, 87, 0.35) !important;
-}
+img.jn-avatar-frame-neon-pink,
 .user-profile-avatar img.jn-avatar-frame-sparkling-pink,
 .user-card-avatar img.jn-avatar-frame-sparkling-pink,
 .user-profile-avatar img.jn-avatar-frame-neon-pink,
 .user-card-avatar img.jn-avatar-frame-neon-pink {
-  background: conic-gradient(#ffffff 0deg, #ff4081 90deg, #f50057 180deg, #ff4081 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #ff4081,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #ff4081,
-    0 0 26px rgba(255, 64, 129, 0.75),
-    0 0 42px rgba(245, 0, 87, 0.45) !important;
+    0 0 24px rgba(255, 64, 129, 0.75),
+    0 0 40px rgba(245, 0, 87, 0.45) !important;
 }
 
 /* 6. Cyan Eletrico / Neon Blue */
 img.jn-avatar-frame-neon-blue,
 img.jn-avatar-frame-cyan-electric,
-img.jn-avatar-frame-neon-aqua {
-  background: conic-gradient(#ffffff 0deg, #00e5ff 90deg, #00b0ff 180deg, #00e5ff 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #00e5ff,
-    0 0 20px rgba(0, 229, 255, 0.65),
-    0 0 32px rgba(0, 176, 255, 0.35) !important;
-}
+img.jn-avatar-frame-neon-aqua,
 .user-profile-avatar img.jn-avatar-frame-neon-blue,
 .user-card-avatar img.jn-avatar-frame-neon-blue,
 .user-profile-avatar img.jn-avatar-frame-cyan-electric,
 .user-card-avatar img.jn-avatar-frame-cyan-electric,
 .user-profile-avatar img.jn-avatar-frame-neon-aqua,
 .user-card-avatar img.jn-avatar-frame-neon-aqua {
-  background: conic-gradient(#ffffff 0deg, #00e5ff 90deg, #00b0ff 180deg, #00e5ff 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #00e5ff,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #00e5ff,
-    0 0 26px rgba(0, 229, 255, 0.75),
-    0 0 42px rgba(0, 176, 255, 0.45) !important;
+    0 0 24px rgba(0, 229, 255, 0.75),
+    0 0 40px rgba(0, 176, 255, 0.45) !important;
 }
 
 /* 7. Verde Kenny */
 img.jn-avatar-frame-sparkling-green,
-img.jn-avatar-frame-green-kenny {
-  background: conic-gradient(#ffffff 0deg, #00ff7f 90deg, #00c853 180deg, #00ff7f 270deg, #ffffff 360deg) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 8px #00ff7f,
-    0 0 20px rgba(0, 255, 127, 0.65),
-    0 0 32px rgba(0, 200, 83, 0.35) !important;
-}
+img.jn-avatar-frame-green-kenny,
 .user-profile-avatar img.jn-avatar-frame-sparkling-green,
 .user-card-avatar img.jn-avatar-frame-sparkling-green,
 .user-profile-avatar img.jn-avatar-frame-green-kenny,
 .user-card-avatar img.jn-avatar-frame-green-kenny {
-  background: conic-gradient(#ffffff 0deg, #00ff7f 90deg, #00c853 180deg, #00ff7f 270deg, #ffffff 360deg) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 3px #00ff7f,
+    0 0 0 4px rgba(255, 255, 255, 0.8),
     0 0 12px #00ff7f,
-    0 0 26px rgba(0, 255, 127, 0.75),
-    0 0 42px rgba(0, 200, 83, 0.45) !important;
+    0 0 24px rgba(0, 255, 127, 0.75),
+    0 0 40px rgba(0, 200, 83, 0.45) !important;
 }
 
 /* Username Flairs (Coloracao & Glow Metallico para Nicknames Cosmeticos - Sem caixa retangular!) */
@@ -844,6 +811,7 @@ a.mention[class*="jn-user-flair-"],
 .user-card .username[class*="jn-user-flair-"],
 .user-profile .username[class*="jn-user-flair-"] {
   font-weight: 800 !important;
+  background-color: transparent !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
