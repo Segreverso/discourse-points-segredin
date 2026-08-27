@@ -635,6 +635,18 @@
    ESTILOS DE MOLDURAS E FLARES DE AVATAR (POINTS MALL COSMETICS)
    ========================================================================== */
 
+/* Prevent Discourse containers from clipping avatar frame auras into square boxes */
+.topic-avatar,
+.user-card-avatar,
+.user-profile-avatar,
+.card-huge-avatar,
+.avatar-wrapper,
+.jn-podium-avatar,
+.jn-leaderboard-avatar,
+a[data-sgd-flare] {
+  overflow: visible !important;
+}
+
 @keyframes jn-frame-pulse {
   0%, 100% {
     filter: brightness(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
@@ -657,6 +669,7 @@ img[class*="jn-avatar-frame-"] {
   border-radius: 50% !important;
   transition: box-shadow 0.3s ease, filter 0.3s ease, transform 0.3s ease;
   animation: jn-frame-pulse 4s ease-in-out infinite;
+  overflow: visible !important;
 }
 
 /* Avatar Frame Base Structure */
@@ -824,14 +837,13 @@ img.jn-avatar-frame-green-kenny {
     0 0 42px rgba(0, 200, 83, 0.45) !important;
 }
 
-/* Username Flairs (Coloracao & Glow Metallico para Nicknames Cosmeticos) */
+/* Username Flairs (Coloracao & Glow Metallico para Nicknames Cosmeticos - Sem caixa retangular!) */
 a[class*="jn-user-flair-"],
 .names a[class*="jn-user-flair-"],
 a.mention[class*="jn-user-flair-"],
 .user-card .username[class*="jn-user-flair-"],
 .user-profile .username[class*="jn-user-flair-"] {
   font-weight: 800 !important;
-  display: inline-block !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
@@ -841,72 +853,100 @@ a.mention[class*="jn-user-flair-"],
 
 /* 1. Dourado VIP (Metallic Gold Aura) */
 .jn-user-flair-gold-vip {
+  color: #FFD700 !important;
   background: linear-gradient(135deg, #FFF59D 0%, #FFD700 45%, #FFA000 75%, #FFE082 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(255, 245, 157, 0.9)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.75)) drop-shadow(0 0 16px rgba(255, 160, 0, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(255, 245, 157, 0.9),
+    0 0 10px rgba(255, 215, 0, 0.8),
+    0 0 18px rgba(255, 160, 0, 0.5) !important;
 }
 
 /* 2. Vermelho Ruby / Sakura Red (Metallic Ruby Glow) */
 .jn-user-flair-ruby-red,
 .jn-user-flair-sakura-red {
+  color: #FF1744 !important;
   background: linear-gradient(135deg, #FF80AB 0%, #FF1744 45%, #D50000 75%, #FF4081 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(255, 128, 171, 0.9)) drop-shadow(0 0 8px rgba(255, 23, 68, 0.75)) drop-shadow(0 0 16px rgba(213, 0, 0, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(255, 128, 171, 0.9),
+    0 0 10px rgba(255, 23, 68, 0.8),
+    0 0 18px rgba(213, 0, 0, 0.5) !important;
 }
 
 /* 3. Azul Bebe / Soft Blue (Electric Soft Blue) */
 .jn-user-flair-baby-blue,
 .jn-user-flair-soft-blue {
+  color: #4DD0E1 !important;
   background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 45%, #00ACC1 75%, #80DEEA 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(224, 247, 250, 0.9)) drop-shadow(0 0 8px rgba(77, 208, 225, 0.75)) drop-shadow(0 0 16px rgba(0, 172, 193, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(224, 247, 250, 0.9),
+    0 0 10px rgba(77, 208, 225, 0.8),
+    0 0 18px rgba(0, 172, 193, 0.5) !important;
 }
 
 /* 4. Roxo Deep (Deep Violet Metal) */
 .jn-user-flair-pinkish-purple,
 .jn-user-flair-purple-deep {
+  color: #E040FB !important;
   background: linear-gradient(135deg, #F3E5F5 0%, #E040FB 45%, #AA00FF 75%, #EA80FC 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(243, 229, 245, 0.9)) drop-shadow(0 0 8px rgba(224, 64, 251, 0.75)) drop-shadow(0 0 16px rgba(170, 0, 255, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(243, 229, 245, 0.9),
+    0 0 10px rgba(224, 64, 251, 0.8),
+    0 0 18px rgba(170, 0, 255, 0.5) !important;
 }
 
 /* 5. Rosa Neon (Neon Pink Aura) */
 .jn-user-flair-sparkling-pink,
 .jn-user-flair-neon-pink {
+  color: #FF4081 !important;
   background: linear-gradient(135deg, #FF80AB 0%, #FF4081 45%, #F50057 75%, #FF4081 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(255, 128, 171, 0.9)) drop-shadow(0 0 8px rgba(255, 64, 129, 0.75)) drop-shadow(0 0 16px rgba(245, 0, 87, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(255, 128, 171, 0.9),
+    0 0 10px rgba(255, 64, 129, 0.8),
+    0 0 18px rgba(245, 0, 87, 0.5) !important;
 }
 
 /* 6. Cyan Eletrico / Neon Blue (Cyan Flash) */
 .jn-user-flair-neon-blue,
 .jn-user-flair-cyan-electric,
 .jn-user-flair-neon-aqua {
+  color: #00E5FF !important;
   background: linear-gradient(135deg, #E0F7FA 0%, #00E5FF 45%, #00B0FF 75%, #80D8FF 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(224, 247, 250, 0.9)) drop-shadow(0 0 8px rgba(0, 229, 255, 0.75)) drop-shadow(0 0 16px rgba(0, 176, 255, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(224, 247, 250, 0.9),
+    0 0 10px rgba(0, 229, 255, 0.8),
+    0 0 18px rgba(0, 176, 255, 0.5) !important;
 }
 
 /* 7. Verde Kenny (Emerald Kenny Metal) */
 .jn-user-flair-sparkling-green,
 .jn-user-flair-green-kenny {
+  color: #00E676 !important;
   background: linear-gradient(135deg, #E8F5E9 0%, #00E676 45%, #00C853 75%, #69F0AE 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  filter: drop-shadow(0 0 3px rgba(232, 245, 233, 0.9)) drop-shadow(0 0 8px rgba(0, 230, 118, 0.75)) drop-shadow(0 0 16px rgba(0, 200, 83, 0.4)) !important;
+  text-shadow:
+    0 0 4px rgba(232, 245, 233, 0.9),
+    0 0 10px rgba(0, 230, 118, 0.8),
+    0 0 18px rgba(0, 200, 83, 0.5) !important;
 }
 
 html.jn-theme-skin-starrail-neon {
