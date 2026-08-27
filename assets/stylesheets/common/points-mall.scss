@@ -665,6 +665,22 @@ a[data-sgd-flare] {
   100% { background-position: 0% 50%; }
 }
 
+.topic-avatar img[class*="jn-avatar-frame-"],
+.topic-avatar img.jn-avatar-frame-active,
+.user-card-avatar img[class*="jn-avatar-frame-"],
+.user-card-avatar img.jn-avatar-frame-active,
+.user-profile-avatar img[class*="jn-avatar-frame-"],
+.user-profile-avatar img.jn-avatar-frame-active,
+.card-huge-avatar img[class*="jn-avatar-frame-"],
+.card-huge-avatar img.jn-avatar-frame-active,
+.avatar-wrapper img[class*="jn-avatar-frame-"],
+.avatar-wrapper img.jn-avatar-frame-active,
+.jn-podium-avatar img[class*="jn-avatar-frame-"],
+.jn-podium-avatar img.jn-avatar-frame-active,
+.jn-leaderboard-avatar img[class*="jn-avatar-frame-"],
+.jn-leaderboard-avatar img.jn-avatar-frame-active,
+#current-user img[class*="jn-avatar-frame-"],
+.header-dropdown-toggle img[class*="jn-avatar-frame-"],
 img.jn-avatar-frame-active,
 img[class*="jn-avatar-frame-"] {
   border-radius: 50% !important;
@@ -675,9 +691,11 @@ img[class*="jn-avatar-frame-"] {
 }
 
 /* 1. Dourado VIP (Aura Solar Radial) */
-img.jn-avatar-frame-gold-vip,
+.topic-avatar img.jn-avatar-frame-gold-vip,
 .user-profile-avatar img.jn-avatar-frame-gold-vip,
-.user-card-avatar img.jn-avatar-frame-gold-vip {
+.user-card-avatar img.jn-avatar-frame-gold-vip,
+.avatar-wrapper img.jn-avatar-frame-gold-vip,
+img.jn-avatar-frame-gold-vip {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -688,12 +706,16 @@ img.jn-avatar-frame-gold-vip,
 }
 
 /* 2. Vermelho Ruby / Sakura Red */
-img.jn-avatar-frame-ruby-red,
-img.jn-avatar-frame-sakura-red,
+.topic-avatar img.jn-avatar-frame-ruby-red,
+.topic-avatar img.jn-avatar-frame-sakura-red,
 .user-profile-avatar img.jn-avatar-frame-ruby-red,
 .user-card-avatar img.jn-avatar-frame-ruby-red,
 .user-profile-avatar img.jn-avatar-frame-sakura-red,
-.user-card-avatar img.jn-avatar-frame-sakura-red {
+.user-card-avatar img.jn-avatar-frame-sakura-red,
+.avatar-wrapper img.jn-avatar-frame-ruby-red,
+.avatar-wrapper img.jn-avatar-frame-sakura-red,
+img.jn-avatar-frame-ruby-red,
+img.jn-avatar-frame-sakura-red {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -704,12 +726,16 @@ img.jn-avatar-frame-sakura-red,
 }
 
 /* 3. Azul Bebe / Soft Blue */
-img.jn-avatar-frame-baby-blue,
-img.jn-avatar-frame-soft-blue,
+.topic-avatar img.jn-avatar-frame-baby-blue,
+.topic-avatar img.jn-avatar-frame-soft-blue,
 .user-profile-avatar img.jn-avatar-frame-baby-blue,
 .user-card-avatar img.jn-avatar-frame-baby-blue,
 .user-profile-avatar img.jn-avatar-frame-soft-blue,
-.user-card-avatar img.jn-avatar-frame-soft-blue {
+.user-card-avatar img.jn-avatar-frame-soft-blue,
+.avatar-wrapper img.jn-avatar-frame-baby-blue,
+.avatar-wrapper img.jn-avatar-frame-soft-blue,
+img.jn-avatar-frame-baby-blue,
+img.jn-avatar-frame-soft-blue {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -720,12 +746,16 @@ img.jn-avatar-frame-soft-blue,
 }
 
 /* 4. Roxo Deep */
-img.jn-avatar-frame-pinkish-purple,
-img.jn-avatar-frame-purple-deep,
+.topic-avatar img.jn-avatar-frame-pinkish-purple,
+.topic-avatar img.jn-avatar-frame-purple-deep,
 .user-profile-avatar img.jn-avatar-frame-pinkish-purple,
 .user-card-avatar img.jn-avatar-frame-pinkish-purple,
 .user-profile-avatar img.jn-avatar-frame-purple-deep,
-.user-card-avatar img.jn-avatar-frame-purple-deep {
+.user-card-avatar img.jn-avatar-frame-purple-deep,
+.avatar-wrapper img.jn-avatar-frame-pinkish-purple,
+.avatar-wrapper img.jn-avatar-frame-purple-deep,
+img.jn-avatar-frame-pinkish-purple,
+img.jn-avatar-frame-purple-deep {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -736,12 +766,16 @@ img.jn-avatar-frame-purple-deep,
 }
 
 /* 5. Rosa Neon */
-img.jn-avatar-frame-sparkling-pink,
-img.jn-avatar-frame-neon-pink,
+.topic-avatar img.jn-avatar-frame-sparkling-pink,
+.topic-avatar img.jn-avatar-frame-neon-pink,
 .user-profile-avatar img.jn-avatar-frame-sparkling-pink,
 .user-card-avatar img.jn-avatar-frame-sparkling-pink,
 .user-profile-avatar img.jn-avatar-frame-neon-pink,
-.user-card-avatar img.jn-avatar-frame-neon-pink {
+.user-card-avatar img.jn-avatar-frame-neon-pink,
+.avatar-wrapper img.jn-avatar-frame-sparkling-pink,
+.avatar-wrapper img.jn-avatar-frame-neon-pink,
+img.jn-avatar-frame-sparkling-pink,
+img.jn-avatar-frame-neon-pink {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -752,15 +786,21 @@ img.jn-avatar-frame-neon-pink,
 }
 
 /* 6. Cyan Eletrico / Neon Blue */
-img.jn-avatar-frame-neon-blue,
-img.jn-avatar-frame-cyan-electric,
-img.jn-avatar-frame-neon-aqua,
+.topic-avatar img.jn-avatar-frame-neon-blue,
+.topic-avatar img.jn-avatar-frame-cyan-electric,
+.topic-avatar img.jn-avatar-frame-neon-aqua,
 .user-profile-avatar img.jn-avatar-frame-neon-blue,
 .user-card-avatar img.jn-avatar-frame-neon-blue,
 .user-profile-avatar img.jn-avatar-frame-cyan-electric,
 .user-card-avatar img.jn-avatar-frame-cyan-electric,
 .user-profile-avatar img.jn-avatar-frame-neon-aqua,
-.user-card-avatar img.jn-avatar-frame-neon-aqua {
+.user-card-avatar img.jn-avatar-frame-neon-aqua,
+.avatar-wrapper img.jn-avatar-frame-neon-blue,
+.avatar-wrapper img.jn-avatar-frame-cyan-electric,
+.avatar-wrapper img.jn-avatar-frame-neon-aqua,
+img.jn-avatar-frame-neon-blue,
+img.jn-avatar-frame-cyan-electric,
+img.jn-avatar-frame-neon-aqua {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
@@ -771,12 +811,16 @@ img.jn-avatar-frame-neon-aqua,
 }
 
 /* 7. Verde Kenny */
-img.jn-avatar-frame-sparkling-green,
-img.jn-avatar-frame-green-kenny,
+.topic-avatar img.jn-avatar-frame-sparkling-green,
+.topic-avatar img.jn-avatar-frame-green-kenny,
 .user-profile-avatar img.jn-avatar-frame-sparkling-green,
 .user-card-avatar img.jn-avatar-frame-sparkling-green,
 .user-profile-avatar img.jn-avatar-frame-green-kenny,
-.user-card-avatar img.jn-avatar-frame-green-kenny {
+.user-card-avatar img.jn-avatar-frame-green-kenny,
+.avatar-wrapper img.jn-avatar-frame-sparkling-green,
+.avatar-wrapper img.jn-avatar-frame-green-kenny,
+img.jn-avatar-frame-sparkling-green,
+img.jn-avatar-frame-green-kenny {
   border-radius: 50% !important;
   padding: 0 !important;
   box-shadow:
