@@ -2,10 +2,11 @@ pt_BR:
   js:
     filters:
       "points-mall":
-        title: "Loja de Pontos"
+        title: "Loja"
         help: "Check-in, loja, pedidos e extrato de pontos"
     points_mall:
       title: "Loja de Pontos"
+      nav_title: "Loja"
       subtitle: "Faça check-in diário, ganhe pontos e resgate recompensas"
       balance: "Saldo"
       storefront:

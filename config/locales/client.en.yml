@@ -2,10 +2,11 @@ en:
   js:
     filters:
       "points-mall":
-        title: "Points Mall"
+        title: "Shop"
         help: "Check-in, shop, orders and points ledger"
     points_mall:
       title: "Points Mall"
+      nav_title: "Shop"
       subtitle: "Check in for points and redeem practical rewards"
       balance: "Points Balance"
       storefront:

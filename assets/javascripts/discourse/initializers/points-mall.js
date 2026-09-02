@@ -250,8 +250,16 @@ export default apiInitializer("1.8.0", (api) => {
   } else if (api.includePostAttributes) {
     api.includePostAttributes("user_jn_cosmetic_avatar_frame");
   }
-
-
+  if (currentUser(api)) {
+    api.addNavigationBarItem({
+      name: "points-mall",
+      displayName: i18n("points_mall.nav_title"),
+      href: "/loja",
+      classNames: ["points-mall-nav"],
+      customFilter: () => !!currentUser(api),
+      forceAfter: true,
+    });
+  }
 
   refreshCurrentUserCosmetics(api);
 

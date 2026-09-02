@@ -2,10 +2,11 @@ zh_CN:
   js:
     filters:
       "points-mall":
-        title: "积分商城"
+        title: "商城"
         help: "签到、商店、订单和积分明细"
     points_mall:
       title: "积分商城"
+      nav_title: "商城"
       subtitle: "签到赚积分，兑换超值好礼"
       balance: "积分余额"
       storefront:
