@@ -177,6 +177,7 @@ en:
         total_checkins: "Total check-ins: %{count}"
         total_points: "Total points earned: %{points}"
         history: "Check-in History"
+        history_empty: "No check-in history yet."
         date: "Date"
         points: "Points"
       shop:

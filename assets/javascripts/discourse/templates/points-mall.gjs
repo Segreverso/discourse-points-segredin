@@ -210,10 +210,11 @@ export default <template>
           <div class="checkin-main-grid">
             <article class="checkin-calendar-card">
               <div class="checkin-calendar-head">
-                <h3>{{i18n "points_mall.checkin.calendar_title"}}</h3>
+                <div class="checkin-calendar-title-group">
+                  <h3>{{dIcon "calendar-check"}} {{i18n "points_mall.checkin.calendar_title"}}</h3>
+                  <span class="checkin-progress-badge">{{@controller.checkinSummary.month_progress_percent}}%</span>
+                </div>
                 <div class="checkin-calendar-head-actions">
-                  <span
-                  >{{@controller.checkinSummary.month_progress_percent}}%</span>
                   <button
                     type="button"
                     class="btn btn-small checkin-buy-makeup-btn
@@ -247,21 +248,27 @@ export default <template>
                   {{#if day.placeholder}}
                     <div class="checkin-day-cell placeholder"></div>
                   {{else}}
-                    <div class="checkin-day-cell status-{{day.status}}">
-                      <strong>{{day.day}}</strong>
-                      <span>{{i18n
-                          (concat
-                            "points_mall.checkin.calendar_status." day.status
-                          )
-                        }}</span>
-                      {{#if day.can_makeup}}
+                    <div
+                      class="checkin-day-cell status-{{day.status}} {{if day.is_today 'is-today'}}"
+                      title="{{day.day}} - {{i18n (concat 'points_mall.checkin.calendar_status.' day.status)}}"
+                    >
+                      <span class="day-number">{{day.day}}</span>
+                      {{#if (eq day.status "checked")}}
+                        <span class="cell-status-dot check-dot">{{dIcon "check"}}</span>
+                      {{else if day.can_makeup}}
                         <button
                           type="button"
-                          class="btn btn-small btn-primary checkin-makeup-btn"
+                          class="btn btn-small btn-primary checkin-makeup-micro-btn"
+                          title={{i18n "points_mall.checkin.makeup_action"}}
                           {{on "click" (fn @controller.makeUpCheckin day)}}
                         >
-                          {{i18n "points_mall.checkin.makeup_action"}}
+                          {{dIcon "rotate-right"}}
+                          <span class="makeup-btn-label">{{i18n "points_mall.checkin.makeup_action"}}</span>
                         </button>
+                      {{else if (eq day.status "missed")}}
+                        <span class="cell-status-dot missed-dot"></span>
+                      {{else if day.is_today}}
+                        <span class="cell-status-dot today-dot"></span>
                       {{/if}}
                     </div>
                   {{/if}}
@@ -319,7 +326,12 @@ export default <template>
           </div>
 
           <div class="checkin-history">
-            <h3>{{i18n "points_mall.checkin.history"}}</h3>
+            <div class="checkin-history-head">
+              <h3>{{i18n "points_mall.checkin.history"}}</h3>
+              <span class="checkin-history-total">
+                {{@controller.model.checkins.length}} registros
+              </span>
+            </div>
 
             <div class="checkin-history-table-wrap">
               <table class="checkin-table">
@@ -331,16 +343,60 @@ export default <template>
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each @controller.model.checkins as |checkin|}}
+                  {{#if @controller.paginatedCheckins.length}}
+                    {{#each @controller.paginatedCheckins as |checkin|}}
+                      <tr>
+                        <td>{{formatDateFixed checkin.checkin_date}}</td>
+                        <td>
+                          <span class="history-points-badge">
+                            {{dIcon "coins"}}
+                            +{{checkin.points_earned}}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="history-streak-badge">
+                            {{dIcon "fire"}}
+                            {{checkin.streak_days}}d
+                          </span>
+                        </td>
+                      </tr>
+                    {{/each}}
+                  {{else}}
                     <tr>
-                      <td>{{formatDateFixed checkin.checkin_date}}</td>
-                      <td>{{checkin.points_earned}}</td>
-                      <td>{{checkin.streak_days}}</td>
+                      <td colspan="3" class="checkin-history-empty">
+                        {{i18n "points_mall.checkin.history_empty"}}
+                      </td>
                     </tr>
-                  {{/each}}
+                  {{/if}}
                 </tbody>
               </table>
             </div>
+
+            {{#if (gt @controller.totalCheckinHistoryPages 1)}}
+              <div class="ledger-pagination checkin-pagination">
+                <button
+                  type="button"
+                  class="btn btn-default btn-small"
+                  disabled={{eq @controller.checkinHistoryPage 1}}
+                  {{on "click" @controller.prevCheckinHistoryPage}}
+                >
+                  {{dIcon "chevron-left"}} Anterior
+                </button>
+
+                <span class="ledger-page-indicator">
+                  Página {{@controller.checkinHistoryPage}} de {{@controller.totalCheckinHistoryPages}}
+                </span>
+
+                <button
+                  type="button"
+                  class="btn btn-default btn-small"
+                  disabled={{eq @controller.checkinHistoryPage @controller.totalCheckinHistoryPages}}
+                  {{on "click" @controller.nextCheckinHistoryPage}}
+                >
+                  Próxima {{dIcon "chevron-right"}}
+                </button>
+              </div>
+            {{/if}}
           </div>
         </div>
       {{/if}}

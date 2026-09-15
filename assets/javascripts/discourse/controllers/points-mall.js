@@ -51,6 +51,8 @@ export default class PointsMallController extends Controller {
   @tracked pointsFilter = "all";
   @tracked ledgerPage = 1;
   @tracked ledgerPerPage = 15;
+  @tracked checkinHistoryPage = 1;
+  @tracked checkinHistoryPerPage = 10;
   @tracked copiedOrderId = null;
 
   updateCurrentUserPoints(delta) {
@@ -82,6 +84,47 @@ export default class PointsMallController extends Controller {
       month_progress_percent: 0,
       ...(this.model.summary || {}),
     };
+  }
+
+  get totalCheckinHistoryPages() {
+    const list = this.model?.checkins || [];
+    return Math.ceil(list.length / this.checkinHistoryPerPage) || 1;
+  }
+
+  get paginatedCheckins() {
+    const list = this.model?.checkins || [];
+    const start = (this.checkinHistoryPage - 1) * this.checkinHistoryPerPage;
+    return list.slice(start, start + this.checkinHistoryPerPage);
+  }
+
+  get hasCheckins() {
+    return (this.model?.checkins || []).length > 0;
+  }
+
+  get hasMultipleCheckinHistoryPages() {
+    return this.totalCheckinHistoryPages > 1;
+  }
+
+  get canPrevCheckinHistoryPage() {
+    return this.checkinHistoryPage > 1;
+  }
+
+  get canNextCheckinHistoryPage() {
+    return this.checkinHistoryPage < this.totalCheckinHistoryPages;
+  }
+
+  @action
+  prevCheckinHistoryPage() {
+    if (this.canPrevCheckinHistoryPage) {
+      this.checkinHistoryPage--;
+    }
+  }
+
+  @action
+  nextCheckinHistoryPage() {
+    if (this.canNextCheckinHistoryPage) {
+      this.checkinHistoryPage++;
+    }
   }
 
   get levelProgress() {
@@ -656,6 +699,7 @@ export default class PointsMallController extends Controller {
       const result = await ajax("/loja/checkin", { type: "POST" });
       const checkin = result.checkin || result;
       this.updateCurrentUserPoints(checkin.points_earned || 0);
+      this.checkinHistoryPage = 1;
       await this.reloadCheckinSummary();
       await this.reloadLedger();
 
@@ -718,6 +762,7 @@ export default class PointsMallController extends Controller {
         };
       }
 
+      this.checkinHistoryPage = 1;
       await this.reloadCheckinSummary();
       await this.reloadProducts();
       await this.reloadLedger();

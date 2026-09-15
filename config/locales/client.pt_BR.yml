@@ -179,6 +179,7 @@ pt_BR:
         total_checkins: "Total: %{count} check-ins"
         total_points: "Total: %{points} pts"
         history: "Histórico"
+        history_empty: "Nenhum registro de check-in ainda."
         date: "Data"
         points: "Pontos"
       shop:

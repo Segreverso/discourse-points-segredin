@@ -201,6 +201,7 @@ zh_CN:
         total_checkins: "累计签到：%{count} 次"
         total_points: "累计获得：%{points} 积分"
         history: "签到历史"
+        history_empty: "暂无签到记录"
         date: "日期"
         points: "积分"
       shop:
