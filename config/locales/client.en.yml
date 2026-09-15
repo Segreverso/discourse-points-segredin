@@ -156,8 +156,9 @@ en:
         buy_makeup_card: "Buy Makeup Card"
         makeup_product_missing: "Makeup card product is unavailable. Please contact an admin."
         makeup_action: "Make Up"
-        ranking_title: "Points Ranking"
-        ranking_my_points: "My leaderboard score: %{points}"
+        ranking_title: "Streak Leaderboard"
+        ranking_my_streak: "Your streak: %{streak} days"
+        ranking_my_points: "Streak: %{points} days"
         ranking_empty: "No ranking data yet"
         weekdays:
           mon: "Mon"

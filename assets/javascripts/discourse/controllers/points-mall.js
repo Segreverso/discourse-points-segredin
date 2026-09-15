@@ -41,6 +41,8 @@ export default class PointsMallController extends Controller {
   @tracked shopCategoryFilter = "all";
   @tracked shopKeyword = "";
   @tracked shopSort = "featured";
+  @tracked shopPage = 1;
+  @tracked shopPerPage = 12;
   @tracked orderTypeFilter = "all";
   @tracked ordersPage = 1;
   @tracked ordersPerPage = 5;
@@ -239,6 +241,45 @@ export default class PointsMallController extends Controller {
     });
 
     return [...products].sort((left, right) => this.compareShopProducts(left, right));
+  }
+
+  get totalShopPages() {
+    return Math.ceil(this.filteredShopProducts.length / this.shopPerPage) || 1;
+  }
+
+  get paginatedShopProducts() {
+    const start = (this.shopPage - 1) * this.shopPerPage;
+    return this.filteredShopProducts.slice(start, start + this.shopPerPage);
+  }
+
+  get hasFilteredShopProducts() {
+    return this.filteredShopProducts.length > 0;
+  }
+
+  get hasMultipleShopPages() {
+    return this.totalShopPages > 1;
+  }
+
+  get canPrevShopPage() {
+    return this.shopPage > 1;
+  }
+
+  get canNextShopPage() {
+    return this.shopPage < this.totalShopPages;
+  }
+
+  @action
+  prevShopPage() {
+    if (this.canPrevShopPage) {
+      this.shopPage--;
+    }
+  }
+
+  @action
+  nextShopPage() {
+    if (this.canNextShopPage) {
+      this.shopPage++;
+    }
   }
 
   get shopSections() {
@@ -588,21 +629,25 @@ export default class PointsMallController extends Controller {
   setShopTypeFilter(filter) {
     this.shopTypeFilter = filter;
     this.shopCategoryFilter = "all";
+    this.shopPage = 1;
   }
 
   @action
   setShopCategoryFilter(filter) {
     this.shopCategoryFilter = filter;
+    this.shopPage = 1;
   }
 
   @action
   setShopSort(sort) {
     this.shopSort = sort;
+    this.shopPage = 1;
   }
 
   @action
   updateShopKeyword(event) {
     this.shopKeyword = event?.target?.value || "";
+    this.shopPage = 1;
   }
 
   @action

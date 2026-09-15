@@ -158,8 +158,9 @@ pt_BR:
         buy_makeup_card: "Comprar Reposição"
         makeup_product_missing: "Card de reposição indisponível."
         makeup_action: "Repor"
-        ranking_title: "Ranking de Pontos"
-        ranking_my_points: "Pontuação: %{points} pts"
+        ranking_title: "Ranking de Sequências"
+        ranking_my_streak: "Sua sequência: %{streak} dias"
+        ranking_my_points: "Sequência: %{points} dias"
         ranking_empty: "Sem dados de ranking"
         weekdays:
           mon: "Seg"

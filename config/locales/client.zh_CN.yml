@@ -180,8 +180,9 @@ zh_CN:
         buy_makeup_card: "购买补签卡"
         makeup_product_missing: "补签卡商品暂未上架，请联系管理员"
         makeup_action: "补签"
-        ranking_title: "积分排行榜"
-        ranking_my_points: "我的榜单分数：%{points}"
+        ranking_title: "连续签到排行"
+        ranking_my_streak: "当前连签：%{streak} 天"
+        ranking_my_points: "当前连签：%{points} 天"
         ranking_empty: "暂无排行榜数据"
         weekdays:
           mon: "一"

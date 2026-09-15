@@ -546,6 +546,56 @@
 }
 
 .points-mall-shop {
+  .shop-compact-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 10px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+
+    .shop-compact-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .shop-compact-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        border-radius: 6px;
+      }
+
+      h2 {
+        font-size: 0.98rem;
+      }
+
+      p {
+        font-size: 0.72rem;
+      }
+    }
+
+    .shop-compact-stats {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      .shop-stat-pill {
+        padding: 3px 8px;
+        font-size: 0.74rem;
+      }
+
+      .shop-stat-checkin-btn {
+        padding: 3px 8px;
+        font-size: 0.74rem;
+      }
+    }
+  }
+
   .shop-command-bar {
     grid-template-columns: auto minmax(0, 1fr);
     gap: 7px;

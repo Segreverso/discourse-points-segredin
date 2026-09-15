@@ -299,85 +299,75 @@ module DiscoursePointsMall
       my_score = 0
       total_users = 0
 
-      if defined?(::DiscourseGamification::GamificationLeaderboard)
-        leaderboard = ::DiscourseGamification::GamificationLeaderboard.find_by(id: PREFERRED_LEADERBOARD_ID) ||
-                      ::DiscourseGamification::GamificationLeaderboard.first
+      begin
+        today = Time.zone.today
+        yesterday = today - 1
 
-        if leaderboard.present? && (!guardian.respond_to?(:can_see_leaderboard?) || guardian.can_see_leaderboard?(leaderboard))
-          period = leaderboard.resolve_period(nil)
-          begin
-            rows = ::DiscourseGamification::GamificationLeaderboard.scores_for(
-              leaderboard.id,
-              period: period,
-              user_limit: RANKING_LIMIT,
-            )
+        streak_by_user = {}
 
-            my_row = ::DiscourseGamification::GamificationLeaderboard.find_position_by(
-              leaderboard_id: leaderboard.id,
-              for_user_id: current_user.id,
-              period: period,
-            )
+        if using_daily_checkin? && defined?(::DiscourseDailyCheckin::DailyCheckin)
+          recent_user_ids = ::DiscourseDailyCheckin::DailyCheckin
+            .where("checked_in_on >= ?", yesterday)
+            .distinct
+            .pluck(:user_id)
 
-            if rows.present?
-              user_levels = ::User.where(id: rows.map(&:id)).pluck(:id, :trust_level).to_h
-              top_users = rows.map do |row|
-                {
-                  rank: row.position.to_i,
-                  user_id: row.id.to_i,
-                  username: row.username,
-                  avatar_template: row.avatar_template,
-                  points: row.total_score.to_i,
-                  level_name: trust_level_name(user_levels[row.id].to_i),
-                }
-              end
-              my_rank = my_row&.position&.to_i
-              my_score = my_row&.total_score.to_i
-              total_users = [rows.length, my_rank].compact.max.to_i
+          users_scope = ::User.where(id: recent_user_ids)
+          users_scope.each do |u|
+            s = if ::DiscourseDailyCheckin::DailyCheckin.respond_to?(:current_streak_for)
+              ::DiscourseDailyCheckin::DailyCheckin.current_streak_for(u).to_i
+            else
+              0
             end
-          rescue ::DiscourseGamification::LeaderboardCachedView::NotReadyError
-            Jobs.enqueue(Jobs::GenerateLeaderboardPositions, leaderboard_id: leaderboard.id) if leaderboard
-          rescue StandardError => e
-            Rails.logger.warn("[points-mall] gamification ranking failed: #{e.class} #{e.message}")
+            streak_by_user[u.id] = s if s.positive?
+          end
+        else
+          # Native PointsMallCheckin: obter o streak_days mais recente para usuários ativos hoje ou ontem
+          recent_checkins = ::PointsMallCheckin
+            .where("checkin_date >= ?", yesterday)
+            .order(checkin_date: :desc, created_at: :desc)
+
+          recent_checkins.each do |c|
+            streak_by_user[c.user_id] ||= c.streak_days.to_i
           end
         end
-      end
 
-      # Fallback if gamification leaderboard is absent or returned no users
-      if top_users.empty?
-        begin
-          if using_daily_checkin? && defined?(::DiscourseDailyCheckin::Checkin)
-            user_scores = ::DiscourseDailyCheckin::Checkin.group(:user_id).sum(:points)
-          else
-            user_scores = ::PointsMallCheckin.group(:user_id).sum(:points_earned)
-          end
+        # Apenas sequências positivas
+        streak_by_user.select! { |_uid, s| s.positive? }
 
-          if user_scores.present?
-            sorted = user_scores.sort_by { |_, pts| -pts }
-            top_pairs = sorted.take(RANKING_LIMIT)
-            user_ids = top_pairs.map(&:first)
-            users_map = ::User.where(id: user_ids).index_by(&:id)
+        if streak_by_user.present?
+          sorted = streak_by_user.sort_by { |_uid, s| -s }
+          total_users = sorted.length
 
-            top_users = top_pairs.each_with_index.map do |(uid, score), index|
-              u = users_map[uid]
-              next unless u
-              {
-                rank: index + 1,
-                user_id: u.id,
-                username: u.username,
-                avatar_template: u.avatar_template,
-                points: score.to_i,
-                level_name: trust_level_name(u.trust_level),
-              }
-            end.compact
+          top_pairs = sorted.take(RANKING_LIMIT)
+          user_ids = top_pairs.map(&:first)
+          users_map = ::User.where(id: user_ids).index_by(&:id)
 
-            my_score = user_scores[current_user.id].to_i
+          top_users = top_pairs.each_with_index.map do |(uid, streak), index|
+            u = users_map[uid]
+            next unless u
+            {
+              rank: index + 1,
+              user_id: u.id,
+              username: u.username,
+              avatar_template: u.avatar_template,
+              points: streak,
+              streak_days: streak,
+              level_name: trust_level_name(u.trust_level.to_i),
+            }
+          end.compact
+
+          my_streak = streak_by_user[current_user.id].to_i
+          if my_streak.positive?
+            my_score = my_streak
             rank_idx = sorted.index { |uid, _| uid == current_user.id }
             my_rank = rank_idx ? rank_idx + 1 : nil
-            total_users = user_scores.keys.length
+          else
+            my_score = 0
+            my_rank = nil
           end
-        rescue StandardError => e
-          Rails.logger.warn("[points-mall] fallback checkin ranking failed: #{e.class} #{e.message}")
         end
+      rescue StandardError => e
+        Rails.logger.warn("[points-mall] streak ranking calculation failed: #{e.class} #{e.message}")
       end
 
       {
