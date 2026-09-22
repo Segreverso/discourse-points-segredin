@@ -83,6 +83,25 @@ module DiscoursePointsMall
       order = nil
       error = nil
       makeup_card = nil
+      async_external_fulfillment = false
+
+      product = ::PointsMallProduct.find_by(id: params[:product_id])
+      unless product&.available?
+        return render_json_error(I18n.t("points_mall.errors.product_unavailable"), status: 422)
+      end
+
+      # Validação preventiva de serviços externos (SiteSetting)
+      if game_voucher_product?(product)
+        unless SiteSetting.points_mall_game_voucher_enabled && SiteSetting.points_mall_game_voucher_endpoint.present?
+          return render_json_error(I18n.t("points_mall.errors.service_disabled"), status: 422)
+        end
+      end
+
+      if netdisk_traffic_product?(product)
+        unless SiteSetting.points_mall_netdisk_enabled && SiteSetting.points_mall_netdisk_endpoint.present?
+          return render_json_error(I18n.t("points_mall.errors.service_disabled"), status: 422)
+        end
+      end
 
       ::PointsMallOrder.transaction do
         locked_user = ::User.lock.find(current_user.id)
@@ -130,7 +149,7 @@ module DiscoursePointsMall
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "积分商城购买补签卡",
+                   description: I18n.t("points_mall.points.makeup_card_purchase"),
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
@@ -154,25 +173,20 @@ module DiscoursePointsMall
               user_id: locked_user.id,
               product_id: product.id,
               points_spent: price,
-              status: "completed",
+              status: "pending",
             )
 
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "Resgate de Voucher / Cartão",
+                   description: I18n.t("points_mall.points.voucher_redeem"),
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
           end
 
-          granted, grant_error = grant_game_voucher!(locked_user, product, order)
-          unless granted
-            error = grant_error
-            raise ActiveRecord::Rollback
-          end
-
           product.decrease_stock! if product.stock
+          async_external_fulfillment = true
           next
         end
 
@@ -189,25 +203,20 @@ module DiscoursePointsMall
               user_id: locked_user.id,
               product_id: product.id,
               points_spent: price,
-              status: "completed",
+              status: "pending",
             )
 
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "Resgate de Tráfego / Nuvem",
+                   description: I18n.t("points_mall.points.netdisk_redeem"),
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
           end
 
-          granted, grant_error = grant_netdisk_traffic!(locked_user, product, order)
-          unless granted
-            error = grant_error
-            raise ActiveRecord::Rollback
-          end
-
           product.decrease_stock! if product.stock
+          async_external_fulfillment = true
           next
         end
 
@@ -237,7 +246,7 @@ module DiscoursePointsMall
           unless DiscoursePointsMall::PointsManager.add_points!(
                    user: locked_user,
                    points: -price,
-                   description: "Resgate de Cosmético / Insígnia",
+                   description: I18n.t("points_mall.points.cosmetic_redeem"),
                  )
             error = I18n.t("points_mall.errors.points_update_failed")
             raise ActiveRecord::Rollback
@@ -259,9 +268,38 @@ module DiscoursePointsMall
             error = I18n.t("points_mall.errors.shipping_info_required")
             raise ActiveRecord::Rollback
           end
+
+          price = product.points_cost
+          if locked_user.points_balance < price
+            error = I18n.t("points_mall.errors.insufficient_points")
+            raise ActiveRecord::Rollback
+          end
+
+          order =
+            ::PointsMallOrder.create!(
+              user_id: locked_user.id,
+              product_id: product.id,
+              points_spent: price,
+              status: "pending",
+              shipping_info: shipping_info,
+            )
+
+          unless DiscoursePointsMall::PointsManager.add_points!(
+                   user: locked_user,
+                   points: -price,
+                   description: "Resgate de #{product.name}",
+                 )
+            error = I18n.t("points_mall.errors.points_update_failed")
+            raise ActiveRecord::Rollback
+          end
+
+          product.decrease_stock! if product.stock
+          next
         end
 
-        if locked_user.points_balance < product.points_cost
+        # fallback virtual product
+        price = product.points_cost
+        if locked_user.points_balance < price
           error = I18n.t("points_mall.errors.insufficient_points")
           raise ActiveRecord::Rollback
         end
@@ -285,16 +323,15 @@ module DiscoursePointsMall
           ::PointsMallOrder.create!(
             user_id: locked_user.id,
             product_id: product.id,
-            points_spent: product.points_cost,
+            points_spent: price,
             status: status,
             notes: notes,
-            shipping_info: shipping_info.presence,
           )
 
         unless DiscoursePointsMall::PointsManager.add_points!(
                  user: locked_user,
-                 points: -product.points_cost,
-                 description: "Compra na Loja de Pontos",
+                 points: -price,
+                 description: "Resgate de #{product.name}",
                )
           error = I18n.t("points_mall.errors.points_update_failed")
           raise ActiveRecord::Rollback
@@ -306,6 +343,10 @@ module DiscoursePointsMall
       if error
         render_json_error(error, status: 422)
       elsif order
+        if async_external_fulfillment
+          ::Jobs.enqueue(:points_mall_fulfill_external_order, order_id: order.id)
+        end
+
         render json: {
           order: serialize_order(order),
           makeup_card: makeup_card,
@@ -316,13 +357,14 @@ module DiscoursePointsMall
     end
 
     def show
-      order = ::PointsMallOrder.find(params[:id])
+      order = ::PointsMallOrder.includes(:product).find_by(id: params[:id])
+      return render_json_error(I18n.t("points_mall.errors.order_not_found"), status: 404) if order.blank?
 
       unless order.user_id == current_user.id || current_user.staff?
-        return render_json_error(I18n.t('points_mall.errors.unauthorized'), status: 403)
+        return render_json_error(I18n.t("points_mall.errors.unauthorized"), status: 403)
       end
 
-      render json: serialize_data(order, DiscoursePointsMall::OrderSerializer)
+      render json: { order: serialize_order(order) }
     end
 
     private
@@ -399,7 +441,7 @@ module DiscoursePointsMall
         current_count = user.custom_fields["jn_theme_skin_ticket_count"].to_i
         user.custom_fields["jn_theme_skin_ticket_count"] = (current_count + 1).to_s
       else
-        return [false, "暂不支持该装饰类型", nil]
+        return [false, I18n.t("points_mall.errors.cosmetic_grant_failed"), nil]
       end
 
       user.save_custom_fields(true)
@@ -407,7 +449,7 @@ module DiscoursePointsMall
       [true, nil, payload]
     rescue StandardError => e
       Rails.logger.warn("[points-mall] cosmetic grant failed: #{e.class}: #{e.message}")
-      [false, "装饰发放失败，请稍后再试", nil]
+      [false, I18n.t("points_mall.errors.cosmetic_grant_failed"), nil]
     end
 
     def netdisk_traffic_config(product)
@@ -422,125 +464,6 @@ module DiscoursePointsMall
 
     def netdisk_traffic_product?(product)
       !netdisk_traffic_config(product).nil?
-    end
-
-    def netdisk_grant_secret
-      path = "/shared/netdisk_redeem_secret"
-      return nil unless File.exist?(path)
-
-      File.read(path).strip.presence
-    end
-
-    def grant_netdisk_traffic!(user, product, order)
-      config = netdisk_traffic_config(product)
-      return [false, "商品配置无效"] if config.nil?
-      secret = netdisk_grant_secret
-      return [false, "流量发货服务未配置"] if secret.blank?
-
-      payload = {
-        external_id: "points_mall_order:#{order.id}",
-        discourse_id: user.id.to_s,
-        mb: config[:mb],
-        valid_days: config[:valid_days],
-        timestamp: Time.now.to_i,
-      }
-      signing_payload = [
-        payload[:external_id],
-        payload[:discourse_id],
-        payload[:mb],
-        payload[:valid_days],
-        payload[:timestamp],
-      ].join(":")
-      payload[:signature] = Base64.urlsafe_encode64(
-        OpenSSL::HMAC.digest("SHA256", secret, signing_payload),
-        padding: false,
-      )
-
-      uri = URI("https://172.17.0.1/sso/points-grant")
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      http.open_timeout = 5
-      http.read_timeout = 15
-
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request["Content-Type"] = "application/json"
-      request["Host"] = "pan.justnainai.com"
-      request.body = payload.to_json
-
-      response = http.request(request)
-      return [true, nil] if response.is_a?(Net::HTTPSuccess)
-
-      Rails.logger.warn("[points-mall] netdisk traffic grant failed: #{response.code} #{response.body}")
-      case response.code.to_i
-      when 409
-        [false, "该订单已发过货，请勿重复兑换"]
-      else
-        [false, "流量发放失败，请稍后再试或联系站长"]
-      end
-    rescue StandardError => e
-      Rails.logger.warn("[points-mall] netdisk traffic grant error: #{e.class}: #{e.message}")
-      [false, "流量发放失败，请稍后再试或联系站长"]
-    end
-
-    def game_voucher_secret
-      path = "/shared/game_voucher_redeem_secret"
-      return nil unless File.exist?(path)
-
-      File.read(path).strip.presence
-    end
-
-    def grant_game_voucher!(user, product, order)
-      config = game_voucher_config(product)
-      secret = game_voucher_secret
-      return [false, "?????????"] if secret.blank?
-
-      payload = {
-        external_id: "points_mall_order:#{order.id}",
-        discourse_id: user.id.to_s,
-        voucher_type: config[:voucher_type],
-        count: config[:count],
-        timestamp: Time.now.to_i,
-      }
-      signing_payload = [
-        payload[:external_id],
-        payload[:discourse_id],
-        payload[:voucher_type],
-        payload[:count],
-        payload[:timestamp],
-      ].join(":")
-      payload[:signature] = Base64.urlsafe_encode64(
-        OpenSSL::HMAC.digest("SHA256", secret, signing_payload),
-        padding: false,
-      )
-
-      uri = URI("https://172.17.0.1/api/community/grant-voucher")
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = uri.scheme == "https"
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      http.open_timeout = 5
-      http.read_timeout = 15
-
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request["Content-Type"] = "application/json"
-      request["Host"] = "game.justnainai.com"
-      request.body = payload.to_json
-
-      response = http.request(request)
-      return [true, nil] if response.is_a?(Net::HTTPSuccess)
-
-      Rails.logger.warn("[points-mall] game voucher grant failed: #{response.code} #{response.body}")
-      case response.code.to_i
-      when 404
-        [false, "???????????????????????"]
-      when 409
-        [false, "???????????????????????"]
-      else
-        [false, "?????????????"]
-      end
-    rescue StandardError => e
-      Rails.logger.warn("[points-mall] game voucher grant error: #{e.class}: #{e.message}")
-      [false, "?????????????"]
     end
 
     def find_or_create_monthly_makeup_card(user_id)

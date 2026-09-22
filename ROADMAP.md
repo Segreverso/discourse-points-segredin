@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.5.0** | 22/09/2026 | Backend Rails / Segurança / Sidekiq / i18n / Testes | **Auditoria Estrutural de Conformidade Discourse (Discourse Skill Protocol)**: Refatoração integral de segurança e conformidade baseada nas 30 Regras do protocolo *Discourse Extension Review*. Eliminação de endpoints legados (`pan.justnainai.com`), remoção de bypass SSL (`VERIFY_NONE` -> `VERIFY_PEER`), desacoplamento de transações de banco com criação do Sidekiq Job assíncrono `PointsMallFulfillExternalOrder`, implementação da action `orders#show` com controle `Guardian`, cobertura trilingue de i18n em português e adição de suite de testes RSpec (`spec/requests/orders_controller_spec.rb`). |
 | **v0.4.33** | 02/09/2026 | JS Initializers (`points-mall.js`) / i18n | **Restauração do Atalho "Loja" no Menu Superior (`#navigation-bar`)**: Reativada a injeção via `api.addNavigationBarItem` com redirecionamento para `/loja`, filtrado para usuários autenticados (`currentUser`), e renomeado no menu de "Loja de Pontos" para apenas "Loja" (`points_mall.nav_title`). |
 | **v0.4.32** | 26/08/2026 | JS Initializers (`points-mall.js`) | **Remoção do Item no Top Navigation Bar (`#navigation-bar`)**: Removida a chamada `api.addNavigationBarItem` para desativar a injeção do botão "Loja de Pontos" na barra superior de navegação (`nav-pills`), permitindo que a navegação seja gerenciada customizadamente na barra lateral (`sidebar`). |
 | **v0.4.31** | 26/08/2026 | Ember Route Map & Admin Routes | **Isolamento Estrito das Rotas Admin (`/admin/plugins`)**: Alterado o caminho em `admin-discourse-points-mall-plugin-route-map.js` de `{ path: "/" }` para `{ path: "/discourse-points-mall" }` e inserida verificação em `beforeModel` para impedir que o painel de admin da loja seja indevidamente renderizado ao visualizar outros plugins no painel do Discourse (`segredin.com`). |
@@ -36,6 +37,50 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 ---
 
 ## 2. Detalhamento Arquitetural das Funcionalidades
+
+### 2.0. Auditoria Estrutural e Conformidade Discourse (v0.5.0)
+
+> **Base Normativa e Créditos Técnicos:**
+> Esta grande atualização de conformidade, estabilidade e segurança foi auditada e implementada com base rigorosa nas 30 diretrizes do **Discourse Extension Review Protocol (Discourse Skill)** do Antigravity Kit. O protocolo forneceu os critérios objetivos para erradicação de vulnerabilidades, auditoria de ciclo de vida de dados e desacoplamento de requisições de rede.
+
+#### 1. Segurança de Transporte e Erradicação de Domínios Fantasma (Regras 06 e 07)
+- **Eliminação de `pan.justnainai.com` e `game.justnainai.com`:** Removidas todas as chamadas hardcoded herdadas da comunidade de origem chinesa (`JustNaiNai`).
+- **Remoção de Bypass SSL:** Extinta a diretiva vulnerável `http.verify_mode = OpenSSL::SSL::VERIFY_NONE`. Toda comunicação externa agora exige validação estrita de autoridade certificadora (`OpenSSL::SSL::VERIFY_PEER`).
+- **Parametrização Opcional em SiteSettings:** Criadas configurações administrativas (`points_mall_netdisk_enabled`, `points_mall_netdisk_endpoint`, `points_mall_game_voucher_enabled`, etc.) com valores padrão seguros (desativados). Se o serviço não estiver configurado, o pedido é rejeitado na camada de validação antes de qualquer transação de banco.
+
+#### 2. Desacoplamento Transacional e Resiliência com Sidekiq (Regras 04, 09 e 10)
+- **Fim das Threads Bloqueadas no Puma:** Removidas as chamadas HTTP síncronas de até 20 segundos que ocorriam dentro do bloco `::PointsMallOrder.transaction` sob bloqueio pessimista (`User.lock`).
+- **Novo Job Assíncrono (`::Jobs::PointsMallFulfillExternalOrder`):** A action `create` apenas valida o saldo, deduz os pontos e cria o pedido com status `pending`, despachando a entrega externa para a fila do Sidekiq.
+- **Idempotência e Estorno Automático:** O job utiliza `order.id` como chave de idempotência. Se a entrega externa falhar de forma definitiva, o pedido é marcado como `failed` e os pontos são estornados automaticamente para a carteira do usuário com registro no extrato.
+
+#### 3. Integridade da API e Rota `orders#show` (Regras 02, 05 e 15)
+- **Ação `show` Implementada:** Sanada a divergência da rota `resources :orders, only: [:index, :create, :show]`.
+- **Autorização Robusta (Guardian):** Usuários comuns só podem consultar pedidos de sua própria autoria (`order.user_id == current_user.id`), enquanto administradores e moderadores (`current_user.staff?`) possuem permissão de auditoria global.
+
+#### 4. Internacionalização (i18n) e Limpeza de Código (Regras 11 e 25)
+- **100% em Português Brasileiro:** Erradicadas todas as mensagens chinesas (`该订单已发过货...`) e strings corrompidas (`???????`) dos arquivos Ruby.
+- **Dicionário Unificado:** Centralizadas todas as mensagens de erro e descrições de extrato em `config/locales/server.pt_BR.yml`.
+
+#### 5. Suite de Testes Automatizados (Regras 16 e 17)
+- **Criação de `spec/requests/discourse_points_mall/orders_controller_spec.rb`:** Testes de requisição cobrindo autenticação, autorização de acesso ao pedido (próprio vs. terceiros vs. staff) e rejeição limpa quando o serviço externo está desativado.
+
+#### 6. Correção do Ciclo de Vida e Expiração de Cosméticos (Bugfix Inventário & Auras)
+- **Causa Raiz Identificada:** O item no card do inventário indicava `EXPIRADO` corretamente porque `item_payload` calculava a validade baseada no pedido, mas o cosmético continuava visível no avatar do cabeçalho e posts. Os motivos eram:
+  1. `equipped_payload` retornava o cosmético equipado lendo apenas a presença da chave em `current_user.custom_fields`, sem validar a data de expiração.
+  2. Ausência de limpeza Just-in-Time (JIT): `cleanup_expired_cosmetics!` não estava implementada no controller.
+  3. O job `PointsMallExpireCosmetics` rodava apenas uma vez a cada 24 horas (`every 1.day`), mantendo o cosmético equipado no banco por horas após vencer.
+  4. Os serializadores (`basic_user`, `user_card`, `post`) e o endpoint `public_cosmetics` não filtravam `expires_at` em tempo real.
+  5. No frontend, o mapa `userFrameCache` em `points-mall.js` não expurgava usuários expirados ao receber o payload público atualizado.
+- **Solução em 6 Camadas de Defesa:**
+  1. **Limpeza JIT (`cleanup_expired_cosmetics!`):** Executada automaticamente no `index`, `equip` e `unequip`, removendo imediatamente chaves expiradas e restaurando títulos anteriores.
+  2. **Validação Estrita em `equipped_payload`:** Itens com validade vencida são ignorados na montagem do JSON de cosméticos equipados.
+  3. **Filtro SQL em `public_cosmetics`:** Cláusula `WHERE` rejeita qualquer moldura ou flair cujo campo `_expires_at` seja anterior ao horário atual.
+  4. **Guarda nos Serializadores:** Serializadores Discourse checam `_expires_at <= Time.zone.now` antes de enviar as classes de moldura.
+  5. **Job de Expiração Otimizado:** Intervalo reduzido para `every 10.minutes` com limpeza explícita do cache ActiveRecord de `custom_fields`.
+  6. **Sincronização de Cache Client-Side:** `points-mall.js` sincroniza o `userFrameCache` limpando chaves obsoletas.
+  7. **Cobertura de Testes:** Criação de `spec/requests/discourse_points_mall/inventory_controller_spec.rb` validando limpeza JIT, filtragem pública e bloqueio de re-equipamento de itens expirados.
+
+---
 
 ### 2.1. Arquitetura de Produtos Híbridos (Pontos vs. Venda Externa R$)
 

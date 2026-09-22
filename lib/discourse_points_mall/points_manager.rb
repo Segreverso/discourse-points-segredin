@@ -61,7 +61,7 @@ module ::DiscoursePointsMall
       end
       true
     rescue => e
-      Rails.logger.warn("DiscoursePointsMall: 积分写入失败 - #{e.class}: #{e.message}")
+      Rails.logger.warn("DiscoursePointsMall: Falha ao registrar pontos - #{e.class}: #{e.message}")
       false
     end
   end

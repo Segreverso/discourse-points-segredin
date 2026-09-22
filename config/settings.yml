@@ -33,3 +33,17 @@ plugins:
     default: 24
     min: 0
     max: 8760
+  points_mall_netdisk_enabled:
+    default: false
+  points_mall_netdisk_endpoint:
+    default: ""
+  points_mall_netdisk_secret:
+    default: ""
+    secret: true
+  points_mall_game_voucher_enabled:
+    default: false
+  points_mall_game_voucher_endpoint:
+    default: ""
+  points_mall_game_voucher_secret:
+    default: ""
+    secret: true

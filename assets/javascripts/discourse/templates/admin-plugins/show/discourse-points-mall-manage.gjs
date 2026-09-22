@@ -30,6 +30,48 @@ function formatBrl(val) {
   return num.toFixed(2).replace(".", ",");
 }
 
+function formatOrderNotes(notes) {
+  if (!notes) {
+    return "";
+  }
+  const trimmed = String(notes).trim();
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    try {
+      const data = JSON.parse(trimmed);
+      const parts = [];
+      if (data.kind) {
+        const kindMap = {
+          avatar_frame: "Moldura de Avatar",
+          title: "Título Especial",
+          card_border: "Borda de Perfil",
+          profile_background: "Fundo de Perfil",
+          theme_skin: "Skin de Tema",
+        };
+        parts.push(`Tipo: ${kindMap[data.kind] || data.kind}`);
+      }
+      if (data.expires_at) {
+        const d = new Date(data.expires_at);
+        if (!isNaN(d.getTime())) {
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2, "0");
+          const mins = String(d.getMinutes()).padStart(2, "0");
+          parts.push(`Validade até ${day}/${month}/${year} às ${hours}:${mins}`);
+        }
+      } else if (data.duration_days) {
+        parts.push(`Duração: ${data.duration_days} dias`);
+      } else if (data.expires_at === null) {
+        parts.push("Validade: Permanente");
+      }
+      return parts.length ? parts.join(" • ") : "Item cosmético ativado";
+    } catch (e) {
+      return notes;
+    }
+  }
+  return notes;
+}
+
 export default <template>
   <div class="admin-detail points-mall-admin">
     {{! CABEÇALHO DO PAINEL }}
@@ -326,9 +368,14 @@ export default <template>
                   {{on "change" (fn @controller.setProductKey @controller.model.newProduct)}}
                 >
                   <option value="">Nenhum (Item normal)</option>
-                  <optgroup label="Auras de Avatar (Gradientes Animados)">
+                  <optgroup label="Auras de Avatar (Brilhos & Neon)">
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Aura Azul Bebê (baby_blue)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Aura Magenta (pinkish_purple)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Aura Rosa Estelar (sparkling_pink)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Aura Azul Névoa (neon_blue)</option>
+                    <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Aura Verde Jade (sparkling_green)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
                     <option selected={{eq @controller.model.newProduct.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
@@ -648,6 +695,11 @@ export default <template>
                           <optgroup label="Auras de Avatar">
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_ruby_red_30d"}} value="cosmetic_avatar_frame_ruby_red_30d">Aura Rubi (ruby_red)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_gold_vip_30d"}} value="cosmetic_avatar_frame_gold_vip_30d">Aura Dourada (gold_vip)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_baby_blue_30d"}} value="cosmetic_avatar_frame_baby_blue_30d">Aura Azul Bebê (baby_blue)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_pinkish_purple_30d"}} value="cosmetic_avatar_frame_pinkish_purple_30d">Aura Magenta (pinkish_purple)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_pink_30d"}} value="cosmetic_avatar_frame_sparkling_pink_30d">Aura Rosa Estelar (sparkling_pink)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_blue_30d"}} value="cosmetic_avatar_frame_neon_blue_30d">Aura Azul Névoa (neon_blue)</option>
+                            <option selected={{eq product.product_key "cosmetic_avatar_frame_sparkling_green_30d"}} value="cosmetic_avatar_frame_sparkling_green_30d">Aura Verde Jade (sparkling_green)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_neon_pink_30d"}} value="cosmetic_avatar_frame_neon_pink_30d">Aura Rosa Neon (neon_pink)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_cyan_electric_30d"}} value="cosmetic_avatar_frame_cyan_electric_30d">Aura Ciano Elétrico (cyan_electric)</option>
                             <option selected={{eq product.product_key "cosmetic_avatar_frame_purple_deep_30d"}} value="cosmetic_avatar_frame_purple_deep_30d">Aura Roxo Abissal (purple_deep)</option>
@@ -920,7 +972,7 @@ export default <template>
                       </select>
                     </td>
 
-                    <td class="col-notes">
+                    <td class="col-notes" title={{formatOrderNotes order.notes}}>
                       <Input
                         @value={{order.notes}}
                         class="points-mall-admin-input --notes"

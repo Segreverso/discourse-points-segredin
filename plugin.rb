@@ -2,7 +2,7 @@
 
 # name: discourse-points-mall
 # about: A points mall plugin that integrates with discourse-gamification for check-ins and shop
-# version: 0.4.35
+# version: 0.5.0
 # authors: VegaMonika
 # url: https://github.com/Segreverso/discourse-points-segredin
 # required_version: 2.7.0
@@ -110,6 +110,7 @@ after_initialize do
   require_relative "app/controllers/discourse_points_mall/admin_orders_controller"
   require_relative "app/controllers/discourse_points_mall/admin_checkins_controller"
   require_relative "app/controllers/discourse_points_mall/shouts_controller"
+  require_relative "app/jobs/regular/points_mall_fulfill_external_order"
 
   add_admin_route(
     "points_mall.admin.title",
@@ -169,20 +170,38 @@ after_initialize do
   end
 
   add_to_serializer(:basic_user, :jn_cosmetic_avatar_frame) do
+    expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"]
+    if expires.present?
+      exp = Time.zone.parse(expires.to_s) rescue nil
+      next nil if exp && exp <= Time.zone.now
+    end
     object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
   end
 
   add_to_serializer(:user_card, :jn_cosmetic_avatar_frame) do
+    expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"]
+    if expires.present?
+      exp = Time.zone.parse(expires.to_s) rescue nil
+      next nil if exp && exp <= Time.zone.now
+    end
     object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
   end
 
   add_to_serializer(:post, :user_jn_cosmetic_avatar_frame) do
-    object.user&.custom_fields&.[]("jn_cosmetic_avatar_frame") rescue nil
+    u = object.user
+    next nil unless u
+
+    expires = u.custom_fields&.[]("jn_cosmetic_avatar_frame_expires_at")
+    if expires.present?
+      exp = Time.zone.parse(expires.to_s) rescue nil
+      next nil if exp && exp <= Time.zone.now
+    end
+    u.custom_fields&.[]("jn_cosmetic_avatar_frame") rescue nil
   end
 
   module ::Jobs
     class PointsMallExpireCosmetics < ::Jobs::Scheduled
-      every 1.day
+      every 10.minutes
 
       def execute(_args)
         now = Time.zone.now
@@ -201,9 +220,12 @@ after_initialize do
               if expires_field == "jn_cosmetic_title_expires_at"
                 previous_title = user.custom_fields["jn_previous_title_before_cosmetic"].to_s.presence
                 user.title = previous_title
-                user.save!
+                user.custom_fields.delete("jn_previous_title_before_cosmetic")
+                user.save! rescue nil
               end
 
+              fields.each { |f| user.custom_fields.delete(f) }
+              user.save_custom_fields(true)
               ::UserCustomField.where(user_id: user.id, name: fields).destroy_all
             end
         end

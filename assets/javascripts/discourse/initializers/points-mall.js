@@ -184,19 +184,32 @@ async function fetchPublicUserCosmetics(api) {
     });
     if (response.ok) {
       const payload = await response.json();
+      const curUser = currentUser(api);
+      const curUsername = curUser?.username ? curUser.username.toLowerCase().trim() : null;
+
       if (payload?.frames) {
+        const curUserFrame = curUsername ? userFrameCache.get(curUsername) : null;
+        userFrameCache.clear();
         Object.entries(payload.frames).forEach(([user, frame]) => {
           if (user && frame) {
             userFrameCache.set(user.toLowerCase().trim(), frame);
           }
         });
+        if (curUsername && curUserFrame) {
+          userFrameCache.set(curUsername, curUserFrame);
+        }
       }
       if (payload?.flairs) {
+        const curUserFlair = curUsername ? userFlairCache.get(curUsername) : null;
+        userFlairCache.clear();
         Object.entries(payload.flairs).forEach(([user, flair]) => {
           if (user && flair) {
             userFlairCache.set(user.toLowerCase().trim(), flair);
           }
         });
+        if (curUsername && curUserFlair) {
+          userFlairCache.set(curUsername, curUserFlair);
+        }
       }
     }
   } catch (_e) {

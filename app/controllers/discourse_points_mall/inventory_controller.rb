@@ -23,16 +23,32 @@ module DiscoursePointsMall
     end
 
     def public_cosmetics
+      now_iso = Time.zone.now.iso8601
+
+      # Desconsidera avatar frames cuja data de expiração já foi atingida
+      expired_frame_user_ids = UserCustomField
+        .where(name: "jn_cosmetic_avatar_frame_expires_at")
+        .where("value IS NOT NULL AND value != '' AND value <= ?", now_iso)
+        .pluck(:user_id)
+
       frames = UserCustomField
         .where(name: "jn_cosmetic_avatar_frame")
         .where.not(value: [nil, ""])
+        .where.not(user_id: expired_frame_user_ids)
         .joins(:user)
         .pluck("users.username_lower", "user_custom_fields.value")
         .to_h
 
+      # Desconsidera flairs de perfil expirados
+      expired_flair_user_ids = UserCustomField
+        .where(name: ["jn_cosmetic_svip_glow_expires_at", "jn_cosmetic_card_border_expires_at"])
+        .where("value IS NOT NULL AND value != '' AND value <= ?", now_iso)
+        .pluck(:user_id)
+
       flairs = UserCustomField
         .where(name: ["jn_cosmetic_svip_glow", "jn_cosmetic_card_border"])
         .where.not(value: [nil, ""])
+        .where.not(user_id: expired_flair_user_ids)
         .joins(:user)
         .pluck("users.username_lower", "user_custom_fields.value")
         .to_h
@@ -91,10 +107,12 @@ module DiscoursePointsMall
     }.freeze
 
     def index
+      cleanup_expired_cosmetics!(current_user)
       render json: inventory_payload
     end
 
     def equip
+      cleanup_expired_cosmetics!(current_user)
       order = cosmetic_order(params[:order_id])
       return render_json_error("Item de cosmético não encontrado", status: 404) unless order
 
@@ -109,6 +127,7 @@ module DiscoursePointsMall
     end
 
     def unequip
+      cleanup_expired_cosmetics!(current_user)
       kind = params[:kind].to_s
       return render_json_error("Tipo de cosmético não suportado", status: 422) unless KIND_FIELDS.key?(kind)
 
@@ -190,9 +209,15 @@ module DiscoursePointsMall
     end
 
     def equipped_payload
+      now = Time.zone.now
+
       KIND_FIELDS.each_with_object({}) do |(kind, fields), payload|
         value = current_user.custom_fields[fields[:value]].presence
         next unless value
+
+        expires_raw = current_user.custom_fields[fields[:expires]].presence
+        expires_at = parse_time(expires_raw)
+        next if expires_at && expires_at <= now
 
         payload[kind] = {
           kind: kind,
@@ -200,9 +225,9 @@ module DiscoursePointsMall
           value: value,
           display_value: display_value_for(kind, value),
           preview_class: preview_class_for(kind, value),
-          expires_at: current_user.custom_fields[fields[:expires]].presence,
-          expires_display: display_time(parse_time(current_user.custom_fields[fields[:expires]].presence)),
-          remaining_text: remaining_text(parse_time(current_user.custom_fields[fields[:expires]].presence)),
+          expires_at: expires_raw,
+          expires_display: display_time(expires_at),
+          remaining_text: remaining_text(expires_at),
         }
       end
     end
@@ -363,6 +388,36 @@ module DiscoursePointsMall
       user.custom_fields.delete(fields[:value])
       user.custom_fields.delete(fields[:expires])
       user.save_custom_fields(true)
+    end
+
+    def cleanup_expired_cosmetics!(user)
+      return unless user
+
+      now = Time.zone.now
+      modified = false
+
+      KIND_FIELDS.each do |kind, fields|
+        expires_raw = user.custom_fields[fields[:expires]].presence
+        next unless expires_raw
+
+        expires_at = parse_time(expires_raw)
+        next unless expires_at && expires_at <= now
+
+        if kind == "title"
+          previous_title = user.custom_fields["jn_previous_title_before_cosmetic"].to_s.presence
+          user.title = previous_title
+          user.custom_fields.delete("jn_previous_title_before_cosmetic")
+          user.save! rescue nil
+        end
+
+        user.custom_fields.delete(fields[:value])
+        user.custom_fields.delete(fields[:expires])
+        modified = true
+      end
+
+      user.save_custom_fields(true) if modified
+    rescue StandardError => e
+      Rails.logger.warn("[points-mall] cleanup_expired_cosmetics! failed: #{e.class}: #{e.message}")
     end
   end
 end
