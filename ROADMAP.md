@@ -41,7 +41,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 ### 2.0. Auditoria Estrutural e Conformidade Discourse (v0.5.0)
 
 > **Base Normativa e Créditos Técnicos:**
-> Esta grande atualização de conformidade, estabilidade e segurança foi auditada e implementada com base rigorosa nas 30 diretrizes do **Discourse Extension Review Protocol (Discourse Skill)** do Antigravity Kit. O protocolo forneceu os critérios objetivos para erradicação de vulnerabilidades, auditoria de ciclo de vida de dados e desacoplamento de requisições de rede.
+> Esta grande atualização de conformidade, estabilidade e segurança foi auditada e implementada com base rigorosa nas 30 diretrizes do **Discourse Extension Review Protocol (Discourse Skill)**. O protocolo forneceu os critérios objetivos para erradicação de vulnerabilidades, auditoria de ciclo de vida de dados e desacoplamento de requisições de rede.
 
 #### 1. Segurança de Transporte e Erradicação de Domínios Fantasma (Regras 06 e 07)
 - **Eliminação de `pan.justnainai.com` e `game.justnainai.com`:** Removidas todas as chamadas hardcoded herdadas da comunidade de origem chinesa (`JustNaiNai`).

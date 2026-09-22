@@ -80,9 +80,12 @@ require_relative "lib/discourse_points_mall/cosmetics"
 
 after_initialize do
   User.register_custom_field_type("jn_cosmetic_avatar_frame", :string) rescue nil
+  User.register_custom_field_type("jn_cosmetic_avatar_frame_expires_at", :string) rescue nil
   User.register_custom_field_type("jn_cosmetic_title", :string) rescue nil
+  User.register_custom_field_type("jn_cosmetic_title_expires_at", :string) rescue nil
 
   DiscoursePluginRegistry.serialized_current_user_fields << "jn_cosmetic_avatar_frame"
+  DiscoursePluginRegistry.serialized_current_user_fields << "jn_cosmetic_avatar_frame_expires_at"
   DiscoursePluginRegistry.serialized_current_user_fields << "jn_cosmetic_title"
   add_to_class(:user, :points_balance) do
     DiscoursePointsMall::PointsManager.balance_for(self)
@@ -170,33 +173,62 @@ after_initialize do
   end
 
   add_to_serializer(:basic_user, :jn_cosmetic_avatar_frame) do
-    expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"]
-    if expires.present?
-      exp = Time.zone.parse(expires.to_s) rescue nil
-      next nil if exp && exp <= Time.zone.now
+    next nil unless object.respond_to?(:custom_fields)
+
+    begin
+      frame = object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
+      next nil if frame.blank?
+
+      expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"] rescue nil
+      if expires.present?
+        exp = Time.zone.parse(expires.to_s) rescue nil
+        next nil if exp && exp <= Time.zone.now
+      end
+
+      frame
+    rescue StandardError
+      nil
     end
-    object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
   end
 
   add_to_serializer(:user_card, :jn_cosmetic_avatar_frame) do
-    expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"]
-    if expires.present?
-      exp = Time.zone.parse(expires.to_s) rescue nil
-      next nil if exp && exp <= Time.zone.now
+    next nil unless object.respond_to?(:custom_fields)
+
+    begin
+      frame = object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
+      next nil if frame.blank?
+
+      expires = object.custom_fields["jn_cosmetic_avatar_frame_expires_at"] rescue nil
+      if expires.present?
+        exp = Time.zone.parse(expires.to_s) rescue nil
+        next nil if exp && exp <= Time.zone.now
+      end
+
+      frame
+    rescue StandardError
+      nil
     end
-    object.custom_fields["jn_cosmetic_avatar_frame"] rescue nil
   end
 
   add_to_serializer(:post, :user_jn_cosmetic_avatar_frame) do
+    next nil unless object.respond_to?(:user)
     u = object.user
-    next nil unless u
+    next nil unless u && u.respond_to?(:custom_fields)
 
-    expires = u.custom_fields&.[]("jn_cosmetic_avatar_frame_expires_at")
-    if expires.present?
-      exp = Time.zone.parse(expires.to_s) rescue nil
-      next nil if exp && exp <= Time.zone.now
+    begin
+      frame = u.custom_fields&.[]("jn_cosmetic_avatar_frame") rescue nil
+      next nil if frame.blank?
+
+      expires = u.custom_fields&.[]("jn_cosmetic_avatar_frame_expires_at") rescue nil
+      if expires.present?
+        exp = Time.zone.parse(expires.to_s) rescue nil
+        next nil if exp && exp <= Time.zone.now
+      end
+
+      frame
+    rescue StandardError
+      nil
     end
-    u.custom_fields&.[]("jn_cosmetic_avatar_frame") rescue nil
   end
 
   module ::Jobs
