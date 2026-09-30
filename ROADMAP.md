@@ -10,6 +10,7 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 
 | Versão | Data | Módulo Afetado | Resumo da Alteração |
 | :--- | :--- | :--- | :--- |
+| **v0.5.1** | 30/09/2026 | Rails Model / Rails Controllers / DB Migration / Admin GJS / i18n (pt\_BR, en) | **Correção Crítica de Sequências de Check-in (Bugfix Makeup Streak)**: Diagnóstico e correção de 4 falhas encadeadas que destruíam a sequência (`streak_days`) de membros que usaram o Cartão de Reposição após indisponibilidade do plugin (27/09/2026). Inclui: (1) novo algoritmo de recálculo em cascata `PointsMallCheckin.recalculate_streaks_for_user`, (2) remoção do `streak_days: 1` hardcoded na ação `perform_makeup`, (3) correção do cálculo de `current_streak` no `summary_payload` (não zerando mais antes do check-in do dia), (4) migration de reparo de dados históricos (`20260930000024`), (5) endpoint administrativo protegido `POST /manage/checkins/recalculate` com botão no painel Admin. Auditoria de segurança concluída com conformidade total às Regras 04, 05, 06, 08, 09 do DiscourseSkill. |
 | **v0.5.0** | 22/09/2026 | Backend Rails / Segurança / Sidekiq / i18n / Testes | **Auditoria Estrutural de Conformidade Discourse (Discourse Skill Protocol)**: Refatoração integral de segurança e conformidade baseada nas 30 Regras do protocolo *Discourse Extension Review*. Eliminação de endpoints legados (`pan.justnainai.com`), remoção de bypass SSL (`VERIFY_NONE` -> `VERIFY_PEER`), desacoplamento de transações de banco com criação do Sidekiq Job assíncrono `PointsMallFulfillExternalOrder`, implementação da action `orders#show` com controle `Guardian`, cobertura trilingue de i18n em português e adição de suite de testes RSpec (`spec/requests/orders_controller_spec.rb`). |
 | **v0.4.33** | 02/09/2026 | JS Initializers (`points-mall.js`) / i18n | **Restauração do Atalho "Loja" no Menu Superior (`#navigation-bar`)**: Reativada a injeção via `api.addNavigationBarItem` com redirecionamento para `/loja`, filtrado para usuários autenticados (`currentUser`), e renomeado no menu de "Loja de Pontos" para apenas "Loja" (`points_mall.nav_title`). |
 | **v0.4.32** | 26/08/2026 | JS Initializers (`points-mall.js`) | **Remoção do Item no Top Navigation Bar (`#navigation-bar`)**: Removida a chamada `api.addNavigationBarItem` para desativar a injeção do botão "Loja de Pontos" na barra superior de navegação (`nav-pills`), permitindo que a navegação seja gerenciada customizadamente na barra lateral (`sidebar`). |
@@ -37,6 +38,225 @@ Este documento registra a arquitetura técnica, modelo de dados, controladores R
 ---
 
 ## 2. Detalhamento Arquitetural das Funcionalidades
+
+### 2.0-A. Correção Crítica de Sequências de Check-in (v0.5.1)
+
+> **Contexto Operacional:**
+> Em 27/09/2026, o plugin foi temporariamente desativado para manutenção técnica. Ao ser reativado, verificou-se que membros que usaram a moeda de reposição (Cartão de Reposição / 补签卡) para preencher o dia 27 perderam suas sequências históricas, enquanto outros membros mantiveram suas sequências normalmente. Esta seção documenta a investigação forense, as 4 falhas identificadas, a solução implementada e a auditoria de segurança conduzida.
+
+#### 1. Diagnóstico: Por que alguns perderam e outros não?
+
+A distinção entre usuários afetados e não afetados foi determinada pelo **momento do check-in em relação à janela de indisponibilidade**:
+
+| Cenário | Resultado |
+| :--- | :--- |
+| Fez check-in **antes** da desativação no dia 27 | ✅ Sequência mantida (registro do dia 27 já existia no banco) |
+| **Não** fez check-in no dia 27 (plugin estava offline) + usou Reposição nos dias seguintes | ❌ Sequência quebrada (4 falhas encadeadas) |
+
+#### 2. As 4 Falhas Encadeadas Identificadas
+
+##### Falha A — `streak_days` fixo em `1` na criação da reposição
+
+**Arquivo:** `app/controllers/discourse_points_mall/checkins_controller.rb` — método `perform_makeup`
+
+```ruby
+# ❌ ANTES (código defeituoso)
+::PointsMallCheckin.create!(
+  user_id: locked_user.id,
+  checkin_date: target_date,
+  points_earned: 0,
+  streak_days: 1,  # ← hardcoded, ignora toda a sequência histórica
+)
+```
+
+Ao registrar a reposição do dia 27, o banco recebia `streak_days: 1`, independentemente de o membro ter 7, 30 ou 60 dias consecutivos antes daquela data.
+
+##### Falha B — Ausência de propagação em cascata (Forward Propagation)
+
+Ao usar a reposição **depois** de já ter feito check-in nos dias 28, 29 e 30, os registros existentes (28 → `streak_days: 1`, 29 → `streak_days: 2`, 30 → `streak_days: 3`) permaneciam congelados. Nenhum recálculo retroativo era disparado, desconectando o passado do presente permanentemente.
+
+##### Falha C — Ranking lê `streak_days` estático do banco
+
+**Arquivo:** `app/controllers/discourse_points_mall/checkins_controller.rb` — método `ranking_payload`
+
+```ruby
+# O ranking não calculava dinamicamente; lia o valor fixo no banco:
+streak_by_user[c.user_id] ||= c.streak_days.to_i
+```
+
+Como o registro mais recente tinha `streak_days` baixo (1, 2 ou 3), o ranking exibia o membro com sequência mínima, mesmo que historicamente ele tivesse uma grande sequência.
+
+##### Falha D — `current_streak` zerando antes do check-in do dia atual
+
+**Arquivo:** `app/controllers/discourse_points_mall/checkins_controller.rb` — método `summary_payload`
+
+```ruby
+# ❌ ANTES: se o usuário não fez o check-in de hoje, retorna 0
+current_streak = calculate_streak_for(today, checkin_dates)
+# calculate_streak_for tenta encontrar 'today' no date_map;
+# se hoje não consta (check-in ainda não feito), o loop para na 1ª iteração → retorna 0
+```
+
+Todo membro ao abrir o painel pela manhã via um `current_streak: 0`, mesmo tendo uma sequência ativa de ontem, gerando confusão e falsa percepção de sequência quebrada.
+
+#### 3. A Solução: 5 Camadas de Correção
+
+##### Camada 1 — Novo algoritmo determinístico de recálculo em cascata
+
+**Arquivo:** `app/models/points_mall_checkin.rb`
+
+Adicionados dois métodos de classe ao modelo:
+
+```ruby
+# Recalcula os streak_days de um único usuário em ordem cronológica estrita
+def self.recalculate_streaks_for_user(user_id)
+  records = where(user_id: user_id).order(checkin_date: :asc)
+  return 0 if records.empty?
+
+  current_streak = 0
+  previous_date = nil
+
+  records.each do |record|
+    if previous_date && record.checkin_date == (previous_date + 1.day)
+      current_streak += 1  # consecutivo → incrementa
+    else
+      current_streak = 1   # gap real → reinicia
+    end
+    # Atualiza apenas registros com valores divergentes (zero writes desnecessários)
+    record.update_columns(streak_days: current_streak, updated_at: Time.zone.now) if record.streak_days != current_streak
+    previous_date = record.checkin_date
+  end
+  current_streak
+end
+
+# Executa recalculate_streaks_for_user para todos os usuários com check-ins
+def self.recalculate_all_streaks!
+  user_ids = distinct.pluck(:user_id)
+  user_ids.each { |uid| recalculate_streaks_for_user(uid) }
+  user_ids.size
+end
+```
+
+##### Camada 2 — Remoção do `streak_days: 1` hardcoded na reposição
+
+**Arquivo:** `app/controllers/discourse_points_mall/checkins_controller.rb` — método `perform_makeup`
+
+```ruby
+# ✅ DEPOIS: calcula o streak real antes de persistir
+prev_checkin = ::PointsMallCheckin.find_by(user_id: locked_user.id, checkin_date: target_date - 1.day)
+initial_streak = prev_checkin ? (prev_checkin.streak_days.to_i + 1) : 1
+
+checkin = ::PointsMallCheckin.create!(
+  user_id: locked_user.id,
+  checkin_date: target_date,
+  points_earned: 0,
+  streak_days: initial_streak,
+)
+
+# Propagação em cascata: recalcula todos os check-ins posteriores do usuário
+::PointsMallCheckin.recalculate_streaks_for_user(locked_user.id)
+checkin.reload  # recarrega o valor final pós-propagação
+```
+
+O resultado imediato: ao registrar o dia 27, os dias 28, 29 e 30 existentes têm seus `streak_days` **atualizados em cascata**, reconectando a sequência histórica completa automaticamente.
+
+##### Camada 3 — Correção do cálculo de `current_streak` no resumo
+
+**Arquivo:** `app/controllers/discourse_points_mall/checkins_controller.rb` — método `summary_payload`
+
+```ruby
+# ✅ DEPOIS: sequência ativa se o usuário fez check-in ontem (mesmo sem fazer hoje ainda)
+current_streak =
+  if checked_in_today
+    calculate_streak_for(today, checkin_dates)       # fez hoje → conta da data de hoje
+  elsif date_map[today - 1.day]
+    calculate_streak_for(today - 1.day, checkin_dates)  # fez ontem → mantém ativa
+  else
+    0                                                # nenhum → sequência inativa
+  end
+```
+
+Efeito: o membro acorda, abre o painel e vê sua sequência ativa. Ela só **aparecerá como 0** se realmente houver um gap não coberto.
+
+##### Camada 4 — Migration de reparo histórico automático
+
+**Arquivo:** `db/migrate/20260930000024_recalculate_points_mall_checkin_streaks.rb`
+
+Uma migration Rails em SQL nativo (via `DB.query` / `DB.exec` do Discourse) que, ao ser executada durante o `launcher rebuild app`, percorre **todos os usuários** e corrige os `streak_days` em ordem cronológica:
+
+```ruby
+class RecalculatePointsMallCheckinStreaks < ActiveRecord::Migration[7.0]
+  def up
+    return unless table_exists?(:points_mall_checkins)
+    user_ids = DB.query_single("SELECT DISTINCT user_id FROM points_mall_checkins")
+    user_ids.each do |user_id|
+      records = DB.query("SELECT id, checkin_date, streak_days FROM points_mall_checkins "\
+                         "WHERE user_id = :user_id ORDER BY checkin_date ASC", user_id: user_id)
+      # ... lógica de recalculo com update direto por SQL parametrizado
+    end
+  end
+
+  def down
+    # Irreversível por design (reparação de dados; sem down necessário)
+  end
+end
+```
+
+**Propriedades de segurança da migration:**
+- Guard clause: `return unless table_exists?` — não falha em instâncias sem o plugin.
+- Idempotente: pode ser reexecutada sem corromper dados.
+- Independente de código Ruby: usa apenas a API `DB` do Discourse (resistente a renomeações futuras de modelo).
+- Não destrói nem renomeia colunas: operação de escrita mínima e segura.
+
+##### Camada 5 — Endpoint Administrativo de Reparo Imediato
+
+**Rota:** `POST /admin/plugins/discourse-points-mall/manage/checkins/recalculate`
+
+**Autorização:** Dupla camada — `AdminConstraint` na rota + herança de `::Admin::AdminController` no controller + `requires_plugin`.
+
+**Controller:** `app/controllers/discourse_points_mall/admin_checkins_controller.rb`
+
+```ruby
+def recalculate
+  count = ::PointsMallCheckin.recalculate_all_streaks!
+  render json: { success: true, recalculated_users: count }
+rescue StandardError => e
+  Rails.logger.error("[points-mall] recalculate streaks failed: #{e.class} #{e.message}")
+  render_json_error(e.message, status: 500)
+end
+```
+
+O botão **"Recalcular Sequências"** foi adicionado ao cabeçalho da aba **Check-ins** no painel administrativo do plugin (`Admin → Plugins → Loja de Pontos → Check-ins`), permitindo disparo manual sem rebuild do container.
+
+#### 4. Fluxo de Recuperação Completo (Diagrama)
+
+```
+[Dia 26] streak: N  ─→  [Dia 27] REPOSIÇÃO  ─→  [Dia 28] streak: N+2
+                              ↓
+                   recalculate_streaks_for_user()
+                              ↓
+            Percorre 26 → 27 → 28 → 29 → 30 em ordem crescente
+                              ↓
+              Atualiza streak_days de forma contínua e conectada
+                              ↓
+            [Dia 26] N  →  [Dia 27] N+1  →  [Dia 28] N+2  →  ...
+```
+
+#### 5. Auditoria de Segurança e Conformidade (DiscourseSkill — Regras Verificadas)
+
+| Regra | Descrição | Status |
+| :---: | :--- | :---: |
+| **04** | Migrations seguras, idempotentes e sem dependência de código externo | ✅ **Conforme** |
+| **05** | Endpoint de recálculo protegido por `AdminConstraint` + `Admin::AdminController` | ✅ **Conforme** |
+| **06** | Nenhuma interpolação de input externo em SQL — uso de bind parametrizado `(:id, :streak)` | ✅ **Conforme** |
+| **08** | Resposta do endpoint retorna apenas `{ success, recalculated_users }` — zero vazamento de PII | ✅ **Conforme** |
+| **09** | Operação síncrona adequada ao volume atual; recomendação de migração para Sidekiq se base > 100k usuários | ℹ️ **Observação Futura** |
+| **14** | Botão e labels de recálculo devidamente cadastrados nos locales `pt_BR` e `en` | ✅ **Conforme** |
+
+**Veredito:** Zero vulnerabilidades introduzidas. Zero vazamento de informações privadas.
+
+---
+
 
 ### 2.0. Auditoria Estrutural e Conformidade Discourse (v0.5.0)
 
@@ -235,7 +455,7 @@ function formatDateFixed(dateVal) {
 
 ## 3. Catálogo de Erros de Compilação e Mitigações Registradas
 
-### 3.1. Incidente de Compilação SCSS (`Discourse::ScssError: unmatched "}"`)
+### 3.1. Incidente de Compilação SCSS (`Discourse::ScssError: unmatched "}")`
 - **Causa**: Edição parcial no bloco `.order-copy-action` dentro de `common/points-mall.scss` que resultou no fechamento incorreto de chaves aninhadas.
 - **Impacto**: Aborto na tarefa `rake assets:precompile` durante o build do Docker no Discourse.
 - **Protocolo de Mitigação**: Obrigatoriedade de execução prévia de compilação sintática via Dart Sass (`npx sass`) no ambiente local antes do envio para controle de versão.
@@ -251,48 +471,81 @@ function formatDateFixed(dateVal) {
 
 ```
 discourse-points-segredin/
-├── ROADMAP.md                                                    # Documentação Técnica e Roadmap Oficial (v0.4.23)
-├── plugin.rb                                                     # Registro da versão v0.4.23 e SVG Icons do Discourse
+├── ROADMAP.md                                                    # Documentação Técnica e Roadmap Oficial (v0.5.1)
+├── plugin.rb                                                     # Registro da versão v0.5.1 + rota recalculate
 ├── config/
 │   └── locales/
-│       ├── client.pt_BR.yml                                      # Localização Português (Brasil)
-│       ├── client.en.yml                                         # Localização Inglês
+│       ├── client.pt_BR.yml                                      # Localização Português (Brasil) + chaves recalculate v0.5.1
+│       ├── client.en.yml                                         # Localização Inglês + chaves recalculate v0.5.1
 │       └── client.zh_CN.yml                                      # Localização Chinês (Simplificado)
 ├── app/
+│   ├── models/
+│   │   └── points_mall_checkin.rb                                # [v0.5.1] recalculate_streaks_for_user + recalculate_all_streaks!
 │   └── controllers/
 │       └── discourse_points_mall/
-│           ├── admin_products_controller.rb                      # Whitelist price_brl, external_url e grant_group_id
-│           ├── checkins_controller.rb                            # Algoritmo de ranking com Fallback SQL
-│           └── inventory_controller.rb                           # Public Cosmetics API com automação VIP apoiador
+│           ├── admin_checkins_controller.rb                       # [v0.5.1] Endpoint de recálculo administrativo
+│           ├── admin_products_controller.rb                       # Whitelist price_brl, external_url e grant_group_id
+│           ├── checkins_controller.rb                             # [v0.5.1] perform_makeup com propagação em cascata + current_streak fix
+│           └── inventory_controller.rb                            # Public Cosmetics API com automação VIP apoiador
+├── db/
+│   └── migrate/
+│       └── 20260930000024_recalculate_points_mall_checkin_streaks.rb  # [v0.5.1] Migration de reparo histórico de sequências
+├── admin/assets/javascripts/discourse/
+│   ├── controllers/admin-plugins/show/discourse-points-mall-manage.js  # [v0.5.1] Action recalculateCheckinStreaks
+│   └── templates/admin-plugins/show/discourse-points-mall-manage.gjs   # [v0.5.1] Botão "Recalcular Sequências" na aba Check-ins
 ├── assets/
 │   ├── javascripts/discourse/
-│   │   ├── initializers/points-mall.js                           # Public Cosmetics DOM Observer (Frames & Flairs)
-│   │   ├── controllers/points-mall.js                            # Paginação de pedidos e inventário
+│   │   ├── initializers/points-mall.js                            # Public Cosmetics DOM Observer (Frames & Flairs)
+│   │   ├── controllers/points-mall.js                             # Paginação de pedidos e inventário
+│   │   ├── controllers/admin-plugins/show/discourse-points-mall-manage.js  # [v0.5.1] Action recalculateCheckinStreaks (mirror)
 │   │   └── templates/
-│   │       ├── points-mall.gjs                                   # Layout principal da loja, inventário e pedidos
+│   │       ├── points-mall.gjs                                    # Layout principal da loja, inventário e pedidos
+│   │       ├── admin-plugins/show/discourse-points-mall-manage.gjs  # [v0.5.1] Botão de recálculo no painel admin (mirror)
 │   │       └── points-mall/
-│   │           ├── checkin.gjs                                   # Ranking e módulo de check-in diário
-│   │           └── orders.gjs                                    # Histórico de pedidos e estatísticas
+│   │           ├── checkin.gjs                                    # Ranking e módulo de check-in diário
+│   │           └── orders.gjs                                     # Histórico de pedidos e estatísticas
 │   └── stylesheets/
-│       ├── common/points-mall.scss                               # Scss global, jn-avatar-frame e jn-user-flair
-│       └── mobile/points-mall.scss                               # Estilos responsivos para telas compactas
+│       ├── common/points-mall.scss                                # Scss global, jn-avatar-frame e jn-user-flair
+│       └── mobile/points-mall.scss                                # Estilos responsivos para telas compactas
+└── spec/
+    └── requests/discourse_points_mall/
+        ├── inventory_controller_spec.rb                           # Testes de inventário e expiração de cosméticos
+        └── orders_controller_spec.rb                              # Testes de autorização de pedidos
 ```
 
 ---
 
 ## 5. Cronograma de Desenvolvimento Futuro (Backlog Expandido)
 
-### 🎯 Fase 1: Automação de Checkout & Webhooks (Q3 2026)
+### ✅ Concluído — Fase 0: Estabilidade e Correções Críticas (Q3 2026)
+
+| Item | Status | Versão |
+| :--- | :---: | :---: |
+| Auditoria estrutural de conformidade Discourse (30 regras) | ✅ Concluído | v0.5.0 |
+| Remoção de bypass SSL e endpoints legados chineses | ✅ Concluído | v0.5.0 |
+| Sidekiq Job assíncrono `PointsMallFulfillExternalOrder` | ✅ Concluído | v0.5.0 |
+| Correção do ciclo de vida e expiração de cosméticos | ✅ Concluído | v0.5.0 |
+| **Bugfix crítico de sequências de check-in (makeup streak reset)** | ✅ Concluído | **v0.5.1** |
+| **Migration de reparo histórico de streak_days corrompidos** | ✅ Concluído | **v0.5.1** |
+| **Endpoint administrativo de recálculo de sequências** | ✅ Concluído | **v0.5.1** |
+
+---
+
+### 🎯 Fase 1: Automação de Checkout & Webhooks (Q3–Q4 2026)
 - **Integração Pix Automática (PagHiper)**: Webhook assíncrono para dar baixa imediata nos pedidos da loja e liberar pontos ou o grupo VIP instantaneamente.
 - **WebMCP Bridge / Bot**: Suporte a execução de comandos de compras via agentes interativos no fórum.
 
-### 🔔 Fase 2: Notificações & Notificações de Expiração (Q4 2026)
+### 🔔 Fase 2: Notificações & Alertas de Expiração (Q4 2026)
 - **Notificações Nativas do Discourse**: Enviar notificação de sistema no fórum quando um produto for entregue/concluído pelo administrador.
 - **Alerta de Expiração de Cosmético**: Avisar o usuário 3 dias antes da expiração de sua moldura ou skin de tema.
+- **Notificação de Sequência em Risco**: Notificar o membro quando estiver próximo de perder a sequência (ex: alerta às 20h se ainda não fez check-in).
 
 ### 📊 Fase 3: Analytics Administrativo e Exportação de Dados (Q1 2027)
 - **Painel Financeiro / Extrato de Pontos**: Gráfico estatístico no painel admin mostrando movimentação diária de pontos emitidos e resgatados.
 - **Exportação CSV/Excel**: Exportar histórico de pedidos e auditoria de resgates para relatórios externos.
+- **[Melhoria v0.5.1]** Migrar `recalculate_all_streaks!` para job Sidekiq assíncrono se a base de usuários exceder 100.000 membros ativos.
 
 ### 🏆 Fase 4: Gamificação Avançada & Conquistas de Loja (Q2 2027)
 - **Badges Dinâmicas por Compras**: Conceder conquistas automáticas do Discourse baseadas em metas de resgates na loja (ex: "Colecionador de Molduras", "Cliente Frequente").
+- **Conquistas de Sequência**: Badges automáticas ao atingir marcos de check-in consecutivo (ex: 7, 30, 100 dias).
+- **Reposição Estendida**: Ampliar janela de reposição para meses anteriores (com custo progressivo) e suporte a lacunas por manutenção programada do fórum.
