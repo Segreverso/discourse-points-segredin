@@ -1036,12 +1036,20 @@ export default <template>
     {{! ==================== ABA 4: CHECK-INS ==================== }}
     {{#if (eq @controller.adminActiveTab "checkins")}}
       <section class="points-mall-admin-section">
-        <div class="points-mall-admin-section-header">
-          <h2>
-            {{dIcon "calendar-days"}}
-            <span>{{i18n "points_mall.admin.checkins.title"}}</span>
-          </h2>
-          <p>{{i18n "points_mall.admin.checkins.help"}}</p>
+        <div class="points-mall-admin-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h2>
+              {{dIcon "calendar-days"}}
+              <span>{{i18n "points_mall.admin.checkins.title"}}</span>
+            </h2>
+            <p>{{i18n "points_mall.admin.checkins.help"}}</p>
+          </div>
+          <DButton
+            @icon="rotate-right"
+            @label="points_mall.admin.checkins.recalculate"
+            @action={{@controller.recalculateCheckinStreaks}}
+            class="btn-primary"
+          />
         </div>
 
         <div class="points-mall-admin-overview-grid points-mall-admin-overview-grid-checkin">

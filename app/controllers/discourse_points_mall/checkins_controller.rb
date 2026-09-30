@@ -458,7 +458,14 @@ module DiscoursePointsMall
       month_end = today.end_of_month
       current_month_checkins = checkin_dates.count { |date| date >= month_start && date <= month_end }
       checked_in_today = date_map[today]
-      current_streak = calculate_streak_for(today, checkin_dates)
+      current_streak =
+        if checked_in_today
+          calculate_streak_for(today, checkin_dates)
+        elsif date_map[today - 1.day]
+          calculate_streak_for(today - 1.day, checkin_dates)
+        else
+          0
+        end
 
       total_points =
         if using_daily_checkin?
@@ -545,13 +552,20 @@ module DiscoursePointsMall
             created_at: checkin.created_at,
           }
         else
+          prev_checkin = ::PointsMallCheckin.find_by(user_id: locked_user.id, checkin_date: target_date - 1.day)
+          initial_streak = prev_checkin ? (prev_checkin.streak_days.to_i + 1) : 1
+
           checkin =
             ::PointsMallCheckin.create!(
               user_id: locked_user.id,
               checkin_date: target_date,
               points_earned: 0,
-              streak_days: 1,
+              streak_days: initial_streak,
             )
+
+          ::PointsMallCheckin.recalculate_streaks_for_user(locked_user.id)
+          checkin.reload
+
           checkin_payload = {
             id: checkin.id,
             user_id: checkin.user_id,

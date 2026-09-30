@@ -36,6 +36,8 @@ pt_BR:
           title: "Check-ins"
           help: "Resumo, tendências, ranking e registros."
           refresh: "Atualizar"
+          recalculate: "Recalcular Sequências"
+          recalculate_success: "Sequências recalculadas com sucesso!"
           cards:
             total_checkins: "Total Check-ins"
             total_points: "Pontos Totais"

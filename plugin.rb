@@ -164,6 +164,7 @@ after_initialize do
         post "/manage/orders/:id/refund" => "discourse_points_mall/admin_orders#refund"
 
         get "/manage/checkins" => "discourse_points_mall/admin_checkins#index"
+        post "/manage/checkins/recalculate" => "discourse_points_mall/admin_checkins#recalculate"
       end
     end
   end

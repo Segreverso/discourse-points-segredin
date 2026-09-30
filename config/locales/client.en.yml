@@ -36,6 +36,8 @@ en:
           title: "Check-in Overview"
           help: "Summary, trends, rankings, and recent records for daily check-ins."
           refresh: "Refresh Overview"
+          recalculate: "Recalculate Streaks"
+          recalculate_success: "Streaks successfully recalculated!"
           cards:
             total_checkins: "Total Check-ins"
             total_points: "Total Check-in Points"

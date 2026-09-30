@@ -43,6 +43,38 @@ class PointsMallCheckin < ActiveRecord::Base
     end
   end
 
+  def self.recalculate_streaks_for_user(user_id)
+    records = where(user_id: user_id).order(checkin_date: :asc)
+    return 0 if records.empty?
+
+    current_streak = 0
+    previous_date = nil
+
+    records.each do |record|
+      if previous_date && record.checkin_date == (previous_date + 1.day)
+        current_streak += 1
+      else
+        current_streak = 1
+      end
+
+      if record.streak_days != current_streak
+        record.update_columns(streak_days: current_streak, updated_at: Time.zone.now)
+      end
+
+      previous_date = record.checkin_date
+    end
+
+    current_streak
+  end
+
+  def self.recalculate_all_streaks!
+    user_ids = distinct.pluck(:user_id)
+    user_ids.each do |uid|
+      recalculate_streaks_for_user(uid)
+    end
+    user_ids.size
+  end
+
   private
 
   def award_points

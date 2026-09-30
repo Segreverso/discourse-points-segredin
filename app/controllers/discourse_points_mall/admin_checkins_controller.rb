@@ -13,6 +13,14 @@ module DiscoursePointsMall
       }
     end
 
+    def recalculate
+      count = ::PointsMallCheckin.recalculate_all_streaks!
+      render json: { success: true, recalculated_users: count }
+    rescue StandardError => e
+      Rails.logger.error("[points-mall] recalculate streaks failed: #{e.class} #{e.message}")
+      render_json_error(e.message, status: 500)
+    end
+
     private
 
     def using_daily_checkin?

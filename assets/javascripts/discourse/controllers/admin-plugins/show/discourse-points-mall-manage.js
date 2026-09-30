@@ -428,4 +428,20 @@ export default class AdminPluginsShowDiscoursePointsMallManageController extends
       popupAjaxError(error);
     }
   }
+
+  @action
+  async recalculateCheckinStreaks() {
+    try {
+      const result = await ajax("/admin/plugins/discourse-points-mall/manage/checkins/recalculate", {
+        type: "POST",
+      });
+      await this.reloadCheckinSummary();
+      this.appEvents.trigger("modal-body:flash", {
+        text: (I18n.t("points_mall.admin.checkins.recalculate_success") || "Sequências recalculadas com sucesso!") + ` (${result.recalculated_users || 0})`,
+        messageClass: "success",
+      });
+    } catch (error) {
+      popupAjaxError(error);
+    }
+  }
 }
